@@ -1,0 +1,252 @@
+﻿#pragma kernel Density
+#pragma kernel Force
+#pragma kernel Integrate
+
+
+#pragma kernel ResetColor
+#pragma kernel UpdateColor
+
+#include "SPHData.cginc"
+#include "GridHelper.cginc"
+#define SIMULATION_BLOCK_SIZE 256
+
+float _Smoothlen;
+float _PressureStiffness;
+float _RestDensity;
+// float _ParticleMass; //Not used
+// float _Viscosity; //Not used
+float3 _Gravity;
+float _TimeStep;
+
+//Runtime parameter
+float _DensityCoef;
+float _GradPressureCoef;
+float _LapViscosityCoef;
+int _NumOfParticle;
+
+
+RWStructuredBuffer<Particle> _ParticleBuffer;
+RWStructuredBuffer<Particle> _ParticleBufferSorted;
+
+RWStructuredBuffer<ParticleDensity> _ParticleDensityBuffer;
+RWStructuredBuffer<ParticleForce>  _ParticleForceBuffer;
+
+StructuredBuffer<uint2> _GridBuffer;
+
+float3 _TargetPos;
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void ResetColor(uint3 DTid : SV_DispatchThreadID)
+{
+	const unsigned int ID = DTid.x; // Particle ID to operate on
+	// _ParticleBuffer[ID].col = 1;
+	_ParticleBufferSorted[ID].col = 1;
+	// _ParticleBuffer[ID].pos = _ParticleBufferSorted[ID].pos;
+	// _ParticleBufferSorted[ID].pos = 1;
+	// _ParticleBufferSorted[ID].pos = 0;
+}
+
+[numthreads(1, 1, 1)]
+void UpdateColor(uint3 DTid : SV_DispatchThreadID)
+{
+	float3 pos = _TargetPos;
+	// pos.x = 0.2f;
+
+	float3 cellPos = PosToCellPos(pos, _GridMin, _GridMax, _GridSpacing);
+	int3 cid = CellPosToCellIndex(cellPos);
+
+	int range = 1;
+	for(int i = max(cid.x-range, 0); i <= min(cid.x+range, _GridSize.x-1); ++i)
+	{
+		for(int j = max(cid.y-range, 0); j <= min(cid.y+range, _GridSize.y-1); ++j)
+		{
+			for(int k = max(cid.z-range, 0); k <= min(cid.z+range, _GridSize.z-1); ++k)
+			{
+				uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
+				for(uint id = startEnd.x; id < startEnd.y; ++id)
+				{
+					_ParticleBufferSorted[id].col = float4(1,0,0,1);
+				}
+			}
+		}
+	}
+}
+
+
+float CalculateDensity(float r_sq) {
+	const float h_sq = _Smoothlen * _Smoothlen;
+	// Implements this equation:
+	// W_poly6(r, h) = 315 / (64 * pi * h^9) * (h^2 - r^2)^3
+	// g_fDensityCoef = fParticleMass * 315.0f / (64.0f * PI * fSmoothlen^9)
+	return _DensityCoef * (h_sq - r_sq) * (h_sq - r_sq) * (h_sq - r_sq);
+}
+groupshared float3 density_shared_pos[SIMULATION_BLOCK_SIZE];
+
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
+{
+	const unsigned int P_ID = DTid.x;
+	const float h_sq = _Smoothlen * _Smoothlen;
+	float3 P_position = _ParticleBuffer[P_ID].pos;
+
+	float density = 0.0;
+
+	// Calculate the density based on all neighbors
+	[loop]
+	for (uint N_block_ID = 0; N_block_ID < (uint)_NumOfParticle; N_block_ID += SIMULATION_BLOCK_SIZE)
+	{
+		// Cache a tile of particles unto shared memory to increase IO efficiency
+		density_shared_pos[GI] = _ParticleBuffer[N_block_ID + GI].pos;
+
+		GroupMemoryBarrierWithGroupSync();
+
+		for (uint N_tile_ID = 0; N_tile_ID < SIMULATION_BLOCK_SIZE; N_tile_ID++)
+		{
+			float3 N_position = density_shared_pos[N_tile_ID];
+
+			float3 diff = N_position - P_position;
+			float  r_sq = dot(diff, diff);
+			if (r_sq < h_sq)
+			{
+				density += CalculateDensity(r_sq);
+			}
+		}
+
+		GroupMemoryBarrierWithGroupSync();
+	}
+	_ParticleDensityBuffer[P_ID].density = density;
+}
+
+
+//--------------------------------------------------------------------------------------
+// Force Calculation
+//--------------------------------------------------------------------------------------
+
+float CalculatePressure(float density) {
+	// Implements this equation:
+	// Pressure = B * ((rho / rho_0)^y  - 1)
+	return _PressureStiffness * max(pow(density / _RestDensity, 3) - 1, 0);
+}
+
+float3 CalculateGradPressure(float r, float P_pressure, float N_pressure, float N_density, float3 diff) {
+	const float h = _Smoothlen;
+	float avg_pressure = 0.5f * (N_pressure + P_pressure);
+	// Implements this equation:
+	// W_spkiey(r, h) = 15 / (pi * h^6) * (h - r)^3
+	// GRAD( W_spikey(r, h) ) = -45 / (pi * h^6) * (h - r)^2
+	// g_fGradPressureCoef = fParticleMass * -45.0f / (PI * fSmoothlen^6)
+	return _GradPressureCoef * avg_pressure / N_density * (h - r) * (h - r) / r * (diff);
+}
+
+float3 CalculateLapVelocity(float r, float3 P_velocity, float3 N_velocity, float N_density) {
+	const float h = _Smoothlen;
+	float3 vel_diff = (N_velocity - P_velocity);
+	// Implements this equation:
+	// W_viscosity(r, h) = 15 / (2 * pi * h^3) * (-r^3 / (2 * h^3) + r^2 / h^2 + h / (2 * r) - 1)
+	// LAPLACIAN( W_viscosity(r, h) ) = 45 / (pi * h^6) * (h - r)
+	// g_fLapViscosityCoef = fParticleMass * fViscosity * 45.0f / (PI * fSmoothlen^6)
+	return _LapViscosityCoef / N_density * (h - r) * vel_diff;
+}
+groupshared struct { float3 position; float3 velocity; float density; } force_shared_pos[SIMULATION_BLOCK_SIZE];
+
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void Force(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
+{
+	const unsigned int P_ID = DTid.x; // Particle ID to operate on
+
+	float3 P_position = _ParticleBuffer[P_ID].pos;
+	float3 P_velocity = _ParticleBuffer[P_ID].vel;
+	float  P_density  = _ParticleDensityBuffer[P_ID].density;
+	float  P_pressure = CalculatePressure(P_density);
+
+	const float h_sq = _Smoothlen * _Smoothlen;
+
+	float3 acceleration = float3(0, 0, 0);
+
+	// Calculate the acceleration based on all neighbors
+	[loop]
+	for (uint N_block_ID = 0; N_block_ID < (uint)_NumOfParticle; N_block_ID += SIMULATION_BLOCK_SIZE)
+	{
+		// Cache a tile of particles unto shared memory to increase IO efficiency
+		force_shared_pos[GI].position = _ParticleBuffer[N_block_ID + GI].pos;
+		force_shared_pos[GI].velocity = _ParticleBuffer[N_block_ID + GI].vel;
+		force_shared_pos[GI].density = _ParticleDensityBuffer[N_block_ID + GI].density;
+
+		GroupMemoryBarrierWithGroupSync();
+
+		[loop]
+		for (uint N_tile_ID = 0; N_tile_ID < SIMULATION_BLOCK_SIZE; N_tile_ID++)
+		{
+			uint N_ID = N_block_ID + N_tile_ID;
+			float3 N_position = force_shared_pos[N_tile_ID].position;
+
+			float3 diff = N_position - P_position;
+			float r_sq = dot(diff, diff);
+			if (r_sq < h_sq && P_ID != N_ID)
+			{
+				float3 N_velocity = force_shared_pos[N_tile_ID].velocity;
+				float  N_density = force_shared_pos[N_tile_ID].density;
+				float  N_pressure = CalculatePressure(N_density);
+				float  r = sqrt(r_sq);
+
+				// Pressure Term
+				acceleration += CalculateGradPressure(r, P_pressure, N_pressure, N_density, diff);
+
+				// Viscosity Term
+				acceleration += CalculateLapVelocity(r, P_velocity, N_velocity, N_density);
+			}
+		}
+		GroupMemoryBarrierWithGroupSync();
+	}
+	_ParticleForceBuffer[P_ID].force = acceleration / P_density;
+}
+
+//--------------------------------------------------------------------------------------
+// Integration
+//--------------------------------------------------------------------------------------
+
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint  GI : SV_GroupIndex) {
+	const unsigned int P_ID = DTid.x; // Particle ID to operate on
+
+	Particle p = _ParticleBuffer[P_ID];
+	float3 acceleration = _ParticleForceBuffer[P_ID].force;
+
+	float  _Restitution = 0.001;
+
+	// Apply gravity
+	acceleration += _Gravity.xyz;
+
+	p.vel+= _TimeStep * acceleration;
+	p.pos+= _TimeStep * p.vel;
+
+	float3 gmin = _GridMin;
+	float3 gmax = _GridMax;
+
+	if (p.pos.x < gmin.x) {
+		p.vel.x = 0;
+		p.pos.x = gmin.x;
+	}
+	if (p.pos.x > gmax.x) {
+		p.vel.x = 0;
+		p.pos.x = gmax.x;
+	}
+	if (p.pos.y < gmin.y) {
+		p.vel.y = 0;
+		p.pos.y = gmin.y;
+	}
+	if (p.pos.y > gmax.y) {
+		p.vel.y = 0;
+		p.pos.y = gmax.y;
+	}
+
+	if (p.pos.z > gmax.z) {
+		p.vel.z = 0;
+		p.pos.z = gmax.z;
+	}
+	if (p.pos.z < gmin.z) {
+		p.vel.z = 0;
+		p.pos.z = gmin.z;
+	}
+	// Update
+	_ParticleBuffer[P_ID] = p;
+}

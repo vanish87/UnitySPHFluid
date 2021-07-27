@@ -30,7 +30,7 @@
     },
     "numOfParticle": 65536,
     "smoothlen": 0.012000000104308129,
-    "searchRange": 3,
+    "searchRange": 5,
     "pressureStiffness": 500.0,
     "restDensity": 1000.0,
     "particleMass": 0.00019999999494757503,

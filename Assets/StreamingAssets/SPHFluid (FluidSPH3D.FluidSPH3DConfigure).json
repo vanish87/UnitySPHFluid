@@ -14,8 +14,8 @@
             }
         },
         "scale": {
-            "x": 0.5,
-            "y": 0.5,
+            "x": 1.0,
+            "y": 0.20000000298023225,
             "z": 0.5
         },
         "displayAxis": false,
@@ -28,11 +28,11 @@
             "a": 1.0
         }
     },
-    "numOfParticle": 65536,
+    "numOfParticle": 131072,
     "smoothlen": 0.012000000104308129,
     "searchRange": 5,
-    "pressureStiffness": 500.0,
-    "restDensity": 1000.0,
+    "pressureStiffness": 100.0,
+    "restDensity": 500.0,
     "particleMass": 0.00019999999494757503,
     "viscosity": 0.5,
     "gravity": {

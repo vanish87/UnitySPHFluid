@@ -284,18 +284,18 @@ MonoBehaviour:
           z: 0
           w: 1
       scale:
-        x: 0.5
-        y: 0.5
+        x: 1
+        y: 0.2
         z: 0.5
       displayAxis: 0
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    numOfParticle: 65536
+    numOfParticle: 131072
     smoothlen: 0.012
     searchRange: 5
-    pressureStiffness: 500
-    restDensity: 1000
+    pressureStiffness: 100
+    restDensity: 500
     particleMass: 0.0002
     viscosity: 0.5
     gravity:

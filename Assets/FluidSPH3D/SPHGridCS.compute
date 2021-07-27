@@ -3,9 +3,6 @@
 #pragma kernel BuildGridIndex
 #pragma kernel BuildSortedObject
 
-#pragma kernel UpdateColor
-#pragma kernel ResetColor
-
 #define SIMULATION_BLOCK_SIZE 128
 #define GRID_BLOCK_SIZE 8
 #include "SPHData.cginc"
@@ -17,10 +14,6 @@ RWStructuredBuffer<Particle> _ObjectBufferSorted;
 RWStructuredBuffer<uint2> _ObjectGridIndexBuffer;
 RWStructuredBuffer<uint2> _GridBuffer;
 
-
-//--------------------------------------------------------------------------------------
-// Build Grid : 各パーティクルの属するセルを計算し、紐づけてGridBufferに保存 -> 確認済み
-//--------------------------------------------------------------------------------------
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void ObjectToGridIndex(uint3 DTid : SV_DispatchThreadID) 
 {

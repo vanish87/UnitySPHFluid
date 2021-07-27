@@ -23,9 +23,6 @@ StructuredBuffer<uint2>	_GridBufferRead;
 RWStructuredBuffer<uint2> _GridBufferWrite;
 
 
-//--------------------------------------------------------------------------------------
-// Build Grid : 各パーティクルの属するセルを計算し、紐づけてGridBufferに保存 -> 確認済み
-//--------------------------------------------------------------------------------------
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void ObjectToGridIndex(uint3 DTid : SV_DispatchThreadID) 
 {

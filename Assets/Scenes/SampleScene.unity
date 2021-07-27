@@ -296,7 +296,7 @@ MonoBehaviour:
     pressureStiffness: 200
     restDensity: 1000
     particleMass: 0.0002
-    viscosity: 0.5
+    viscosity: 0.1
     gravity:
       x: 0
       y: -3

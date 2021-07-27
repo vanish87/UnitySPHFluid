@@ -1,9 +1,9 @@
 
-using UnityTools.Common;
+using UnityTools.Rendering;
 
 namespace FluidSPH3D
 {
-	public class SPHParticleRender : ParticleRender<Particle>
+	public class SPHParticleRender : ParticleRenderBase<Particle>
 	{
 
 	}

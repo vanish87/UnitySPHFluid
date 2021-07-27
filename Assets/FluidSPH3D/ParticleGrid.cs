@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using Unity.Mathematics;
 using System.Linq;
+using UnityTools.Rendering;
 
 namespace UnityTools.Common
 {

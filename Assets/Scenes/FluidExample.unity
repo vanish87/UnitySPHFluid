@@ -293,6 +293,7 @@ MonoBehaviour:
       color: {r: 0, g: 1, b: 1, a: 1}
     numOfParticle: 65536
     smoothlen: 0.012
+    searchRange: 3
     pressureStiffness: 500
     restDensity: 1000
     particleMass: 0.0002
@@ -328,7 +329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91a27059538c6b544b7dfb514fa0b73b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 1
+  mode: 0
   sphData:
     densityCoef: 0
     gradPressureCoef: 0

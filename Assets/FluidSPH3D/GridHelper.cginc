@@ -3,6 +3,11 @@ float3 _GridMax;
 float3 _GridSize;
 float3 _GridSpacing;
 
+#define LOOP_RANGE(I, J, K, CURRENT, RANGE, SIZE) \
+for(int I = max(CURRENT.x - RANGE.x, 0); I <= min(CURRENT.x + RANGE.x, SIZE.x-1); ++I)\
+for(int J = max(CURRENT.y - RANGE.y, 0); J <= min(CURRENT.y + RANGE.y, SIZE.y-1); ++J)\
+for(int K = max(CURRENT.z - RANGE.z, 0); K <= min(CURRENT.z + RANGE.z, SIZE.z-1); ++K)
+
 float3 PosToCellPos(float3 pos, float3 gridMin, float3 gridMax, float3 gridSpacing)
 {
 	pos = clamp(pos, gridMin + gridSpacing * 0.5f, gridMax - gridSpacing * 0.5f);

@@ -7,6 +7,7 @@
 #define SIMULATION_BLOCK_SIZE 256
 
 float _Smoothlen;
+int   _SearchRange;
 float _PressureStiffness;
 float _RestDensity;
 // float _ParticleMass; //Not used
@@ -45,25 +46,20 @@ void Density(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 	// Calculate the density based on neighbors from the 8 adjacent cells + current cell
 	float3 cellPos = PosToCellPos(P_position, _GridMin, _GridMax, _GridSpacing);
 	int3 cid = CellPosToCellIndex(cellPos);
-	int range = 3;
-	for(int i = max(cid.x-range, 0); i <= min(cid.x+range, _GridSize.x-1); ++i)
-	{
-		for(int j = max(cid.y-range, 0); j <= min(cid.y+range, _GridSize.y-1); ++j)
-		{
-			for(int k = max(cid.z-range, 0); k <= min(cid.z+range, _GridSize.z-1); ++k)
-			{
-				uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
-				for(uint id = startEnd.x; id < startEnd.y; ++id)
-				{
-					float3 N_position = _ParticleBufferSorted[id].pos;
 
-					float3 diff = N_position - P_position;
-					float r_sq = dot(diff, diff);
-					if (0 < r_sq && r_sq < h_sq && P_ID != id) {
-					// if (r_sq < h_sq) {
-						density += CalculateDensity(r_sq);
-					}
-				}
+	int3 range = _SearchRange;
+	LOOP_RANGE(i, j, k, cid, range, _GridSize)
+	{
+		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
+		for(uint id = startEnd.x; id < startEnd.y; ++id)
+		{
+			float3 N_position = _ParticleBufferSorted[id].pos;
+
+			float3 diff = N_position - P_position;
+			float r_sq = dot(diff, diff);
+			if (0 < r_sq && r_sq < h_sq && P_ID != id) {
+			// if (r_sq < h_sq) {
+				density += CalculateDensity(r_sq);
 			}
 		}
 	}
@@ -120,33 +116,27 @@ void Force(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid
 	// Calculate the acceleration based on neighbors from the 8 adjacent cells + current cell
 	float3 cellPos = PosToCellPos(P_position, _GridMin, _GridMax, _GridSpacing);
 	int3 cid = CellPosToCellIndex(cellPos);
-	int range = 3;
-	for(int i = max(cid.x-range, 0); i <= min(cid.x+range, _GridSize.x-1); ++i)
+	int3 range = _SearchRange;
+	LOOP_RANGE(i, j, k, cid, range, _GridSize)
 	{
-		for(int j = max(cid.y-range, 0); j <= min(cid.y+range, _GridSize.y-1); ++j)
+		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
+		for(uint id = startEnd.x; id < startEnd.y; ++id)
 		{
-			for(int k = max(cid.z-range, 0); k <= min(cid.z+range, _GridSize.z-1); ++k)
-			{
-				uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
-				for(uint id = startEnd.x; id < startEnd.y; ++id)
-				{
-					float3 N_position = _ParticleBufferSorted[id].pos;
+			float3 N_position = _ParticleBufferSorted[id].pos;
 
-					float3 diff = N_position - P_position;
-					float r_sq = dot(diff, diff);
-					if (0 < r_sq && r_sq < h_sq && P_ID != id) {
-						float3 N_velocity = _ParticleBufferSorted[id].vel;
-						float  N_density = _ParticleDensityBuffer[id].density;
-						float  N_pressure = CalculatePressure(N_density);
-						float  r = sqrt(r_sq);
+			float3 diff = N_position - P_position;
+			float r_sq = dot(diff, diff);
+			if (0 < r_sq && r_sq < h_sq && P_ID != id) {
+				float3 N_velocity = _ParticleBufferSorted[id].vel;
+				float  N_density = _ParticleDensityBuffer[id].density;
+				float  N_pressure = CalculatePressure(N_density);
+				float  r = sqrt(r_sq);
 
-						// Pressure Term
-						acceleration += CalculateGradPressure(r, P_pressure, N_pressure, N_density, diff);
+				// Pressure Term
+				acceleration += CalculateGradPressure(r, P_pressure, N_pressure, N_density, diff);
 
-						// Viscosity Term
-						acceleration += CalculateLapVelocity(r, P_velocity, N_velocity, N_density);
-					}
-				}
+				// Viscosity Term
+				acceleration += CalculateLapVelocity(r, P_velocity, N_velocity, N_density);
 			}
 		}
 	}
@@ -164,8 +154,6 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 
 	Particle p = _ParticleBufferSorted[P_ID];
 	float3 acceleration = _ParticleForceBuffer[P_ID].force;
-
-	float  _Restitution = 0.001;
 
 	// Apply gravity
 	acceleration += _Gravity.xyz;
@@ -193,13 +181,13 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 		p.pos.y = gmax.y;
 	}
 
-	if (p.pos.z > gmax.z) {
-		p.vel.z = 0;
-		p.pos.z = gmax.z;
-	}
 	if (p.pos.z < gmin.z) {
 		p.vel.z = 0;
 		p.pos.z = gmin.z;
+	}
+	if (p.pos.z > gmax.z) {
+		p.vel.z = 0;
+		p.pos.z = gmax.z;
 	}
 	// Update
 	_ParticleBuffer[P_ID] = p;

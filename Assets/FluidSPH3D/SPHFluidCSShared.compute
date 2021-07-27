@@ -18,10 +18,10 @@ float _TimeStep;
 float _DensityCoef;
 float _GradPressureCoef;
 float _LapViscosityCoef;
-int _NumOfParticle;
 
 
 RWStructuredBuffer<Particle> _ParticleBuffer;
+int _ParticleBufferCount;
 RWStructuredBuffer<Particle> _ParticleBufferSorted;
 
 RWStructuredBuffer<ParticleDensity> _ParticleDensityBuffer;
@@ -49,7 +49,7 @@ void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTi
 
 	// Calculate the density based on all neighbors
 	[loop]
-	for (uint N_block_ID = 0; N_block_ID < (uint)_NumOfParticle; N_block_ID += SIMULATION_BLOCK_SIZE)
+	for (uint N_block_ID = 0; N_block_ID < (uint)_ParticleBufferCount; N_block_ID += SIMULATION_BLOCK_SIZE)
 	{
 		// Cache a tile of particles unto shared memory to increase IO efficiency
 		density_shared_pos[GI] = _ParticleBuffer[N_block_ID + GI].pos;
@@ -121,7 +121,7 @@ void Force(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid 
 
 	// Calculate the acceleration based on all neighbors
 	[loop]
-	for (uint N_block_ID = 0; N_block_ID < (uint)_NumOfParticle; N_block_ID += SIMULATION_BLOCK_SIZE)
+	for (uint N_block_ID = 0; N_block_ID < (uint)_ParticleBufferCount; N_block_ID += SIMULATION_BLOCK_SIZE)
 	{
 		// Cache a tile of particles unto shared memory to increase IO efficiency
 		force_shared_pos[GI].position = _ParticleBuffer[N_block_ID + GI].pos;

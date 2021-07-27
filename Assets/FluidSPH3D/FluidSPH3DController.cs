@@ -60,14 +60,11 @@ namespace FluidSPH3D
 		protected FluidSPH3DConfigure configure;
 
 		protected SPHGrid SPHGrid => this.sphGrid ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<SPHGrid>();
-
 		protected SPHGrid sphGrid;
-
 		protected ComputeShaderDispatcher<SPHKernel> fluidDispatcher;
 		protected void Init()
 		{
 			this.Configure.Initialize();
-
 			this.InitSPH();
 		}
 

@@ -2,10 +2,6 @@
 #pragma kernel Force
 #pragma kernel Integrate
 
-
-#pragma kernel ResetColor
-#pragma kernel UpdateColor
-
 #include "SPHData.cginc"
 #include "GridHelper.cginc"
 #define SIMULATION_BLOCK_SIZE 256
@@ -23,7 +19,6 @@ float _DensityCoef;
 float _GradPressureCoef;
 float _LapViscosityCoef;
 
-
 RWStructuredBuffer<Particle> _ParticleBuffer;
 RWStructuredBuffer<Particle> _ParticleBufferSorted;
 
@@ -31,45 +26,6 @@ RWStructuredBuffer<ParticleDensity> _ParticleDensityBuffer;
 RWStructuredBuffer<ParticleForce>  _ParticleForceBuffer;
 
 StructuredBuffer<uint2> _GridBuffer;
-
-float3 _TargetPos;
-[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
-void ResetColor(uint3 DTid : SV_DispatchThreadID)
-{
-	const unsigned int ID = DTid.x; // Particle ID to operate on
-	// _ParticleBuffer[ID].col = 1;
-	_ParticleBufferSorted[ID].col = 1;
-	// _ParticleBuffer[ID].pos = _ParticleBufferSorted[ID].pos;
-	// _ParticleBufferSorted[ID].pos = 1;
-	// _ParticleBufferSorted[ID].pos = 0;
-}
-
-[numthreads(1, 1, 1)]
-void UpdateColor(uint3 DTid : SV_DispatchThreadID)
-{
-	float3 pos = _TargetPos;
-	// pos.x = 0.2f;
-
-	float3 cellPos = PosToCellPos(pos, _GridMin, _GridMax, _GridSpacing);
-	int3 cid = CellPosToCellIndex(cellPos);
-
-	int range = 1;
-	for(int i = max(cid.x-range, 0); i <= min(cid.x+range, _GridSize.x-1); ++i)
-	{
-		for(int j = max(cid.y-range, 0); j <= min(cid.y+range, _GridSize.y-1); ++j)
-		{
-			for(int k = max(cid.z-range, 0); k <= min(cid.z+range, _GridSize.z-1); ++k)
-			{
-				uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
-				for(uint id = startEnd.x; id < startEnd.y; ++id)
-				{
-					_ParticleBufferSorted[id].col = float4(1,0,0,1);
-				}
-			}
-		}
-	}
-}
-
 
 float CalculateDensity(float r_sq) {
 	const float h_sq = _Smoothlen * _Smoothlen;

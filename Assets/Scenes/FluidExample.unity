@@ -328,15 +328,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91a27059538c6b544b7dfb514fa0b73b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mode: 1
   sphData:
-    targetPos:
-      x: 0
-      y: 0
-      z: 0
     densityCoef: 0
     gradPressureCoef: 0
     lapViscosityCoef: 0
-  fluidCS: {fileID: 7200000, guid: 97cf74747040be94f9aa9b58e07dd9bc, type: 3}
+  fluidSortedCS: {fileID: 7200000, guid: 549639aea11b573459f719cee082cf9c, type: 3}
+  fluidSharedCS: {fileID: 7200000, guid: 97cf74747040be94f9aa9b58e07dd9bc, type: 3}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

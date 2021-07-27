@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityTools;
 using UnityTools.Common;
 using UnityTools.ComputeShaderTool;
+using UnityTools.Rendering;
 
 namespace FluidSPH3D
 {
@@ -26,20 +27,20 @@ namespace FluidSPH3D
 	}
 	public class FluidSPH3DController : MonoBehaviour, IParticleBuffer<Particle>
 	{
+		public enum RunMode
+		{
+			SortedGrid,
+			SharedMemory,
+		}
 		public enum SPHKernel
 		{
 			Density,
 			Force,
 			Integrate,
-
-			ResetColor,
-			UpdateColor,
 		}
 		[System.Serializable]
 		public class SPHGPUData : GPUContainer
 		{
-			[Shader(Name = "_TargetPos")] public float3 targetPos = 0;
-
 			[Shader(Name = "_DensityCoef")] public float densityCoef = 0;
 			[Shader(Name = "_GradPressureCoef")] public float gradPressureCoef = 0;
 			[Shader(Name = "_LapViscosityCoef")] public float lapViscosityCoef = 0;
@@ -51,8 +52,10 @@ namespace FluidSPH3D
 
 		}
 		public GPUBufferVariable<Particle> Buffer => this.sphData.particleBuffer;
+		[SerializeField] protected RunMode mode = RunMode.SharedMemory;
 		[SerializeField] protected SPHGPUData sphData = new SPHGPUData();
-		[SerializeField] protected ComputeShader fluidCS;
+		[SerializeField] protected ComputeShader fluidSortedCS;
+		[SerializeField] protected ComputeShader fluidSharedCS;
 		protected FluidSPH3DConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<FluidSPH3DConfigure>();
 		protected FluidSPH3DConfigure configure;
 
@@ -73,8 +76,8 @@ namespace FluidSPH3D
 			this.SPHGrid.Init(this.Configure.D.simulationSpace, this.Configure.D.smoothlen);
 
 			this.sphData.particleBuffer.InitBuffer(this.Configure.D.numOfParticle, true, false);
-			this.sphData.particleDensity.InitBuffer(this.Configure.D.numOfParticle, true, false);
-			this.sphData.particleForce.InitBuffer(this.Configure.D.numOfParticle, true, false);
+			this.sphData.particleDensity.InitBuffer(this.Configure.D.numOfParticle);
+			this.sphData.particleForce.InitBuffer(this.Configure.D.numOfParticle);
 
 			foreach (var i in Enumerable.Range(0, this.sphData.particleBuffer.Size))
 			{
@@ -87,7 +90,8 @@ namespace FluidSPH3D
 			}
 			this.sphData.particleBuffer.SetToGPUBuffer(true);
 
-			this.fluidDispatcher = new ComputeShaderDispatcher<SPHKernel>(this.fluidCS);
+			var cs = this.mode == RunMode.SharedMemory ? this.fluidSharedCS : this.fluidSortedCS;
+			this.fluidDispatcher = new ComputeShaderDispatcher<SPHKernel>(cs);
 			foreach (SPHKernel k in Enum.GetValues(typeof(SPHKernel)))
 			{
 				this.fluidDispatcher.AddParameter(k, this.Configure.D);
@@ -109,13 +113,7 @@ namespace FluidSPH3D
 		{
 			var num = this.Configure.D.numOfParticle;
 			this.fluidDispatcher.Dispatch(SPHKernel.Density, num);
-			// this.sphData.particleDensity.GetToCPUData();
-			// Debug.Log(this.sphData.particleDensity.CPUData[0].density);
-			// foreach(var d in this.sphData.particleDensity.CPUData) Debug.Log(d.density);
 			this.fluidDispatcher.Dispatch(SPHKernel.Force, num);
-			// this.sphData.particleForce.GetToCPUData();
-			// Debug.Log(this.sphData.particleForce.CPUData[0].force);
-			// foreach(var f in this.sphData.particleForce.CPUData) Debug.Log(f.force);
 			this.fluidDispatcher.Dispatch(SPHKernel.Integrate, num);
 		}
 		protected void DeInit()
@@ -133,12 +131,12 @@ namespace FluidSPH3D
 
 		protected void Update()
 		{
-			GPUBufferVariable<Particle> sorted;
-			this.SPHGrid.BuildSortedParticleGridIndex(this.sphData.particleBuffer, out sorted);
-			this.sphData.particleBufferSorted.UpdateBuffer(sorted);
-
-			// this.fluidDispatcher.Dispatch(SPHKernel.ResetColor, sorted.Size);
-			// this.fluidDispatcher.Dispatch(SPHKernel.UpdateColor, 1);
+			if(this.mode == RunMode.SortedGrid)
+			{
+				GPUBufferVariable<Particle> sorted;
+				this.SPHGrid.BuildSortedParticleGridIndex(this.sphData.particleBuffer, out sorted);
+				this.sphData.particleBufferSorted.UpdateBuffer(sorted);
+			}
 
 			this.UpdateSPHParameter();
 			this.SPHStep();

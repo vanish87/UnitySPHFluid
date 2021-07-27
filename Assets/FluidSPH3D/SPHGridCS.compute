@@ -3,14 +3,16 @@
 #pragma kernel BuildGridIndex
 #pragma kernel BuildSortedObject
 
+#define DataType Particle
+
 #define SIMULATION_BLOCK_SIZE 128
 #define GRID_BLOCK_SIZE 8
 #include "SPHData.cginc"
 #include "GridHelper.cginc"
 
-StructuredBuffer<Particle> _ObjectBufferRead;
+StructuredBuffer<DataType> _ObjectBufferRead;
 int	_ObjectBufferReadCount;
-RWStructuredBuffer<Particle> _ObjectBufferSorted;
+RWStructuredBuffer<DataType> _ObjectBufferSorted;
 RWStructuredBuffer<uint2> _ObjectGridIndexBuffer;
 RWStructuredBuffer<uint2> _GridBuffer;
 

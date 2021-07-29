@@ -7,7 +7,6 @@
 #define SIMULATION_BLOCK_SIZE 256
 
 float _Smoothlen;
-int   _SearchRange;
 float _PressureStiffness;
 float _RestDensity;
 // float _ParticleMass; //Not used
@@ -47,7 +46,7 @@ void Density(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 	float3 cellPos = PosToCellPos(P_position, _GridMin, _GridMax, _GridSpacing);
 	int3 cid = CellPosToCellIndex(cellPos);
 
-	int3 range = _SearchRange;
+	int3 range = 1;
 	LOOP_RANGE(i, j, k, cid, range, _GridSize)
 	{
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
@@ -116,7 +115,7 @@ void Force(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid
 	// Calculate the acceleration based on neighbors from the 8 adjacent cells + current cell
 	float3 cellPos = PosToCellPos(P_position, _GridMin, _GridMax, _GridSpacing);
 	int3 cid = CellPosToCellIndex(cellPos);
-	int3 range = _SearchRange;
+	int3 range = 1;
 	LOOP_RANGE(i, j, k, cid, range, _GridSize)
 	{
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];

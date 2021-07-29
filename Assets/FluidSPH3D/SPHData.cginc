@@ -17,3 +17,8 @@ struct ParticleForce
 {
 	float3 force;
 };
+
+struct ParticleVelocity
+{
+	float3 velocity;
+};

@@ -25,6 +25,10 @@ namespace FluidSPH3D
 	{
 		public float3 force;
 	}
+	public struct ParticleVelocity
+	{
+		public float3 velocity;
+	}
 	public class FluidSPH3DController : MonoBehaviour, IParticleBuffer<Particle>
 	{
 		public enum RunMode
@@ -35,7 +39,8 @@ namespace FluidSPH3D
 		public enum SPHKernel
 		{
 			Density,
-			Force,
+			Viscosity,
+			Pressure,
 			Integrate,
 		}
 		[System.Serializable]
@@ -49,6 +54,7 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleBufferSorted")] public GPUBufferVariable<Particle> particleBufferSorted = new GPUBufferVariable<Particle>();
 			[Shader(Name = "_ParticleDensityBuffer")] public GPUBufferVariable<ParticleDensity> particleDensity = new GPUBufferVariable<ParticleDensity>();
 			[Shader(Name = "_ParticleForceBuffer")] public GPUBufferVariable<ParticleForce> particleForce = new GPUBufferVariable<ParticleForce>();
+			[Shader(Name = "_ParticleVelocityBuffer")] public GPUBufferVariable<ParticleVelocity> particleVelocity = new GPUBufferVariable<ParticleVelocity>();
 
 		}
 		public GPUBufferVariable<Particle> Buffer => this.sphData.particleBuffer;
@@ -73,8 +79,9 @@ namespace FluidSPH3D
 			this.SPHGrid.Init(this.Configure.D.simulationSpace, this.Configure.D.smoothlen);
 
 			this.sphData.particleBuffer.InitBuffer(this.Configure.D.numOfParticle, true, false);
-			this.sphData.particleDensity.InitBuffer(this.Configure.D.numOfParticle);
+			this.sphData.particleDensity.InitBuffer(this.Configure.D.numOfParticle, true, false);
 			this.sphData.particleForce.InitBuffer(this.Configure.D.numOfParticle);
+			this.sphData.particleVelocity.InitBuffer(this.Configure.D.numOfParticle);
 
 			foreach (var i in Enumerable.Range(0, this.sphData.particleBuffer.Size))
 			{
@@ -110,7 +117,10 @@ namespace FluidSPH3D
 		{
 			var num = this.Configure.D.numOfParticle;
 			this.fluidDispatcher.Dispatch(SPHKernel.Density, num);
-			this.fluidDispatcher.Dispatch(SPHKernel.Force, num);
+			this.sphData.particleDensity.GetToCPUData();
+			// foreach(var d in this.sphData.particleDensity.CPUData) Debug.Log(d.density);
+			this.fluidDispatcher.Dispatch(SPHKernel.Viscosity, num);
+			this.fluidDispatcher.Dispatch(SPHKernel.Pressure, num);
 			this.fluidDispatcher.Dispatch(SPHKernel.Integrate, num);
 		}
 		protected void DeInit()

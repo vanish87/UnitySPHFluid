@@ -285,23 +285,22 @@ MonoBehaviour:
           z: 0
           w: 1
       scale:
-        x: 0.5
-        y: 0.5
-        z: 0.5
+        x: 10
+        y: 10
+        z: 10
       displayAxis: 0
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    numOfParticle: 65536
+    numOfParticle: 32768
     smoothlen: 0.012
-    searchRange: 1
     pressureStiffness: 200
     restDensity: 1000
-    particleMass: 0.0002
-    viscosity: 10
+    particleMass: 0.05
+    viscosity: 0.1
     gravity:
       x: 0
-      y: -3
+      y: -9.8
       z: 0
     timeStep: 0.005
 --- !u!114 &468932072

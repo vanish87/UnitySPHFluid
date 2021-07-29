@@ -15,7 +15,6 @@ namespace FluidSPH3D
 			public Space3D simulationSpace;
 			[Shader(Name = "_NumOfParticle")] public int numOfParticle = 1024 * 16;
 			[Shader(Name = "_Smoothlen")] public float smoothlen = 0.012f;
-			[Shader(Name = "_SearchRange")] public int searchRange = 3;//Sort only
 			[Shader(Name = "_PressureStiffness")] public float pressureStiffness = 200;
 
 			[Shader(Name = "_RestDensity")] public float restDensity = 800;

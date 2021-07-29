@@ -65,7 +65,7 @@ void Density(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 	}
 
 	_ParticleDensityBuffer[P_ID].density = max(density, _RestDensity);
-	// _ParticleDensityBuffer[P_ID].density = clamp(max(density, _RestDensity), 0, 2 * _RestDensity);
+	// _ParticleDensityBuffer[P_ID].density = clamp(max(density, _RestDensity), 0, 10 * _RestDensity);
 	// _ParticleDensityBuffer[P_ID].density = density;
 }
 
@@ -161,8 +161,9 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 	p.vel+= _TimeStep * acceleration;
 	p.pos+= _TimeStep * p.vel;
 
-	float3 gmin = _GridMin;
-	float3 gmax = _GridMax;
+	float3 offset = 0;//_GridSpacing * 1.001f;
+	float3 gmin = _GridMin + offset;
+	float3 gmax = _GridMax - offset;
 
 	if (p.pos.x < gmin.x) {
 		p.vel.x = 0;

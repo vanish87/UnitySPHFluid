@@ -80,7 +80,7 @@ namespace FluidSPH3D
 			{
 				var rand = new float3(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
 				rand -= 0.5f;
-				rand = UnityEngine.Random.insideUnitSphere * 0.5f;
+				rand = UnityEngine.Random.insideUnitSphere * 0.25f;
 				this.sphData.particleBuffer.CPUData[i].col = 1;
 				this.sphData.particleBuffer.CPUData[i].pos = this.Configure.D.simulationSpace.TRS.MultiplyPoint(rand);
 				this.sphData.particleBuffer.CPUData[i].vel = 0;

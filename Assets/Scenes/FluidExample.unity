@@ -186,6 +186,7 @@ MonoBehaviour:
     displayText: 0
     displayBound: 0
     color: {r: 0, g: 1, b: 1, a: 1}
+  drawDebugGrid: 0
   gridData:
     centerMode: 0
     gridSize:
@@ -293,11 +294,11 @@ MonoBehaviour:
       color: {r: 0, g: 1, b: 1, a: 1}
     numOfParticle: 65536
     smoothlen: 0.012
-    searchRange: 5
-    pressureStiffness: 100
-    restDensity: 500
+    searchRange: 1
+    pressureStiffness: 200
+    restDensity: 1000
     particleMass: 0.0002
-    viscosity: 0.5
+    viscosity: 10
     gravity:
       x: 0
       y: -3

@@ -164,7 +164,7 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 		}
 		GroupMemoryBarrierWithGroupSync();
 	}
-	_ParticleVelocityBuffer[P_ID].velocity = P_velocity + _TimeStep * (force + _Gravity) / _ParticleMass;
+	_ParticleVelocityBuffer[P_ID].vel= P_velocity + _TimeStep * (force + _Gravity) / _ParticleMass;
 }
 
 groupshared struct { float3 position; float3 velocity; float density; } force_shared_pos[SIMULATION_BLOCK_SIZE];
@@ -229,7 +229,7 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 
 	Particle p = _ParticleBuffer[P_ID];
 	float3 acceleration = _ParticleForceBuffer[P_ID].force;
-	float3 velocity = _ParticleVelocityBuffer[P_ID].velocity;
+	float3 velocity = _ParticleVelocityBuffer[P_ID].vel;
 
 	p.vel = velocity + _TimeStep * acceleration / _ParticleMass;
 	p.pos += _TimeStep * p.vel;

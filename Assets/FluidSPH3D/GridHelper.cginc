@@ -10,7 +10,7 @@ for(int K = max(CURRENT.z - RANGE.z, 0); K <= min(CURRENT.z + RANGE.z, SIZE.z-1)
 
 float3 PosToCellPos(float3 pos, float3 gridMin, float3 gridMax, float3 gridSpacing)
 {
-	pos = clamp(pos, gridMin, gridMax);
+	pos = clamp(pos, gridMin+gridSpacing*0.5f, gridMax-gridSpacing*0.5f);
 	pos = pos - gridMin; //Start from grid left bottom corner
 	return pos/gridSpacing;
 }
@@ -19,6 +19,12 @@ uint3 CellPosToCellIndex(float3 pos)
 {
 	return (uint3)pos;
 }
+
+bool IsCellIndexValid(int3 index, int3 gridSize)
+{
+	return all(0<=index) && all(index<gridSize);
+}
+
 uint CellIndexToCellID(int3 index, int3 gridSize)
 {
 	return index.x + index.y * gridSize.x + index.z * gridSize.x * gridSize.y;

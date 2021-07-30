@@ -102,6 +102,9 @@ void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTi
 	int3 range = 1;
 	LOOP_RANGE(i, j, k, cid, range, _GridSize)
 	{
+		int3 index = int3(i,j,k);
+		if(!IsCellIndexValid(index, _GridSize)) continue;
+
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
 		for(uint id = startEnd.x; id < startEnd.y; ++id)
 		{
@@ -133,6 +136,8 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	int3 range = 1;
 	LOOP_RANGE(i, j, k, cid, range, _GridSize)
 	{
+		int3 index = int3(i,j,k);
+		if(!IsCellIndexValid(index, _GridSize)) continue;
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
 		for(uint id = startEnd.x; id < startEnd.y; ++id)
 		{
@@ -174,6 +179,9 @@ void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 	int3 range = 1;
 	LOOP_RANGE(i, j, k, cid, range, _GridSize)
 	{
+		int3 index = int3(i,j,k);
+		if(!IsCellIndexValid(index, _GridSize)) continue;
+		
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
 		for(uint id = startEnd.x; id < startEnd.y; ++id)
 		{

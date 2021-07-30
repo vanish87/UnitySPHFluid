@@ -28,17 +28,17 @@
             "a": 1.0
         }
     },
-    "numOfParticle": 32768,
+    "numOfParticle": 131072,
     "particleRadius": 0.05000000074505806,
     "smoothlen": 0.05000000074505806,
     "pressureStiffness": 0.009999999776482582,
     "restDensity": 1000.0,
     "particleMass": 2.0,
-    "viscosity": 80.0,
+    "viscosity": 50.0,
     "gravity": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0
     },
-    "timeStep": 0.004999999888241291
+    "timeStep": 0.009999999776482582
 }

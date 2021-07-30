@@ -54,6 +54,7 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleDensityBuffer")] public GPUBufferVariable<ParticleDensity> particleDensity = new GPUBufferVariable<ParticleDensity>();
 			[Shader(Name = "_ParticleForceBuffer")] public GPUBufferVariable<ParticleForce> particleForce = new GPUBufferVariable<ParticleForce>();
 			[Shader(Name = "_ParticleVelocityBuffer")] public GPUBufferVariable<ParticleVelocity> particleVelocity = new GPUBufferVariable<ParticleVelocity>();
+			[Shader(Name = "_ParticleCount")] public GPUBufferVariable<int> particleCount = new GPUBufferVariable<int>();
 
 		}
 		public GPUBufferVariable<Particle> Buffer => this.sphData.particleBuffer;
@@ -95,6 +96,7 @@ namespace FluidSPH3D
 			this.sphData.particleDensity.InitBuffer(this.Configure.D.numOfParticle, true, false);
 			this.sphData.particleForce.InitBuffer(this.Configure.D.numOfParticle);
 			this.sphData.particleVelocity.InitBuffer(this.Configure.D.numOfParticle);
+			this.sphData.particleCount.InitBuffer(this.Configure.D.numOfParticle, true, false);
 
 			var cs = this.mode == RunMode.SharedMemory ? this.fluidSharedCS : this.fluidSortedCS;
 			this.fluidDispatcher = new ComputeShaderDispatcher<SPHKernel>(cs);
@@ -104,6 +106,8 @@ namespace FluidSPH3D
 				this.fluidDispatcher.AddParameter(k, this.sphData);
 				this.fluidDispatcher.AddParameter(k, this.SPHGrid.GridGPUData);
 			}
+
+			// this.Configure.D.timeStep =  0.4f * this.Configure.D.smoothlen/1f;
 		}
 		protected void UpdateSPHParameter()
 		{
@@ -124,6 +128,9 @@ namespace FluidSPH3D
 			this.fluidDispatcher.Dispatch(SPHKernel.Viscosity, num);
 			this.fluidDispatcher.Dispatch(SPHKernel.Pressure, num);
 			this.fluidDispatcher.Dispatch(SPHKernel.Integrate, num);
+
+			this.sphData.particleCount.GetToCPUData();
+			// Debug.Log(this.sphData.particleCount.CPUData[10]);
 		}
 		protected void DeInit()
 		{

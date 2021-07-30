@@ -46,12 +46,11 @@ namespace FluidSPH3D
 		[System.Serializable]
 		public class SPHGPUData : GPUContainer
 		{
-			[Shader(Name = "_DensityCoef")] public float densityCoef = 0;
-			[Shader(Name = "_GradPressureCoef")] public float gradPressureCoef = 0;
-			[Shader(Name = "_LapViscosityCoef")] public float lapViscosityCoef = 0;
+			// [Shader(Name = "_DensityCoef")] public float densityCoef = 0;
+			// [Shader(Name = "_GradPressureCoef")] public float gradPressureCoef = 0;
+			// [Shader(Name = "_LapViscosityCoef")] public float lapViscosityCoef = 0;
 			
 			[Shader(Name = "_ParticleBuffer")] public GPUBufferVariable<Particle> particleBuffer = new GPUBufferVariable<Particle>();
-			[Shader(Name = "_ParticleBufferSorted")] public GPUBufferVariable<Particle> particleBufferSorted = new GPUBufferVariable<Particle>();
 			[Shader(Name = "_ParticleDensityBuffer")] public GPUBufferVariable<ParticleDensity> particleDensity = new GPUBufferVariable<ParticleDensity>();
 			[Shader(Name = "_ParticleForceBuffer")] public GPUBufferVariable<ParticleForce> particleForce = new GPUBufferVariable<ParticleForce>();
 			[Shader(Name = "_ParticleVelocityBuffer")] public GPUBufferVariable<ParticleVelocity> particleVelocity = new GPUBufferVariable<ParticleVelocity>();
@@ -72,17 +71,10 @@ namespace FluidSPH3D
 		{
 			this.Configure.Initialize();
 			this.InitSPH();
+			this.InitParticle();
 		}
-
-		protected void InitSPH()
+		protected void InitParticle()
 		{
-			this.SPHGrid.Init(this.Configure.D.simulationSpace, this.Configure.D.smoothlen);
-
-			this.sphData.particleBuffer.InitBuffer(this.Configure.D.numOfParticle, true, false);
-			this.sphData.particleDensity.InitBuffer(this.Configure.D.numOfParticle, true, false);
-			this.sphData.particleForce.InitBuffer(this.Configure.D.numOfParticle);
-			this.sphData.particleVelocity.InitBuffer(this.Configure.D.numOfParticle);
-
 			foreach (var i in Enumerable.Range(0, this.sphData.particleBuffer.Size))
 			{
 				var rand = new float3(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
@@ -93,6 +85,16 @@ namespace FluidSPH3D
 				this.sphData.particleBuffer.CPUData[i].vel = 0;
 			}
 			this.sphData.particleBuffer.SetToGPUBuffer(true);
+		}
+
+		protected void InitSPH()
+		{
+			this.SPHGrid.Init(this.Configure.D.simulationSpace, 0.1f);
+
+			this.sphData.particleBuffer.InitBuffer(this.Configure.D.numOfParticle, true, false);
+			this.sphData.particleDensity.InitBuffer(this.Configure.D.numOfParticle, true, false);
+			this.sphData.particleForce.InitBuffer(this.Configure.D.numOfParticle);
+			this.sphData.particleVelocity.InitBuffer(this.Configure.D.numOfParticle);
 
 			var cs = this.mode == RunMode.SharedMemory ? this.fluidSharedCS : this.fluidSortedCS;
 			this.fluidDispatcher = new ComputeShaderDispatcher<SPHKernel>(cs);
@@ -108,9 +110,9 @@ namespace FluidSPH3D
 			var p = this.sphData;
 			var config = this.Configure.D;
 
-			p.densityCoef = config.particleMass * 315.0f / (64.0f * Mathf.PI * Mathf.Pow(config.smoothlen, 9));
-			p.gradPressureCoef = config.particleMass * -45.0f / (Mathf.PI * Mathf.Pow(config.smoothlen, 6));
-			p.lapViscosityCoef = config.particleMass * config.viscosity * 45.0f / (Mathf.PI * Mathf.Pow(config.smoothlen, 6));
+			// p.densityCoef = config.particleMass * 315.0f / (64.0f * Mathf.PI * Mathf.Pow(config.smoothlen, 9));
+			// p.gradPressureCoef = config.particleMass * -45.0f / (Mathf.PI * Mathf.Pow(config.smoothlen, 6));
+			// p.lapViscosityCoef = config.particleMass * config.viscosity * 45.0f / (Mathf.PI * Mathf.Pow(config.smoothlen, 6));
 		}
 
 		protected void SPHStep()
@@ -138,15 +140,10 @@ namespace FluidSPH3D
 
 		protected void Update()
 		{
-			if(this.mode == RunMode.SortedGrid)
-			{
-				GPUBufferVariable<Particle> sorted;
-				this.SPHGrid.BuildSortedParticleGridIndex(this.sphData.particleBuffer, out sorted);
-				this.sphData.particleBufferSorted.UpdateBuffer(sorted);
-			}
-
 			this.UpdateSPHParameter();
 			this.SPHStep();
+
+			if(Input.GetKeyDown(KeyCode.R)) this.InitParticle();
 		}
 
 	}

@@ -285,22 +285,23 @@ MonoBehaviour:
           z: 0
           w: 1
       scale:
-        x: 10
-        y: 10
-        z: 10
+        x: 1
+        y: 1
+        z: 1
       displayAxis: 0
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
     numOfParticle: 32768
-    smoothlen: 0.012
-    pressureStiffness: 200
+    particleRadius: 0.05
+    smoothlen: 0.05
+    pressureStiffness: 1
     restDensity: 1000
-    particleMass: 0.05
+    particleMass: 0.01
     viscosity: 0.1
     gravity:
       x: 0
-      y: -9.8
+      y: -0.01
       z: 0
     timeStep: 0.005
 --- !u!114 &468932072
@@ -330,10 +331,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 1
-  sphData:
-    densityCoef: 0
-    gradPressureCoef: 0
-    lapViscosityCoef: 0
   fluidSortedCS: {fileID: 7200000, guid: 549639aea11b573459f719cee082cf9c, type: 3}
   fluidSharedCS: {fileID: 7200000, guid: 97cf74747040be94f9aa9b58e07dd9bc, type: 3}
 --- !u!1 &705507993

@@ -292,7 +292,7 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    numOfParticle: 131072
+    numOfParticle: 65536
     particleRadius: 0.05
     smoothlen: 0.05
     pressureStiffness: 0.01

@@ -28,7 +28,7 @@
             "a": 1.0
         }
     },
-    "numOfParticle": 131072,
+    "numOfParticle": 32768,
     "particleRadius": 0.05000000074505806,
     "smoothlen": 0.05000000074505806,
     "pressureStiffness": 0.009999999776482582,

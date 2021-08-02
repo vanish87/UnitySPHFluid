@@ -4,6 +4,7 @@
 #pragma kernel Integrate
 
 #include "SPHData.cginc"
+#include "Kernel.cginc"
 #include "GridHelper.cginc"
 #define SIMULATION_BLOCK_SIZE 256
 
@@ -27,67 +28,6 @@ RWStructuredBuffer<int>  _ParticleCount;
 
 StructuredBuffer<uint2> _GridBuffer;
 
-static const float PI = 3.141592653f;
-float W(float3 r, float h)
-{
-	float c = 8.0/(PI * pow(h,3));
-	float q = length(r)/h;
-
-	if(0 <= q && q <= 0.5) return c * (6 * (pow(q,3) - pow(q,2)) +1);
-	if(0.5 < q && q <= 1) return c * 2 * pow(1-q,3);
-
-	return 0;
-}
-
-float3 WGrad(float3 r, float h)
-{
-	float c = 8.0/(PI * pow(h,3));
-	float rl = length(r);
-	if(rl > 0)
-	{
-		float q = rl/h;
-		float3 grandq = 1/h * (r / rl);
-
-		if(0 <= q && q <= 0.5) return c * 6 * ( 3 * pow(q,2) -  2*q) * grandq;
-		if(0.5 < q && q <= 1) return - c * 2 * 3 * pow(1-q,2) * grandq;
-	}
-
-	return 0;
-}
-
-
-float CalculatePressure(float density) {
-	// Implements this equation:
-	// Pressure = B * ((rho / rho_0)^y  - 1)
-	float k1 = _PressureStiffness;
-	float k2 = 3;
-	return k1 * max(pow(density / _RestDensity, k2) - 1, 0);
-}
-
-float3 CalculateGradPressure(float P_pressure, float N_pressure,float P_density, float N_density, float3 r) {
-	const float h = _H;
-	float3 grandW = WGrad(r, h);
-	float symmetic = (P_pressure / pow(P_density,2)) + (N_pressure/pow(N_density,2)); 
-
-	return _ParticleMass * symmetic * grandW;
-}
-
-float3 CalculateLapVelocity(float3 r, float3 P_velocity, float3 N_velocity, float P_density, float N_density) {
-	const float h = _H;
-	float rl = length(r);
-	if(rl > 0)
-	{
-		float nu = _Viscosity/P_density;
-		float3 gradW = WGrad(r, h);
-		float3 Vij = P_velocity - N_velocity;
-		float3 lap = - _ParticleMass/N_density * Vij * (2*length(gradW)/rl);
-		return _ParticleMass * nu * lap;
-	}
-	else
-	{
-		return 0;
-	}
-}
 
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
@@ -151,7 +91,7 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 				float  N_density = _ParticleDensityBuffer[id].density;
 
 				// Viscosity Term
-				force += CalculateLapVelocity(r, P_velocity, N_velocity, P_density, N_density);
+				force += CalculateLapVelocity(_H, _ParticleMass, _Viscosity, r, P_velocity, N_velocity, P_density, N_density);
 			}
 		}
 	}
@@ -166,7 +106,7 @@ void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 	float3 P_position = _ParticleBufferSorted[P_ID].pos;
 	float3 P_velocity = _ParticleBufferSorted[P_ID].vel;
 	float  P_density  = _ParticleDensityBuffer[P_ID].density;
-	float  P_pressure = CalculatePressure(P_density);
+	float  P_pressure = CalculateSEPressure(P_density, _PressureStiffness, 3, _RestDensity);
 
 	const float h_sq = pow(_H, 2);
 
@@ -193,14 +133,13 @@ void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 			{
 				float3 N_velocity = _ParticleBufferSorted[id].vel;
 				float  N_density = _ParticleDensityBuffer[id].density;
-				float  N_pressure = CalculatePressure(N_density);
+				float  N_pressure = CalculateSEPressure(N_density, _PressureStiffness, 3, _RestDensity);
 
 				// Pressure Term
-				gradPressure += CalculateGradPressure(P_pressure, N_pressure, P_density, N_density, r);
+				gradPressure += CalculateGradPressure(_H, _ParticleMass, r, P_pressure, N_pressure, P_density, N_density);
 				count++;
 			}
 		}
-		GroupMemoryBarrierWithGroupSync();
 	}
 
 	_ParticleForceBuffer[P_ID].force = -(1.0/P_density) * P_density *  gradPressure;

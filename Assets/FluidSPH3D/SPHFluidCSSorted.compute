@@ -37,8 +37,7 @@ void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTi
 
 	float density = 0.0;
 
-    float3 cellPos = PosToCellPos(P_position, _GridMin, _GridMax, _GridSpacing);
-    int3 cid = CellPosToCellIndex(cellPos);
+    int3 cid = PosToCellIndex(P_position, _GridMin, _GridMax, _GridSpacing);
 	int3 range = 1;
 	LOOP_RANGE(i, j, k, cid, range, _GridSize)
 	{
@@ -46,9 +45,9 @@ void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTi
 		if(!IsCellIndexValid(index, _GridSize)) continue;
 
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
-		for(uint id = startEnd.x; id < startEnd.y; ++id)
+		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
-			float3 N_position = _ParticleBufferSorted[id].pos;
+			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
 			float3 r = P_position - N_position;
 			density += _ParticleMass * W(r, _H);
@@ -71,24 +70,23 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	float3 force = float3(0, 0, 0);
 
 	
-    float3 cellPos = PosToCellPos(P_position, _GridMin, _GridMax, _GridSpacing);
-    int3 cid = CellPosToCellIndex(cellPos);
+    int3 cid = PosToCellIndex(P_position, _GridMin, _GridMax, _GridSpacing);
 	int3 range = 1;
 	LOOP_RANGE(i, j, k, cid, range, _GridSize)
 	{
 		int3 index = int3(i,j,k);
 		if(!IsCellIndexValid(index, _GridSize)) continue;
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
-		for(uint id = startEnd.x; id < startEnd.y; ++id)
+		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
-			float3 N_position = _ParticleBufferSorted[id].pos;
+			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
 			float3 r = P_position - N_position;
 			float r_sq = dot(r, r);
-			if (r_sq < h_sq && P_ID != id)
+			if (r_sq < h_sq && P_ID != N_ID)
 			{
-				float3 N_velocity = _ParticleBufferSorted[id].vel;
-				float  N_density = _ParticleDensityBuffer[id].density;
+				float3 N_velocity = _ParticleBufferSorted[N_ID].vel;
+				float  N_density = _ParticleDensityBuffer[N_ID].density;
 
 				// Viscosity Term
 				force += CalculateLapVelocity(_H, _ParticleMass, _Viscosity, r, P_velocity, N_velocity, P_density, N_density);
@@ -114,8 +112,7 @@ void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 	int count = 0;
 
 	
-    float3 cellPos = PosToCellPos(P_position, _GridMin, _GridMax, _GridSpacing);
-    int3 cid = CellPosToCellIndex(cellPos);
+    int3 cid = PosToCellIndex(P_position, _GridMin, _GridMax, _GridSpacing);
 	int3 range = 1;
 	LOOP_RANGE(i, j, k, cid, range, _GridSize)
 	{
@@ -123,16 +120,16 @@ void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 		if(!IsCellIndexValid(index, _GridSize)) continue;
 		
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
-		for(uint id = startEnd.x; id < startEnd.y; ++id)
+		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
-			float3 N_position = _ParticleBufferSorted[id].pos;
+			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
 			float3 r = P_position - N_position;
 			float r_sq = dot(r, r);
-			if (r_sq < h_sq && P_ID != id)
+			if (r_sq < h_sq && P_ID != N_ID)
 			{
-				float3 N_velocity = _ParticleBufferSorted[id].vel;
-				float  N_density = _ParticleDensityBuffer[id].density;
+				float3 N_velocity = _ParticleBufferSorted[N_ID].vel;
+				float  N_density = _ParticleDensityBuffer[N_ID].density;
 				float  N_pressure = CalculateSEPressure(N_density, _PressureStiffness, 3, _RestDensity);
 
 				// Pressure Term

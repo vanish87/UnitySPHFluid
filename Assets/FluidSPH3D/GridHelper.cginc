@@ -20,6 +20,11 @@ uint3 CellPosToCellIndex(float3 pos)
 	return (uint3)pos;
 }
 
+uint3 PosToCellIndex(float3 pos, float3 gridMin, float3 gridMax, float3 gridSpacing)
+{
+	return CellPosToCellIndex(PosToCellPos(pos, gridMin, gridMax, gridSpacing));
+}
+
 bool IsCellIndexValid(int3 index, int3 gridSize)
 {
 	return all(0<=index) && all(index<gridSize);

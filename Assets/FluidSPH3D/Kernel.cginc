@@ -32,7 +32,7 @@ float CalculateSEPressure(float density, float k1, float k2, float restDensity)
 	return k1 * max(pow(density / restDensity, k2) - 1, 0);
 }
 
-float3 CalculateGradPressure(float h, float mass, float3 r, float P_pressure, float N_pressure,float P_density, float N_density) 
+float3 CalculateGradPressure(float h, float mass, float3 r, float P_pressure, float N_pressure, float P_density, float N_density) 
 {
 	float3 grandW = WGrad(r, h);
 	float symmetic = (P_pressure / pow(P_density,2)) + (N_pressure/pow(N_density,2)); 

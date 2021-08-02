@@ -295,7 +295,9 @@ MonoBehaviour:
     numOfParticle: 65536
     particleRadius: 0.05
     smoothlen: 0.05
-    pressureStiffness: 0.01
+    pressureK:
+      x: 0.01
+      y: 3
     restDensity: 1000
     particleMass: 2
     viscosity: 50

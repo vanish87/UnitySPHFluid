@@ -9,7 +9,7 @@
 #define SIMULATION_BLOCK_SIZE 256
 
 float _H;
-float _PressureStiffness;
+float2 _PressureK;// k1 and k2 in State Equation Pressure
 float _RestDensity;
 float _ParticleMass;
 float _Viscosity;
@@ -114,7 +114,7 @@ void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 	float3 P_position = _ParticleBuffer[P_ID].pos;
 	float3 P_velocity = _ParticleBuffer[P_ID].vel;
 	float  P_density  = _ParticleDensityBuffer[P_ID].density;
-	float  P_pressure = CalculateSEPressure(P_density, _PressureStiffness, 3, _RestDensity);
+	float  P_pressure = CalculateSEPressure(P_density, _PressureK.x, _PressureK.y, _RestDensity);
 
 	const float h_sq = pow(_H, 2);
 
@@ -144,7 +144,7 @@ void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 			{
 				float3 N_velocity = force_shared_pos[N_tile_ID].velocity;
 				float  N_density = force_shared_pos[N_tile_ID].density;
-				float  N_pressure = CalculateSEPressure(N_density, _PressureStiffness, 3, _RestDensity);
+				float  N_pressure = CalculateSEPressure(N_density, _PressureK.x, _PressureK.y, _RestDensity);
 
 				// Pressure Term
 				gradPressure += CalculateGradPressure(_H, _ParticleMass, r, P_pressure, N_pressure, P_density, N_density);

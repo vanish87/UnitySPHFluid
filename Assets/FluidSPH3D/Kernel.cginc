@@ -29,7 +29,7 @@ float3 WGrad(float3 r, float h)
 //State Equation Pressure
 float CalculateSEPressure(float density, float k1, float k2, float restDensity)
 {
-	return k1 * max(pow(density / restDensity, k2) - 1, 0);
+	return k1 * max(pow(max(density / restDensity, 0), k2) - 1, 0);
 }
 
 float3 CalculateGradPressure(float h, float mass, float3 r, float P_pressure, float N_pressure, float P_density, float N_density) 

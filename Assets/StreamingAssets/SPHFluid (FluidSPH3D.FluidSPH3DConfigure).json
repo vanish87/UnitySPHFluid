@@ -31,7 +31,10 @@
     "numOfParticle": 65536,
     "particleRadius": 0.05000000074505806,
     "smoothlen": 0.05000000074505806,
-    "pressureStiffness": 0.009999999776482582,
+    "pressureK": {
+        "x": 0.009999999776482582,
+        "y": 3.0
+    },
     "restDensity": 1000.0,
     "particleMass": 2.0,
     "viscosity": 50.0,

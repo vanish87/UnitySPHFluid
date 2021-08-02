@@ -28,6 +28,8 @@ Shader "Unlit/SPHParticleShader"
 
 	sampler2D _MainTex;
 	float4 _ST;
+	float _H;
+	float _ParticleScale;
 
     StructuredBuffer<Particle> _ParticleBuffer;
 
@@ -37,7 +39,8 @@ Shader "Unlit/SPHParticleShader"
         UNITY_SETUP_INSTANCE_ID(i);
         UNITY_TRANSFER_INSTANCE_ID(i, o);
 
-        float4 wp = float4(i.vertex.xyz * 0.05/4 + _ParticleBuffer[iid].pos,1);
+        float radius = 0.25f * _H * _ParticleScale;
+        float4 wp = float4(i.vertex.xyz * radius + _ParticleBuffer[iid].pos,1);
         o.position = UnityObjectToClipPos(wp);
         o.color = _ParticleBuffer[iid].col;
         // o.color = 1;

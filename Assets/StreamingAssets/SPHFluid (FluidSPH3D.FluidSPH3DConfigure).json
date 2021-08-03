@@ -15,8 +15,8 @@
         },
         "scale": {
             "x": 2.0,
-            "y": 2.0,
-            "z": 2.0
+            "y": 4.0,
+            "z": 0.4000000059604645
         },
         "displayAxis": false,
         "displayText": false,
@@ -36,7 +36,7 @@
     },
     "restDensity": 1000.0,
     "particleMass": 2.0,
-    "viscosity": 50.0,
+    "viscosity": 100.0,
     "gravity": {
         "x": 0.0,
         "y": -1.0,

@@ -286,21 +286,20 @@ MonoBehaviour:
           w: 1
       scale:
         x: 2
-        y: 2
-        z: 2
+        y: 4
+        z: 0.4
       displayAxis: 0
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    numOfParticle: 65536
-    particleRadius: 0.05
+    numOfParticle: 32768
     smoothlen: 0.05
     pressureK:
       x: 0.01
       y: 3
     restDensity: 1000
     particleMass: 2
-    viscosity: 50
+    viscosity: 100
     gravity:
       x: 0
       y: -1

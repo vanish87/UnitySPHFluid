@@ -1,4 +1,5 @@
 ﻿#pragma kernel Density
+#pragma kernel Vorticity
 #pragma kernel Viscosity
 #pragma kernel Pressure
 #pragma kernel Integrate
@@ -24,6 +25,7 @@ StructuredBuffer<Particle> _ParticleBufferSorted;
 RWStructuredBuffer<ParticleVelocity> _ParticleVelocityBuffer;
 RWStructuredBuffer<ParticleDensity> _ParticleDensityBuffer;
 RWStructuredBuffer<ParticleForce>  _ParticleForceBuffer;
+RWStructuredBuffer<float3>  _ParticleVorticityBuffer;
 RWStructuredBuffer<int>  _ParticleCount;
 
 StructuredBuffer<uint2> _GridBuffer;
@@ -56,6 +58,84 @@ void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTi
 }
 
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
+{
+	const unsigned int P_ID = DTid.x; // Particle ID to operate on
+
+	float3 P_position = _ParticleBufferSorted[P_ID].pos;
+	float3 P_velocity = _ParticleBufferSorted[P_ID].vel;
+	float  P_density  = _ParticleDensityBuffer[P_ID].density;
+
+	const float h_sq = pow(_H, 2);
+	float3 w = 0;
+	
+    int3 cid = PosToCellIndex(P_position, _GridMin, _GridMax, _GridSpacing);
+	int3 range = 1;
+	LOOP_RANGE(i, j, k, cid, range, _GridSize)
+	{
+		int3 index = int3(i,j,k);
+		if(!IsCellIndexValid(index, _GridSize)) continue;
+
+		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
+		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
+		{
+			float3 N_position = _ParticleBufferSorted[N_ID].pos;
+
+			float3 r = P_position - N_position;
+			float r_sq = dot(r, r);
+			if (r_sq < h_sq && P_ID != N_ID)
+			{
+				float3 N_velocity = _ParticleBufferSorted[N_ID].vel;
+				float  N_density = _ParticleDensityBuffer[N_ID].density;
+
+				float3 r = P_position - N_position;
+
+				float3 gradW = WGrad(r, _H);
+				w += -_ParticleMass/N_density *(cross(P_velocity - N_velocity, gradW));
+			}
+		}
+	}
+	
+	_ParticleVorticityBuffer[P_ID] = w;
+	AllMemoryBarrier();
+
+	float3 n = 0;
+	LOOP_RANGE(i1, j1, k1, cid, range, _GridSize)
+	{
+		int3 index = int3(i1,j1,k1);
+		if(!IsCellIndexValid(index, _GridSize)) continue;
+
+		uint2 startEnd = _GridBuffer[CellIndexToCellID(index, _GridSize)];
+		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
+		{
+			float3 N_position = _ParticleBufferSorted[N_ID].pos;
+
+			float3 r = P_position - N_position;
+			float r_sq = dot(r, r);
+			if (r_sq < h_sq && P_ID != N_ID)
+			{
+				float3 N_velocity = _ParticleBufferSorted[N_ID].vel;
+				float  N_density = _ParticleDensityBuffer[N_ID].density;
+				float3 N_vorticity = _ParticleVorticityBuffer[N_ID];
+
+				float3 r = P_position - N_position;
+
+				float3 gradW = WGrad(r, _H);
+				n += _ParticleMass/N_density * length(N_vorticity) * gradW;
+			}
+		}
+	}
+	float3 force = 0;
+	if(length(n) > 0)
+	{
+		float ep = 2.0f;
+		force += ep * cross(normalize(n), w);
+	}
+
+	_ParticleForceBuffer[P_ID].force = force;
+}
+
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
 {
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
@@ -66,8 +146,7 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 
 	const float h_sq = pow(_H, 2);
 
-	float3 force = float3(0, 0, 0);
-
+	float3 force = _ParticleForceBuffer[P_ID].force;
 	
     int3 cid = PosToCellIndex(P_position, _GridMin, _GridMax, _GridSpacing);
 	int3 range = 1;
@@ -75,6 +154,7 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	{
 		int3 index = int3(i,j,k);
 		if(!IsCellIndexValid(index, _GridSize)) continue;
+
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
@@ -89,11 +169,24 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 
 				// Viscosity Term
 				force += CalculateLapVelocity(_H, _ParticleMass, _Viscosity, r, P_velocity, N_velocity, P_density, N_density);
+				float3 r = P_position - N_position;
+				// force += _ParticleMass/N_density *(N_velocity - P_velocity) * W(r, _H);
+
 			}
 		}
 	}
+	// P_velocity + _TimeStep * (force) / _ParticleMass;
+
+	// float alpha = 2.0f;
+	// P_velocity += alpha * force;
+
+	// force = 0;
+	if(distance(P_position, 0) < 0.3) force += normalize(P_position) * 100;
+	if(distance(P_position, float3(0.8,0.1,0)) < 0.2) force += normalize(P_position-float3(0.8,0.1,0)) * 100;
+	if(distance(P_position, float3(-0.5,0.5,0)) < 0.5) force += normalize(P_position-float3(-0.4,0.5,0)) * 100;
 	_ParticleVelocityBuffer[P_ID].vel= P_velocity + _TimeStep * (force + _Gravity) / _ParticleMass;
 }
+
 
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
@@ -168,6 +261,8 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 		p.pos.x = gmax.x;
 	}
 	if (p.pos.y < gmin.y) {
+		p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
+		p.pos.y = gmax.y - _GridSpacing.y;
 		p.vel.y = 0;
 		p.pos.y = gmin.y;
 	}

@@ -39,6 +39,7 @@ namespace FluidSPH3D
 		public enum SPHKernel
 		{
 			Density,
+			Vorticity,
 			Viscosity,
 			Pressure,
 			Integrate,
@@ -55,6 +56,7 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleDensityBuffer")] public GPUBufferVariable<ParticleDensity> particleDensity = new GPUBufferVariable<ParticleDensity>();
 			[Shader(Name = "_ParticleForceBuffer")] public GPUBufferVariable<ParticleForce> particleForce = new GPUBufferVariable<ParticleForce>();
 			[Shader(Name = "_ParticleVelocityBuffer")] public GPUBufferVariable<ParticleVelocity> particleVelocity = new GPUBufferVariable<ParticleVelocity>();
+			[Shader(Name = "_ParticleVorticityBuffer")] public GPUBufferVariable<float3> particleVorticity = new GPUBufferVariable<float3>();
 			[Shader(Name = "_ParticleCount")] public GPUBufferVariable<int> particleCount = new GPUBufferVariable<int>();
 
 		}
@@ -97,6 +99,7 @@ namespace FluidSPH3D
 			this.sphData.particleDensity.InitBuffer(this.Configure.D.numOfParticle);
 			this.sphData.particleForce.InitBuffer(this.Configure.D.numOfParticle);
 			this.sphData.particleVelocity.InitBuffer(this.Configure.D.numOfParticle);
+			this.sphData.particleVorticity.InitBuffer(this.Configure.D.numOfParticle);
 
 			this.sphData.particleCount.InitBuffer(this.Configure.D.numOfParticle, true, false);
 
@@ -123,6 +126,7 @@ namespace FluidSPH3D
 		{
 			var num = this.Configure.D.numOfParticle;
 			this.fluidDispatcher.Dispatch(SPHKernel.Density, num);
+			this.fluidDispatcher.Dispatch(SPHKernel.Vorticity, num);
 			this.fluidDispatcher.Dispatch(SPHKernel.Viscosity, num);
 			this.fluidDispatcher.Dispatch(SPHKernel.Pressure, num);
 			this.fluidDispatcher.Dispatch(SPHKernel.Integrate, num);

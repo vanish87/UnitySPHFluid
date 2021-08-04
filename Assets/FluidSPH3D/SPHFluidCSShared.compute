@@ -1,4 +1,5 @@
 ﻿#pragma kernel Density
+#pragma kernel Vorticity
 #pragma kernel Viscosity
 #pragma kernel Pressure
 #pragma kernel Integrate
@@ -58,6 +59,11 @@ void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTi
 	_ParticleDensityBuffer[P_ID].density = max(density, _RestDensity);
 }
 
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
+{
+
+}
 groupshared struct { float3 position; float3 velocity; float density; } viscosity_shared_pos[SIMULATION_BLOCK_SIZE];
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)

@@ -1,0 +1,47 @@
+﻿{
+    "simulationSpace": {
+        "center": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "value": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            }
+        },
+        "scale": {
+            "x": 2.0,
+            "y": 2.0,
+            "z": 2.0
+        },
+        "displayAxis": false,
+        "displayText": false,
+        "displayBound": true,
+        "color": {
+            "r": 0.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+        }
+    },
+    "numOfParticle": 65536,
+    "smoothlen": 0.05000000074505806,
+    "pressureK": {
+        "x": 0.009999999776482582,
+        "y": 3.0
+    },
+    "restDensity": 1000.0,
+    "particleMass": 2.0,
+    "viscosity": 100.0,
+    "gravity": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+    },
+    "timeStep": 0.009999999776482582,
+    "particleScale": 1.0
+}

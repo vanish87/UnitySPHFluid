@@ -128,11 +128,17 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	float3 force = 0;
 	if(length(n) > 0)
 	{
-		float ep = 2.0f;
+		float ep = 1.0f;
+		// ep = 0.01f;
 		force += ep * cross(normalize(n), w);
 	}
 
 	_ParticleForceBuffer[P_ID].force = force;
+}
+float sdBox( float3 p, float3 b )
+{
+	float3 q = abs(p) - b;
+	return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
 }
 
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
@@ -181,9 +187,11 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	// P_velocity += alpha * force;
 
 	// force = 0;
-	if(distance(P_position, 0) < 0.3) force += normalize(P_position) * 100;
-	if(distance(P_position, float3(0.8,0.1,0)) < 0.2) force += normalize(P_position-float3(0.8,0.1,0)) * 100;
-	if(distance(P_position, float3(-0.5,0.5,0)) < 0.5) force += normalize(P_position-float3(-0.4,0.5,0)) * 100;
+	if(distance(P_position, float3(0.1,0.3,0)) < 0.2) force += normalize(P_position-float3(0.1,0.3,0)) * 1000;
+	if(distance(P_position, float3(0.8,0.1,0)) < 0.2) force += normalize(P_position-float3(0.8,0.1,0)) * 1000;
+	if(distance(P_position, float3(-0.5,0.5,0)) < 0.4) force += normalize(P_position-float3(-0.4,0.5,0)) * 1000;
+	// force += (sdBox(P_position, float3(0.5,0.5,0.1)) < 0)?float3(0,100,0):0;
+
 	_ParticleVelocityBuffer[P_ID].vel= P_velocity + _TimeStep * (force + _Gravity) / _ParticleMass;
 }
 
@@ -261,10 +269,10 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 		p.pos.x = gmax.x;
 	}
 	if (p.pos.y < gmin.y) {
-		p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
-		p.pos.y = gmax.y - _GridSpacing.y;
 		p.vel.y = 0;
 		p.pos.y = gmin.y;
+		// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
+		// p.pos.y = gmax.y - _GridSpacing.y;
 	}
 	if (p.pos.y > gmax.y) {
 		p.vel.y = 0;
@@ -278,6 +286,14 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 	if (p.pos.z < gmin.z) {
 		p.vel.z = -p.vel.z * scale;
 		p.pos.z = gmin.z;
+
+		if(p.pos.y < gmin.y + _GridSpacing.y * 5)
+		{
+		// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
+		// p.vel.z = 0;
+		// p.pos.y = gmax.y - _GridSpacing.y;
+		// p.pos.z = gmax.z - _GridSpacing.z * 20;
+		}
 	}
 	// Update
 	_ParticleBuffer[P_ID] = p;

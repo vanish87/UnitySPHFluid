@@ -14,9 +14,9 @@
             }
         },
         "scale": {
-            "x": 2.0,
-            "y": 4.0,
-            "z": 0.4000000059604645
+            "x": 10.0,
+            "y": 40.0,
+            "z": 2.0
         },
         "displayAxis": false,
         "displayText": false,
@@ -29,19 +29,19 @@
         }
     },
     "numOfParticle": 65536,
-    "smoothlen": 0.05000000074505806,
+    "smoothlen": 0.30000001192092898,
     "pressureK": {
-        "x": 0.05000000074505806,
+        "x": 500.0,
         "y": 3.0
     },
     "restDensity": 1000.0,
-    "particleMass": 2.0,
+    "particleMass": 18.0,
     "viscosity": 100.0,
     "gravity": {
         "x": 0.0,
-        "y": -1.0,
+        "y": -9.800000190734864,
         "z": 0.0
     },
     "timeStep": 0.009999999776482582,
-    "particleScale": 1.0
+    "particleScale": 0.5299999713897705
 }

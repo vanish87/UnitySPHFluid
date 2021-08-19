@@ -43,5 +43,5 @@
         "z": 0.0
     },
     "timeStep": 0.004999999888241291,
-    "particleScale": 1.0
+    "particleScale": 0.5
 }

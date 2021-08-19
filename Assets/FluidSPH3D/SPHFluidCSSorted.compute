@@ -25,7 +25,7 @@ StructuredBuffer<Particle> _ParticleBufferSorted;
 RWStructuredBuffer<ParticleVelocity> _ParticleVelocityBuffer;
 RWStructuredBuffer<ParticleDensity> _ParticleDensityBuffer;
 RWStructuredBuffer<ParticleForce>  _ParticleForceBuffer;
-RWStructuredBuffer<float3>  _ParticleVorticityBuffer;
+RWStructuredBuffer<ParticleVorticity>  _ParticleVorticityBuffer;
 RWStructuredBuffer<int>  _ParticleCount;
 
 StructuredBuffer<uint2> _GridBuffer;
@@ -96,7 +96,7 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 		}
 	}
 	
-	_ParticleVorticityBuffer[P_ID] = w;
+	_ParticleVorticityBuffer[P_ID].vor = w;
 	AllMemoryBarrier();
 
 	float3 n = 0;
@@ -116,7 +116,7 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 			{
 				float3 N_velocity = _ParticleBufferSorted[N_ID].vel;
 				float  N_density = _ParticleDensityBuffer[N_ID].density;
-				float3 N_vorticity = _ParticleVorticityBuffer[N_ID];
+				float3 N_vorticity = _ParticleVorticityBuffer[N_ID].vor;
 
 				float3 r = P_position - N_position;
 

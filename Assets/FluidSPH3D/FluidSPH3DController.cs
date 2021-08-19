@@ -29,6 +29,10 @@ namespace FluidSPH3D
 	{
 		public float3 velocity;
 	}
+	public struct ParticleVorticity
+	{
+		public float3 vorticity;
+	}
 	public class FluidSPH3DController : MonoBehaviour, IParticleBuffer<Particle>
 	{
 		public enum RunMode
@@ -56,7 +60,7 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleDensityBuffer")] public GPUBufferVariable<ParticleDensity> particleDensity = new GPUBufferVariable<ParticleDensity>();
 			[Shader(Name = "_ParticleForceBuffer")] public GPUBufferVariable<ParticleForce> particleForce = new GPUBufferVariable<ParticleForce>();
 			[Shader(Name = "_ParticleVelocityBuffer")] public GPUBufferVariable<ParticleVelocity> particleVelocity = new GPUBufferVariable<ParticleVelocity>();
-			[Shader(Name = "_ParticleVorticityBuffer")] public GPUBufferVariable<float3> particleVorticity = new GPUBufferVariable<float3>();
+			[Shader(Name = "_ParticleVorticityBuffer")] public GPUBufferVariable<ParticleVorticity> particleVorticity = new GPUBufferVariable<ParticleVorticity>();
 			[Shader(Name = "_ParticleCount")] public GPUBufferVariable<int> particleCount = new GPUBufferVariable<int>();
 
 		}

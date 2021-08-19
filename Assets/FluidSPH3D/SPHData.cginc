@@ -22,3 +22,8 @@ struct ParticleVelocity
 {
 	float3 vel;
 };
+
+struct ParticleVorticity
+{
+	float3 vor;
+};

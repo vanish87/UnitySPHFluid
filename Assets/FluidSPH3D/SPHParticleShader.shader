@@ -39,7 +39,7 @@ Shader "Unlit/SPHParticleShader"
         UNITY_SETUP_INSTANCE_ID(i);
         UNITY_TRANSFER_INSTANCE_ID(i, o);
 
-        float radius = 0.25f * _H * _ParticleScale;
+        float radius = 0.5f * _H * _ParticleScale;
         float4 wp = float4(i.vertex.xyz * radius + _ParticleBuffer[iid].pos,1);
         o.position = UnityObjectToClipPos(wp);
         o.color = _ParticleBuffer[iid].col;

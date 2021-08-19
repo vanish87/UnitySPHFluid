@@ -292,14 +292,14 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    numOfParticle: 16384
+    numOfParticle: 65536
     smoothlen: 0.08
     pressureK:
       x: 0.1
       y: 3
     restDensity: 1000
     particleMass: 2
-    viscosity: 100
+    viscosity: 500
     gravity:
       x: 0
       y: -9.8

@@ -31,12 +31,12 @@
     "numOfParticle": 65536,
     "smoothlen": 0.05000000074505806,
     "pressureK": {
-        "x": 0.009999999776482582,
+        "x": 0.05000000074505806,
         "y": 3.0
     },
     "restDensity": 1000.0,
     "particleMass": 2.0,
-    "viscosity": 100.0,
+    "viscosity": 500.0,
     "gravity": {
         "x": 0.0,
         "y": -1.0,

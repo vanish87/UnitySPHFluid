@@ -28,7 +28,7 @@
             "a": 1.0
         }
     },
-    "numOfParticle": 65536,
+    "numOfParticle": 131072,
     "smoothlen": 0.07999999821186066,
     "pressureK": {
         "x": 0.10000000149011612,

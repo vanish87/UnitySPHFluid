@@ -39,7 +39,10 @@ StructuredBuffer<uint2> _GridBuffer;
 void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
 {
 	const unsigned int P_ID = DTid.x;
-	float3 P_position = _ParticleBufferSorted[P_ID].pos;
+	Particle p = _ParticleBufferSorted[P_ID];
+	if(!IsFluid(p)) return;
+
+	float3 P_position = p.pos;
 
 	float density = 0.0;
 
@@ -53,7 +56,10 @@ void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTi
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
-			float3 N_position = _ParticleBufferSorted[N_ID].pos;
+			Particle np = _ParticleBufferSorted[N_ID];
+			if(!IsFluid(np)) continue;
+
+			float3 N_position = np.pos;
 
 			float3 r = P_position - N_position;
 			density += _ParticleMass * W(r, _H);
@@ -66,6 +72,9 @@ void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTi
 void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
 {
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
+
+	Particle p = _ParticleBufferSorted[P_ID];
+	if(!IsFluid(p)) return;
 
 	float3 P_position = _ParticleBufferSorted[P_ID].pos;
 	float3 P_velocity = _ParticleBufferSorted[P_ID].vel;
@@ -84,6 +93,9 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
+			Particle np = _ParticleBufferSorted[N_ID];
+			if(!IsFluid(np)) continue;
+
 			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
 			float3 r = P_position - N_position;
@@ -113,6 +125,9 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(index, _GridSize)];
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
+			Particle np = _ParticleBufferSorted[N_ID];
+			if(!IsFluid(np)) continue;
+
 			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
 			float3 r = P_position - N_position;
@@ -140,16 +155,14 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 
 	_ParticleForceBuffer[P_ID].force = force;
 }
-float sdBox( float3 p, float3 b )
-{
-	float3 q = abs(p) - b;
-	return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
-}
 
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
 {
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
+
+	Particle p = _ParticleBufferSorted[P_ID];
+	if(!IsFluid(p)) return;
 
 	float3 P_position = _ParticleBufferSorted[P_ID].pos;
 	float3 P_velocity = _ParticleBufferSorted[P_ID].vel;
@@ -169,6 +182,9 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
+			Particle np = _ParticleBufferSorted[N_ID];
+			if(!IsFluid(np)) continue;
+
 			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
 			float3 r = P_position - N_position;
@@ -208,6 +224,9 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
 {
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
+	
+	Particle p = _ParticleBufferSorted[P_ID];
+	if(!IsFluid(p)) return;
 
 	float3 P_position = _ParticleBufferSorted[P_ID].pos;
 	float3 P_velocity = _ParticleBufferSorted[P_ID].vel;
@@ -230,6 +249,9 @@ void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
+			Particle np = _ParticleBufferSorted[N_ID];
+			if(!IsFluid(np)) continue;
+
 			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
 			float3 r = P_position - N_position;
@@ -258,55 +280,59 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
 
 	Particle p = _ParticleBufferSorted[P_ID];
-	float3 acceleration = _ParticleForceBuffer[P_ID].force;
-	float3 velocity = _ParticleVelocityBuffer[P_ID].vel;
-
-	// if(p.type == PT_FLUID)
+	if(IsFluid(p))
 	{
-		p.vel = velocity + _TimeStep * acceleration / _ParticleMass;
-		p.pos += _TimeStep * p.vel;
-	}
-	// else
-	{
-	}
 
-	float3 gmin = _GridMin;
-	float3 gmax = _GridMax;
+		float3 acceleration = _ParticleForceBuffer[P_ID].force;
+		float3 velocity = _ParticleVelocityBuffer[P_ID].vel;
 
-	float scale = 0.1f;
-	if (p.pos.x < gmin.x) {
-		p.vel.x = -p.vel.x * scale;
-		p.pos.x = gmin.x;
-	}
-	if (p.pos.x > gmax.x) {
-		p.vel.x = -p.vel.x * scale;
-		p.pos.x = gmax.x;
-	}
-	if (p.pos.y < gmin.y) {
-		p.vel.y = 0;
-		p.pos.y = gmin.y;
-		// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
-		// p.pos.y = gmax.y - _GridSpacing.y;
-	}
-	if (p.pos.y > gmax.y) {
-		p.vel.y = 0;
-		p.pos.y = gmax.y;
-	}
-
-	if (p.pos.z > gmax.z) {
-		p.vel.z = -p.vel.z * scale;
-		p.pos.z = gmax.z;
-	}
-	if (p.pos.z < gmin.z) {
-		p.vel.z = -p.vel.z * scale;
-		p.pos.z = gmin.z;
-
-		if(p.pos.y < gmin.y + _GridSpacing.y * 5)
+		if(p.type == PT_FLUID)
 		{
-		// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
-		// p.vel.z = 0;
-		// p.pos.y = gmax.y - _GridSpacing.y;
-		// p.pos.z = gmax.z - _GridSpacing.z * 20;
+			p.vel = velocity + _TimeStep * acceleration / _ParticleMass;
+			p.pos += _TimeStep * p.vel;
+		}
+		else
+		{
+		}
+
+		float3 gmin = _GridMin;
+		float3 gmax = _GridMax;
+
+		float scale = 0.1f;
+		if (p.pos.x < gmin.x) {
+			p.vel.x = -p.vel.x * scale;
+			p.pos.x = gmin.x;
+		}
+		if (p.pos.x > gmax.x) {
+			p.vel.x = -p.vel.x * scale;
+			p.pos.x = gmax.x;
+		}
+		if (p.pos.y < gmin.y) {
+			p.vel.y = 0;
+			p.pos.y = gmin.y;
+			// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
+			// p.pos.y = gmax.y - _GridSpacing.y;
+		}
+		if (p.pos.y > gmax.y) {
+			p.vel.y = 0;
+			p.pos.y = gmax.y;
+		}
+
+		if (p.pos.z > gmax.z) {
+			p.vel.z = -p.vel.z * scale;
+			p.pos.z = gmax.z;
+		}
+		if (p.pos.z < gmin.z) {
+			p.vel.z = -p.vel.z * scale;
+			p.pos.z = gmin.z;
+
+			if(p.pos.y < gmin.y + _GridSpacing.y * 5)
+			{
+			// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
+			// p.vel.z = 0;
+			// p.pos.y = gmax.y - _GridSpacing.y;
+			// p.pos.z = gmax.z - _GridSpacing.z * 20;
+			}
 		}
 	}
 	// Update

@@ -14,7 +14,7 @@ namespace FluidSPH3D
 {
 	public enum ParticleType
 	{
-		InActive = 0,
+		Inactive = 0,
 		Fluid,
 		Boundary
 	}
@@ -23,7 +23,7 @@ namespace FluidSPH3D
 		public float3 pos;
 		public float3 vel;
 		public float4 col;
-		// public ParticleType type;
+		public ParticleType type;
 	}
 	public struct ParticleDensity
 	{
@@ -92,7 +92,7 @@ namespace FluidSPH3D
 			this.InitSPH();
 			this.InitParticle();
 
-			// this.InitIndexPool();
+			this.InitIndexPool();
 		}
 		protected void InitParticle()
 		{
@@ -104,7 +104,7 @@ namespace FluidSPH3D
 				this.sphData.particleBuffer.CPUData[i].col = 1;
 				this.sphData.particleBuffer.CPUData[i].pos = this.Configure.D.simulationSpace.TRS.MultiplyPoint(rand);
 				this.sphData.particleBuffer.CPUData[i].vel = 0;
-				// this.sphData.particleBuffer.CPUData[i].type = ParticleType.Fluid;
+				this.sphData.particleBuffer.CPUData[i].type = ParticleType.Inactive;
 			}
 			this.sphData.particleBuffer.SetToGPUBuffer(true);
 		}
@@ -183,7 +183,7 @@ namespace FluidSPH3D
 				this.SPHGrid.BuildSortedParticleGridIndex(this.sphData.particleBuffer, out sorted);
 				this.sphData.particleBufferSorted.UpdateBuffer(sorted);
 			}
-			// this.SPHStep();
+			this.SPHStep();
 
 			if (Input.GetKeyDown(KeyCode.R)) this.InitParticle();
 			if (Input.GetKeyDown(KeyCode.E)) this.Emit();

@@ -5,7 +5,7 @@ struct Particle
 	float3 pos;
 	float3 vel;
 	float4 col;
-	// int type;
+	int type;
 };
 
 
@@ -32,3 +32,8 @@ struct ParticleVorticity
 static const int PT_INACTIVE = 0;
 static const int PT_FLUID 	= 1;
 static const int PT_BOUNDARY = 2;
+
+bool IsFluid(Particle p) 
+{
+	return p.type == PT_FLUID;
+}

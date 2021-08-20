@@ -11,7 +11,7 @@ namespace FluidSPH3D
 		protected FluidSPH3DConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<FluidSPH3DConfigure>();
 		protected FluidSPH3DConfigure configure;
 
-		protected override void Draw(Mesh mesh, Material material, GPUBufferVariable<uint> indirectBuffer)
+		protected override void Draw(Mesh mesh, Material material, GPUBufferIndirectArgument indirectBuffer)
 		{
 			this.Configure.D.UpdateGPU(material);
 			base.Draw(mesh, material, indirectBuffer);

@@ -286,8 +286,8 @@ MonoBehaviour:
           w: 1
       scale:
         x: 2
-        y: 2
-        z: 2
+        y: 5
+        z: 0.5
       displayAxis: 0
       displayText: 0
       displayBound: 1
@@ -305,7 +305,7 @@ MonoBehaviour:
       y: -9.8
       z: 0
     timeStep: 0.005
-    particleScale: 1
+    particleScale: 0.5
 --- !u!114 &468932072
 MonoBehaviour:
   m_ObjectHideFlags: 0

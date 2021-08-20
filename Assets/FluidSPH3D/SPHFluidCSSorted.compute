@@ -4,10 +4,14 @@
 #pragma kernel Pressure
 #pragma kernel Integrate
 
+#pragma kernel InitIndexPool
+#pragma kernel Emit
+
+#define SIMULATION_BLOCK_SIZE 256
+
 #include "SPHData.cginc"
 #include "Kernel.cginc"
 #include "GridHelper.cginc"
-#define SIMULATION_BLOCK_SIZE 256
 
 float _H;
 float2 _PressureK;// k1 and k2 in State Equation Pressure
@@ -16,7 +20,6 @@ float _ParticleMass;
 float _Viscosity;
 float3 _Gravity;
 float _TimeStep;
-
 
 RWStructuredBuffer<Particle> _ParticleBuffer;
 int _ParticleBufferCount;
@@ -29,6 +32,8 @@ RWStructuredBuffer<ParticleVorticity>  _ParticleVorticityBuffer;
 RWStructuredBuffer<int>  _ParticleCount;
 
 StructuredBuffer<uint2> _GridBuffer;
+
+#include "SPHIndexPool.cginc"
 
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
@@ -128,7 +133,7 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	float3 force = 0;
 	if(length(n) > 0)
 	{
-		float ep = 1.0f;
+		float ep = 2.0f;
 		// ep = 0.01f;
 		force += ep * cross(normalize(n), w);
 	}
@@ -187,9 +192,12 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	// P_velocity += alpha * force;
 
 	// force = 0;
-	if(distance(P_position, float3(0.1,0.3,0)) < 0.2) force += normalize(P_position-float3(0.1,0.3,0)) * 1000;
-	if(distance(P_position, float3(0.8,0.1,0)) < 0.2) force += normalize(P_position-float3(0.8,0.1,0)) * 1000;
-	if(distance(P_position, float3(-0.5,0.5,0)) < 0.4) force += normalize(P_position-float3(-0.4,0.5,0)) * 1000;
+	// if(distance(P_position, float3(0.1,0.3,0)) < 0.2 * 5) force += normalize(P_position-float3(0.1,0.3,0)) * 500;
+	// if(distance(P_position, float3(0.8 * 5,0.1,0)) < 0.2 * 5) force += normalize(P_position-float3(0.8 * 5,0.1,0)) * 500;
+	// if(distance(P_position, float3(-0.5 * 5,0.5 * 10,0)) < 0.4 * 5) force += normalize(P_position-float3(-0.4 * 5,0.5 * 10,0)) * 500;
+	// if(distance(P_position, float3(0.1,0.3,0)) < 0.2) force += normalize(P_position-float3(0.1,0.3,0)) * 500;
+	// if(distance(P_position, float3(0.8 ,0.1,0)) < 0.2) force += normalize(P_position-float3(0.8,0.1,0)) * 500;
+	// if(distance(P_position, float3(-0.5,0.5 ,0)) < 0.4 ) force += normalize(P_position-float3(-0.4,0.5,0)) * 500;
 	// force += (sdBox(P_position, float3(0.5,0.5,0.1)) < 0)?float3(0,100,0):0;
 
 	_ParticleVelocityBuffer[P_ID].vel= P_velocity + _TimeStep * (force + _Gravity) / _ParticleMass;
@@ -253,8 +261,14 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 	float3 acceleration = _ParticleForceBuffer[P_ID].force;
 	float3 velocity = _ParticleVelocityBuffer[P_ID].vel;
 
-	p.vel = velocity + _TimeStep * acceleration / _ParticleMass;
-	p.pos += _TimeStep * p.vel;
+	// if(p.type == PT_FLUID)
+	{
+		p.vel = velocity + _TimeStep * acceleration / _ParticleMass;
+		p.pos += _TimeStep * p.vel;
+	}
+	// else
+	{
+	}
 
 	float3 gmin = _GridMin;
 	float3 gmax = _GridMax;

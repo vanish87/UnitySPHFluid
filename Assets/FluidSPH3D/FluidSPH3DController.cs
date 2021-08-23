@@ -58,6 +58,8 @@ namespace FluidSPH3D
 
 			InitIndexPool,
 			Emit,
+
+			AddBoundary,
 		}
 		[System.Serializable]
 		public class EmitterGPUData : GPUContainer
@@ -66,6 +68,12 @@ namespace FluidSPH3D
 			public const int MAX_NUM_EMITTER = 128;
 
 			[Shader(Name = "_EmitterBuffer")] public GPUBufferVariable<EmitterData> emitterBuffer = new GPUBufferVariable<EmitterData>();
+		}
+		[System.Serializable]
+		public class BoundaryGPUData : GPUContainer
+		{
+			[Shader(Name = "_BoundaryBuffer")] public GPUBufferVariable<float3> boundaryBuffer = new GPUBufferVariable<float3>();
+			[Shader(Name = "_BoundarySize")] public int boundarySize;
 		}
 		[System.Serializable]
 		public class SPHGPUData : GPUContainer
@@ -84,6 +92,7 @@ namespace FluidSPH3D
 		[SerializeField] protected RunMode mode = RunMode.SharedMemory;
 		[SerializeField] protected SPHGPUData sphData = new SPHGPUData();
 		[SerializeField] protected EmitterGPUData emitterGPUData = new EmitterGPUData();
+		[SerializeField] protected BoundaryGPUData boundaryGPUData = new BoundaryGPUData();
 		[SerializeField] protected ComputeShader fluidSortedCS;
 		[SerializeField] protected ComputeShader fluidSharedCS;
 		protected FluidSPH3DConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<FluidSPH3DConfigure>();
@@ -102,6 +111,7 @@ namespace FluidSPH3D
 
 			this.InitIndexPool();
 			this.InitEmitters();
+			this.InitBoundary();
 		}
 		protected void InitParticle()
 		{
@@ -127,6 +137,26 @@ namespace FluidSPH3D
 			this.emitters.Clear();
 			this.emitters = this.GetComponentsInChildren<IEmitter>().ToList();
 			this.emitterGPUData.emitterBuffer.InitBuffer(EmitterGPUData.MAX_NUM_EMITTER, true, true);
+		}
+
+		protected void InitBoundary()
+		{
+			this.boundaryGPUData.boundaryBuffer.InitBuffer(1024 * 8 * 4, true, true);
+
+			var boundary = this.gameObject.GetComponentsInChildren<BoundarySampler>();
+			foreach(var b in boundary)
+			{
+				var samples = b.Sample(1f/32f);
+				var count = 0;
+				foreach(var p in samples)
+				{
+					this.boundaryGPUData.boundaryBuffer.CPUData[count++] = p;
+				}
+				this.boundaryGPUData.boundarySize = samples.Count;
+
+				this.fluidDispatcher.Dispatch(SPHKernel.AddBoundary, samples.Count);
+			}
+
 		}
 
 		protected void Emit()
@@ -174,6 +204,7 @@ namespace FluidSPH3D
 				this.fluidDispatcher.AddParameter(k, this.sphData);
 				this.fluidDispatcher.AddParameter(k, this.SPHGrid.GridGPUData);
 				this.fluidDispatcher.AddParameter(k, this.emitterGPUData);
+				this.fluidDispatcher.AddParameter(k, this.boundaryGPUData);
 			}
 		}
 		protected void SPHStep()
@@ -192,6 +223,7 @@ namespace FluidSPH3D
 		{
 			this.sphData?.Release();
 			this.emitterGPUData?.Release();
+			this.boundaryGPUData?.Release();
 		}
 		protected void OnEnable()
 		{
@@ -212,7 +244,7 @@ namespace FluidSPH3D
 			}
 			this.SPHStep();
 
-			if (Input.GetKeyDown(KeyCode.R)) { this.InitParticle(); this.InitIndexPool(); }
+			if (Input.GetKeyDown(KeyCode.R)) { this.InitParticle(); this.InitIndexPool(); this.InitBoundary();}
 			if (Input.GetKeyDown(KeyCode.E)) this.Emit();
 		}
 

@@ -63,7 +63,9 @@ Shader "Unlit/SPHParticleShader"
 		// Blend One OneMinusSrcAlpha
         // Blend SrcAlpha OneMinusSrcAlpha
     
-		// Tags{ "RenderType"="Opaque" "Queue"="Geometry"}
+		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
+        ZWrite Off
+        Blend SrcAlpha OneMinusSrcAlpha
 		// Blend One One
 		Pass
 		{

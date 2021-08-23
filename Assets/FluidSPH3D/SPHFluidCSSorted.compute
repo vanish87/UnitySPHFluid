@@ -7,6 +7,8 @@
 #pragma kernel InitIndexPool
 #pragma kernel Emit
 
+#pragma kernel AddBoundary
+
 #define SIMULATION_BLOCK_SIZE 256
 
 #include "SPHData.cginc"
@@ -40,7 +42,7 @@ void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTi
 {
 	const unsigned int P_ID = DTid.x;
 	Particle p = _ParticleBufferSorted[P_ID];
-	if(!IsFluid(p)) return;
+	if(!IsActive(p)) return;
 
 	float3 P_position = p.pos;
 
@@ -57,12 +59,14 @@ void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTi
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
 			Particle np = _ParticleBufferSorted[N_ID];
-			if(!IsFluid(np)) continue;
+			if(!IsActive(np)) continue;
 
 			float3 N_position = np.pos;
 
+			float gamma = IsBoundary(np)?20:1;
+
 			float3 r = P_position - N_position;
-			density += _ParticleMass * W(r, _H);
+			density += _ParticleMass * W(r, _H) * gamma;
 		}
 	}
 	_ParticleDensityBuffer[P_ID].density = max(density, _RestDensity);
@@ -74,7 +78,7 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
 
 	Particle p = _ParticleBufferSorted[P_ID];
-	if(!IsFluid(p)) return;
+	if(!IsActive(p)) return;
 
 	float3 P_position = _ParticleBufferSorted[P_ID].pos;
 	float3 P_velocity = _ParticleBufferSorted[P_ID].vel;
@@ -94,7 +98,7 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
 			Particle np = _ParticleBufferSorted[N_ID];
-			if(!IsFluid(np)) continue;
+			if(!IsActive(np)) continue;
 
 			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
@@ -126,7 +130,7 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
 			Particle np = _ParticleBufferSorted[N_ID];
-			if(!IsFluid(np)) continue;
+			if(!IsActive(np)) continue;
 
 			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
@@ -148,7 +152,7 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	float3 force = 0;
 	if(length(n) > 0)
 	{
-		float ep = 2.0f;
+		float ep = 5.0f;
 		// ep = 0.01f;
 		force += ep * cross(normalize(n), w);
 	}
@@ -162,7 +166,7 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
 
 	Particle p = _ParticleBufferSorted[P_ID];
-	if(!IsFluid(p)) return;
+	if(!IsActive(p)) return;
 
 	float3 P_position = _ParticleBufferSorted[P_ID].pos;
 	float3 P_velocity = _ParticleBufferSorted[P_ID].vel;
@@ -183,7 +187,7 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
 			Particle np = _ParticleBufferSorted[N_ID];
-			if(!IsFluid(np)) continue;
+			if(!IsActive(np)) continue;
 
 			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
@@ -226,7 +230,7 @@ void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
 	
 	Particle p = _ParticleBufferSorted[P_ID];
-	if(!IsFluid(p)) return;
+	if(!IsActive(p)) return;
 
 	float3 P_position = _ParticleBufferSorted[P_ID].pos;
 	float3 P_velocity = _ParticleBufferSorted[P_ID].vel;
@@ -250,7 +254,7 @@ void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
 			Particle np = _ParticleBufferSorted[N_ID];
-			if(!IsFluid(np)) continue;
+			if(!IsActive(np)) continue;
 
 			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
@@ -280,9 +284,8 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
 
 	Particle p = _ParticleBufferSorted[P_ID];
-	if(IsFluid(p))
+	if(IsActive(p))
 	{
-
 		float3 acceleration = _ParticleForceBuffer[P_ID].force;
 		float3 velocity = _ParticleVelocityBuffer[P_ID].vel;
 

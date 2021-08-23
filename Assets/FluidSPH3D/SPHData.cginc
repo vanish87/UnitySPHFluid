@@ -37,3 +37,12 @@ bool IsFluid(Particle p)
 {
 	return p.type == PT_FLUID;
 }
+
+bool IsBoundary(Particle p) 
+{
+	return p.type == PT_BOUNDARY;
+}
+bool IsActive(Particle p) 
+{
+	return p.type != PT_INACTIVE;
+}

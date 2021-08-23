@@ -26,5 +26,10 @@ namespace FluidSPH3D
 
 			[Shader(Name = "_ParticleScale")] public float particleScale = 1f;
 		}
+
+		protected void OnDrawGizmos()
+		{
+			this.D.simulationSpace?.OnDrawGizmos();
+		}
 	}
 }

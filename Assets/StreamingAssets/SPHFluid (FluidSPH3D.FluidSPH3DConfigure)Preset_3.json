@@ -15,8 +15,8 @@
         },
         "scale": {
             "x": 2.0,
-            "y": 5.0,
-            "z": 0.5
+            "y": 2.0,
+            "z": 2.0
         },
         "displayAxis": false,
         "displayText": false,
@@ -29,14 +29,14 @@
         }
     },
     "numOfParticle": 131072,
-    "smoothlen": 0.10000000149011612,
+    "smoothlen": 0.07999999821186066,
     "pressureK": {
-        "x": 40.0,
+        "x": 5.0,
         "y": 3.0
     },
     "restDensity": 1000.0,
     "particleMass": 2.0,
-    "viscosity": 300.0,
+    "viscosity": 10.0,
     "gravity": {
         "x": 0.0,
         "y": -9.800000190734864,

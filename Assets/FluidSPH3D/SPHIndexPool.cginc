@@ -40,6 +40,8 @@ void Emit(uint3 DTid : SV_DispatchThreadID)
 		const uint P_ID = _ParticleBufferIndexConsume.Consume();
 
 		Particle p = _ParticleBuffer[P_ID];
+		if(IsActive(p)) return;
+
 		float3 np = PosToNormalized01(p.pos, _GridMin, _GridMax);
 		float4 pos = float4(wang_hash01((np.x + _Time.y)*10321), wang_hash01(DTid.y * np.y * _Time.z * 388), wang_hash01(DTid.y * _Time.x), 1);
 		pos -= 0.5f;
@@ -51,4 +53,24 @@ void Emit(uint3 DTid : SV_DispatchThreadID)
 		p.pos = pos.xyz;
 		_ParticleBuffer[P_ID] = p;
 	}
+}
+
+StructuredBuffer<float3> _BoundaryBuffer;
+int _BoundarySize;
+[numthreads(128, 1, 1)]
+void AddBoundary(uint3 DTid : SV_DispatchThreadID)
+{
+	int pid = DTid.x;
+	if(pid >= _BoundarySize) return;
+
+	const uint P_ID = _ParticleBufferIndexConsume.Consume();
+
+	Particle p = _ParticleBuffer[P_ID];
+	if(IsActive(p)) return;
+
+	p.type = PT_BOUNDARY;
+	p.pos = _BoundaryBuffer[pid];
+	p.col = float4(1,0,0,0.1);
+	_ParticleBuffer[P_ID] = p;
+
 }

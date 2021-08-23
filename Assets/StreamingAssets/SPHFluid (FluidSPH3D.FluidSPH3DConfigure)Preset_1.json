@@ -35,8 +35,8 @@
         "y": 3.0
     },
     "restDensity": 1000.0,
-    "particleMass": 2.0,
-    "viscosity": 300.0,
+    "particleMass": 1.0,
+    "viscosity": 100.0,
     "gravity": {
         "x": 0.0,
         "y": -9.800000190734864,

@@ -16,6 +16,7 @@ namespace FluidSPH3D
 		public BlittableBool enabled;
 		public float4x4 localToWorld;
 	}
+	[ExecuteInEditMode]
 
 	public class Emitter : MonoBehaviour, IEmitter
 	{

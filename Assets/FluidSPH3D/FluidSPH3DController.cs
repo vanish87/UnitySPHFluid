@@ -60,6 +60,14 @@ namespace FluidSPH3D
 			Emit,
 		}
 		[System.Serializable]
+		public class EmitterGPUData : GPUContainer
+		{
+			public int particlePerEmit = 256;
+			public const int MAX_NUM_EMITTER = 128;
+
+			[Shader(Name = "_EmitterBuffer")] public GPUBufferVariable<EmitterData> emitterBuffer = new GPUBufferVariable<EmitterData>();
+		}
+		[System.Serializable]
 		public class SPHGPUData : GPUContainer
 		{
 			[Shader(Name = "_ParticleBuffer")] public GPUBufferVariable<Particle> particleBuffer = new GPUBufferVariable<Particle>();
@@ -71,13 +79,11 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleVelocityBuffer")] public GPUBufferVariable<ParticleVelocity> particleVelocity = new GPUBufferVariable<ParticleVelocity>();
 			[Shader(Name = "_ParticleVorticityBuffer")] public GPUBufferVariable<ParticleVorticity> particleVorticity = new GPUBufferVariable<ParticleVorticity>();
 			[Shader(Name = "_ParticleCount")] public GPUBufferVariable<int> particleCount = new GPUBufferVariable<int>();
-
-			public int emitNum = 256;
-
 		}
 		public GPUBufferVariable<Particle> Buffer => this.sphData.particleBuffer;
 		[SerializeField] protected RunMode mode = RunMode.SharedMemory;
 		[SerializeField] protected SPHGPUData sphData = new SPHGPUData();
+		[SerializeField] protected EmitterGPUData emitterGPUData = new EmitterGPUData();
 		[SerializeField] protected ComputeShader fluidSortedCS;
 		[SerializeField] protected ComputeShader fluidSharedCS;
 		protected FluidSPH3DConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<FluidSPH3DConfigure>();
@@ -86,6 +92,8 @@ namespace FluidSPH3D
 		protected SPHGrid SPHGrid => this.sphGrid ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<SPHGrid>();
 		protected SPHGrid sphGrid;
 		protected ComputeShaderDispatcher<SPHKernel> fluidDispatcher;
+		protected List<IEmitter> emitters = new List<IEmitter>();
+
 		protected void Init()
 		{
 			this.Configure.Initialize();
@@ -93,6 +101,7 @@ namespace FluidSPH3D
 			this.InitParticle();
 
 			this.InitIndexPool();
+			this.InitEmitters();
 		}
 		protected void InitParticle()
 		{
@@ -113,17 +122,33 @@ namespace FluidSPH3D
 			this.sphData.particleBufferIndexAppend.ResetCounter();
 			this.fluidDispatcher.Dispatch(SPHKernel.InitIndexPool, this.Configure.D.numOfParticle);
 		}
+		protected void InitEmitters()
+		{
+			this.emitters.Clear();
+			this.emitters = this.GetComponentsInChildren<IEmitter>().ToList();
+			this.emitterGPUData.emitterBuffer.InitBuffer(EmitterGPUData.MAX_NUM_EMITTER, true, true);
+		}
 
 		protected void Emit()
 		{
-			var num = this.sphData.emitNum;
+			var ecount = 0;
+			var eCPU = this.emitterGPUData.emitterBuffer.CPUData;
+			foreach(var e in this.emitters)
+			{
+				eCPU[ecount].enabled = true;
+				eCPU[ecount].localToWorld = e.Space.TRS;
+				ecount++;
+			}
+			while(ecount<EmitterGPUData.MAX_NUM_EMITTER) eCPU[ecount++].enabled = false;
+
+			var num = this.emitterGPUData.particlePerEmit * this.emitters.Count;
 			var poolNum = this.sphData.particleBufferIndexConsume.GetCounter();
 			if(poolNum < num)
 			{
 				LogTool.Log("pool particle " + poolNum + " not enough to emit " + num, LogLevel.Warning);
 				return;
 			}
-			this.fluidDispatcher.Dispatch(SPHKernel.Emit, num);
+			this.fluidDispatcher.Dispatch(SPHKernel.Emit, this.emitterGPUData.emitterBuffer.Size, this.emitterGPUData.particlePerEmit);
 		}
 
 		protected void InitSPH()
@@ -148,6 +173,7 @@ namespace FluidSPH3D
 				this.fluidDispatcher.AddParameter(k, this.Configure.D);
 				this.fluidDispatcher.AddParameter(k, this.sphData);
 				this.fluidDispatcher.AddParameter(k, this.SPHGrid.GridGPUData);
+				this.fluidDispatcher.AddParameter(k, this.emitterGPUData);
 			}
 		}
 		protected void SPHStep()
@@ -165,6 +191,7 @@ namespace FluidSPH3D
 		protected void DeInit()
 		{
 			this.sphData?.Release();
+			this.emitterGPUData?.Release();
 		}
 		protected void OnEnable()
 		{
@@ -185,7 +212,7 @@ namespace FluidSPH3D
 			}
 			this.SPHStep();
 
-			if (Input.GetKeyDown(KeyCode.R)) this.InitParticle();
+			if (Input.GetKeyDown(KeyCode.R)) { this.InitParticle(); this.InitIndexPool(); }
 			if (Input.GetKeyDown(KeyCode.E)) this.Emit();
 		}
 

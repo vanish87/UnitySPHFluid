@@ -14,6 +14,11 @@ float3 PosToCellPos(float3 pos, float3 gridMin, float3 gridMax, float3 gridSpaci
 	pos = pos - gridMin; //Start from grid left bottom corner
 	return pos/gridSpacing;
 }
+float3 PosToNormalized01(float3 pos, float3 gridMin, float3 gridMax)
+{
+	float3 size = gridMax-gridMin;
+	return (pos-gridMin)/size;
+}
 
 uint3 CellPosToCellIndex(float3 pos)
 {

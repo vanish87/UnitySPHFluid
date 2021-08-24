@@ -20,6 +20,7 @@ float2 _PressureK;// k1 and k2 in State Equation Pressure
 float _RestDensity;
 float _ParticleMass;
 float _Viscosity;
+float _Vorticity;
 float3 _Gravity;
 float _TimeStep;
 
@@ -152,8 +153,7 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	float3 force = 0;
 	if(length(n) > 0)
 	{
-		float ep = 5.0f;
-		// ep = 0.01f;
+		float ep = _Vorticity;
 		force += ep * cross(normalize(n), w);
 	}
 

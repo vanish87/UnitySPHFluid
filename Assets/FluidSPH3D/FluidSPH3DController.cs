@@ -12,35 +12,6 @@ using UnityTools.Rendering;
 
 namespace FluidSPH3D
 {
-	public enum ParticleType
-	{
-		Inactive = 0,
-		Fluid,
-		Boundary
-	}
-	public struct Particle
-	{
-		public float3 pos;
-		public float3 vel;
-		public float4 col;
-		public ParticleType type;
-	}
-	public struct ParticleDensity
-	{
-		public float density;
-	}
-	public struct ParticleForce
-	{
-		public float3 force;
-	}
-	public struct ParticleVelocity
-	{
-		public float3 velocity;
-	}
-	public struct ParticleVorticity
-	{
-		public float3 vorticity;
-	}
 	public class FluidSPH3DController : MonoBehaviour, IParticleBuffer<Particle>
 	{
 		public enum RunMode

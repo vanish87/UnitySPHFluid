@@ -223,6 +223,9 @@ namespace FluidSPH3D
 
 		protected void Update()
 		{
+			var c = 10;
+			while(c-->0)
+			{
 			if (this.mode == RunMode.SortedGrid)
 			{
 				GPUBufferVariable<Particle> sorted;
@@ -230,6 +233,7 @@ namespace FluidSPH3D
 				this.sphData.particleBufferSorted.UpdateBuffer(sorted);
 			}
 			this.SPHStep();
+			}
 
 			if (Input.GetKeyDown(KeyCode.R)) { this.InitParticle(); this.InitIndexPool(); this.InitBoundary();}
 			if (Input.GetKeyDown(KeyCode.E)) this.Emit();

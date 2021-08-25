@@ -59,6 +59,7 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleVelocityBuffer")] public GPUBufferVariable<ParticleVelocity> particleVelocity = new GPUBufferVariable<ParticleVelocity>();
 			[Shader(Name = "_ParticleVorticityBuffer")] public GPUBufferVariable<ParticleVorticity> particleVorticity = new GPUBufferVariable<ParticleVorticity>();
 			[Shader(Name = "_ParticleCount")] public GPUBufferVariable<int> particleCount = new GPUBufferVariable<int>();
+			[Shader(Name = "_DeltaTime")] public float deltaTime = 0.001f;
 		}
 		public GPUBufferVariable<Particle> Buffer => this.sphData.particleBuffer;
 		[SerializeField] protected RunMode mode = RunMode.SharedMemory;
@@ -223,20 +224,30 @@ namespace FluidSPH3D
 
 		protected void Update()
 		{
-			var c = 10;
-			while(c-->0)
+			foreach(var i in Enumerable.Range(0, this.Configure.D.stepIteration))
 			{
-			if (this.mode == RunMode.SortedGrid)
-			{
-				GPUBufferVariable<Particle> sorted;
-				this.SPHGrid.BuildSortedParticleGridIndex(this.sphData.particleBuffer, out sorted);
-				this.sphData.particleBufferSorted.UpdateBuffer(sorted);
-			}
-			this.SPHStep();
+				this.sphData.deltaTime = Time.deltaTime / this.Configure.D.stepIteration;
+
+				if (this.mode == RunMode.SortedGrid)
+				{
+					GPUBufferVariable<Particle> sorted;
+					this.SPHGrid.BuildSortedParticleGridIndex(this.sphData.particleBuffer, out sorted);
+					this.sphData.particleBufferSorted.UpdateBuffer(sorted);
+				}
+				this.SPHStep();
 			}
 
-			if (Input.GetKeyDown(KeyCode.R)) { this.InitParticle(); this.InitIndexPool(); this.InitBoundary();}
-			if (Input.GetKeyDown(KeyCode.E)) this.Emit();
+			if (Input.GetKeyDown(KeyCode.R)) 
+			{
+				this.InitSPH();
+				this.InitParticle();
+
+				this.InitIndexPool();
+				this.InitEmitters();
+				this.InitBoundary();
+			}
+			if (Input.GetKey(KeyCode.E)) this.Emit();
+			// this.Emit();
 		}
 
 	}

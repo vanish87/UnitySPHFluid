@@ -149,7 +149,7 @@ Transform:
   m_GameObject: {fileID: 372068199}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: 1.74}
-  m_LocalScale: {x: 5, y: 4, z: 0.1}
+  m_LocalScale: {x: 3, y: 4, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
   m_RootOrder: 2
@@ -178,7 +178,7 @@ MonoBehaviour:
         z: 0
         w: 1
     scale:
-      x: 5
+      x: 3
       y: 4
       z: 0.1
     displayAxis: 0
@@ -349,7 +349,7 @@ MonoBehaviour:
           z: 0
           w: 1
       scale:
-        x: 5
+        x: 8
         y: 5
         z: 5
       displayAxis: 0
@@ -359,13 +359,13 @@ MonoBehaviour:
     numOfParticle: 262144
     smoothlen: 0.1
     pressureK:
-      x: 40
+      x: 100
       y: 3
     restDensity: 1000
-    particleMass: 1
+    particleMass: 0.8
     viscosity: 200
     vorticity: 1
-    nu_t: 0.6
+    nu_t: 0.5
     nu_ext: 0
     theta: 20
     gravity:
@@ -424,7 +424,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &521483102
 Transform:
   m_ObjectHideFlags: 0
@@ -433,8 +433,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 521483101}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 2.5}
-  m_LocalScale: {x: 5, y: 4, z: 0.1}
+  m_LocalPosition: {x: 0, y: 0, z: 2.5}
+  m_LocalScale: {x: 3, y: 5, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
   m_RootOrder: 3
@@ -454,7 +454,7 @@ MonoBehaviour:
   plane:
     center:
       x: 0
-      y: 0.5
+      y: 0
       z: 2.5
     rotation:
       value:
@@ -463,8 +463,8 @@ MonoBehaviour:
         z: 0
         w: 1
     scale:
-      x: 5
-      y: 4
+      x: 3
+      y: 5
       z: 0.1
     displayAxis: 0
     displayText: 0

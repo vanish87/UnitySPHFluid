@@ -24,6 +24,8 @@ float _Viscosity;
 float _Vorticity;
 float3 _Gravity;
 float _TimeStep;
+float _DeltaTime;
+float2 _ParticleLife;
 
 
 float _NU_T;
@@ -402,6 +404,17 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 			// p.pos.y = gmax.y - _GridSpacing.y;
 			// p.pos.z = gmax.z - _GridSpacing.z * 20;
 			}
+		}
+
+		p.life -= _DeltaTime;
+		if(IsFluid(p) && p.life < 0)
+		{
+			// p.type = PT_INACTIVE;
+			// _ParticleBufferIndexAppend.Append(P_ID);
+			p.pos = float3(wang_hash01(P_ID)-0.5, 2 + wang_hash01(P_ID + p.vel.x * 102314) * 0.1, 2.17 + wang_hash01(P_ID + p.vel.z * 23910457) * 0.5f);
+			p.vel.y = -wang_hash01(P_ID);
+			p.vel.xz = 0;
+			p.life = lerp(_ParticleLife.x, _ParticleLife.y, wang_hash01(P_ID));
 		}
 	}
 	// Update

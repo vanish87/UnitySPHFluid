@@ -15,6 +15,7 @@ namespace FluidSPH3D
 		public float3 vel;
 		public float3 w;
 		public float4 col;
+		public float life;
 		public ParticleType type;
 	}
 	public struct ParticleDensity

@@ -51,6 +51,8 @@ void Emit(uint3 DTid : SV_DispatchThreadID)
 		pos = mul(e.localToWorld, pos);
 		pos /= pos.w;
 		p.pos = pos.xyz;
+		p.vel = 0;
+		p.life = lerp(_ParticleLife.x, _ParticleLife.y, wang_hash01(P_ID));
 		_ParticleBuffer[P_ID] = p;
 	}
 }

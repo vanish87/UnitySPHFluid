@@ -6,6 +6,7 @@ struct Particle
 	float3 vel;
 	float3 w;//angular velocity
 	float4 col;
+	float life;
 	int type;
 };
 

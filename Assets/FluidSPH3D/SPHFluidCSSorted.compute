@@ -278,8 +278,8 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	// if(distance(P_position, float3(0.1,0.3,0)) < 0.2 * 5) force += normalize(P_position-float3(0.1,0.3,0)) * 500;
 	// if(distance(P_position, float3(0.8 * 5,0.1,0)) < 0.2 * 5) force += normalize(P_position-float3(0.8 * 5,0.1,0)) * 500;
 	// if(distance(P_position, float3(-0.5 * 5,0.5 * 10,0)) < 0.4 * 5) force += normalize(P_position-float3(-0.4 * 5,0.5 * 10,0)) * 500;
-	if(distance(P_position, float3(0.1,0.3,0)) < 0.2) force += normalize(P_position-float3(0.1,0.3,0)) * 500;
-	if(distance(P_position, float3(0.8 ,0.1,0)) < 0.2) force += normalize(P_position-float3(0.8,0.1,0)) * 500;
+	// if(distance(P_position, float3(0.1,0.3,0)) < 0.2) force += normalize(P_position-float3(0.1,0.3,0)) * 500;
+	// if(distance(P_position, float3(0.8 ,0.1,0)) < 0.2) force += normalize(P_position-float3(0.8,0.1,0)) * 500;
 	// if(distance(P_position, float3(-0.5,0.5 ,0)) < 0.4 ) force += normalize(P_position-float3(-0.4,0.5,0)) * 500;
 	// force += (sdBox(P_position, float3(0.5,0.5,0.1)) < 0)?float3(0,100,0):0;
 
@@ -356,6 +356,7 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 		if(p.type == PT_FLUID)
 		{
 			p.vel = velocity + _TimeStep * acceleration / _ParticleMass;
+			p.vel = clamp(p.vel, -5, 5);
 			p.pos += _TimeStep * p.vel;
 			p.w +=  _Vorticity * _TimeStep * (transferTorque + _NU_EXT) / (_ParticleMass * _Theta);
 		}
@@ -378,8 +379,8 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 		if (p.pos.y < gmin.y) {
 			p.vel.y = 0;
 			p.pos.y = gmin.y;
-			p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
-			p.pos.y = gmax.y - _GridSpacing.y;
+			// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
+			// p.pos.y = gmax.y - _GridSpacing.y;
 		}
 		if (p.pos.y > gmax.y) {
 			p.vel.y = 0;

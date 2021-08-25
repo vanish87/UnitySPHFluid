@@ -31,14 +31,14 @@
     "numOfParticle": 262144,
     "smoothlen": 0.10000000149011612,
     "pressureK": {
-        "x": 40.0,
+        "x": 200.0,
         "y": 3.0
     },
     "restDensity": 1000.0,
     "particleMass": 2.0,
     "viscosity": 200.0,
     "vorticity": 1.0,
-    "nu_t": 0.4000000059604645,
+    "nu_t": 0.5,
     "nu_ext": 0.0,
     "theta": 30.0,
     "gravity": {
@@ -47,5 +47,6 @@
         "z": 0.0
     },
     "timeStep": 0.004999999888241291,
-    "particleScale": 0.5
+    "particleScale": 0.5,
+    "addSimulationBoundary": false
 }

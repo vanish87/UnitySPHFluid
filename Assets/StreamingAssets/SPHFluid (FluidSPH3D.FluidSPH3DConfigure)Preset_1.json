@@ -28,16 +28,19 @@
             "a": 1.0
         }
     },
-    "numOfParticle": 131072,
+    "numOfParticle": 262144,
     "smoothlen": 0.10000000149011612,
     "pressureK": {
         "x": 40.0,
         "y": 3.0
     },
     "restDensity": 1000.0,
-    "particleMass": 1.0,
-    "viscosity": 100.0,
-    "vorticity": 0.10000000149011612,
+    "particleMass": 2.0,
+    "viscosity": 200.0,
+    "vorticity": 1.0,
+    "nu_t": 0.4000000059604645,
+    "nu_ext": 0.0,
+    "theta": 30.0,
     "gravity": {
         "x": 0.0,
         "y": -9.800000190734864,

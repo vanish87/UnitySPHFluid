@@ -4,6 +4,7 @@ struct Particle
 {
 	float3 pos;
 	float3 vel;
+	float3 w;//angular velocity
 	float4 col;
 	int type;
 };
@@ -17,6 +18,8 @@ struct ParticleDensity
 struct ParticleForce
 {
 	float3 force;
+	float3 transferForce;
+	float3 transferTorque;
 };
 
 struct ParticleVelocity

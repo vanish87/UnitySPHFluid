@@ -22,6 +22,9 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleMass")] public float particleMass = 0.0004f;
 			[Shader(Name = "_Viscosity")] public float viscosity = 1.5f;
 			[Shader(Name = "_Vorticity")] public float vorticity = 1f;
+			[Shader(Name = "_NU_T")] public float nu_t = 1f;
+			[Shader(Name = "_NU_EXT")] public float nu_ext = 0f;
+			[Shader(Name = "_Theta")] public float theta = 1f;
 			[Shader(Name = "_Gravity")] public float3 gravity = new float3(0, -2, 0);
 			[Shader(Name = "_TimeStep")] public float timeStep = 0.001f;
 

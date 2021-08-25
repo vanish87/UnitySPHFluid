@@ -1,5 +1,6 @@
 ﻿#pragma kernel Density
 #pragma kernel Vorticity
+#pragma kernel VorticityConfinement
 #pragma kernel Viscosity
 #pragma kernel Pressure
 #pragma kernel Integrate
@@ -9,7 +10,7 @@
 
 #pragma kernel AddBoundary
 
-#define SIMULATION_BLOCK_SIZE 256
+#define SIMULATION_BLOCK_SIZE 512
 
 #include "SPHData.cginc"
 #include "Kernel.cginc"
@@ -23,6 +24,11 @@ float _Viscosity;
 float _Vorticity;
 float3 _Gravity;
 float _TimeStep;
+
+
+float _NU_T;
+float _NU_EXT;
+float _Theta;
 
 RWStructuredBuffer<Particle> _ParticleBuffer;
 int _ParticleBufferCount;
@@ -75,6 +81,62 @@ void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTi
 
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
+{
+	const unsigned int P_ID = DTid.x; // Particle ID to operate on
+	const float h_sq = pow(_H, 2);
+
+	Particle p = _ParticleBufferSorted[P_ID];
+	if(!IsActive(p)) return;
+
+	float3 P_position = p.pos;
+	float3 P_vel = p.vel;
+	float3 P_w = p.w;
+
+	float3 nonPressureForce = 0;
+	float3 transferForce = 0;
+	float3 transferTorque = 0;
+
+
+	// nonPressureForce += _Gravity;
+
+    int3 cid = PosToCellIndex(P_position, _GridMin, _GridMax, _GridSpacing);
+	int3 range = 1;
+	LOOP_RANGE(i, j, k, cid, range, _GridSize)
+	{
+		int3 index = int3(i,j,k);
+		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
+		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
+		{
+			Particle np = _ParticleBufferSorted[N_ID];
+			if(!IsActive(np)) continue;
+
+			float3 N_position = _ParticleBufferSorted[N_ID].pos;
+
+			float3 r = P_position - N_position;
+			float r_sq = dot(r, r);
+			if (r_sq < h_sq && P_ID != N_ID)
+			{
+				float3 N_w = _ParticleBufferSorted[N_ID].w;
+				float3 N_vel = _ParticleBufferSorted[N_ID].vel;
+				float  N_density = _ParticleDensityBuffer[N_ID].density;
+
+				float3 r = P_position - N_position;
+
+				float3 gradW = WGrad(r, _H);
+				transferForce  += -_ParticleMass/N_density *(cross(P_w - N_w, gradW));
+				transferTorque += -_ParticleMass/N_density *(cross(P_vel - N_vel, gradW));
+			}
+		}
+	}
+
+	_ParticleForceBuffer[P_ID].force = nonPressureForce;
+	_ParticleForceBuffer[P_ID].transferForce = _ParticleMass * _NU_T * transferForce;
+	_ParticleForceBuffer[P_ID].transferTorque = _ParticleMass * _NU_T * (transferTorque - 2 * P_w);
+
+}
+
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void VorticityConfinement(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
 {
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
 
@@ -175,6 +237,7 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	const float h_sq = pow(_H, 2);
 
 	float3 force = _ParticleForceBuffer[P_ID].force;
+	float3 transferForce = _ParticleForceBuffer[P_ID].transferForce;
 	
     int3 cid = PosToCellIndex(P_position, _GridMin, _GridMax, _GridSpacing);
 	int3 range = 1;
@@ -220,7 +283,7 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	// if(distance(P_position, float3(-0.5,0.5 ,0)) < 0.4 ) force += normalize(P_position-float3(-0.4,0.5,0)) * 500;
 	// force += (sdBox(P_position, float3(0.5,0.5,0.1)) < 0)?float3(0,100,0):0;
 
-	_ParticleVelocityBuffer[P_ID].vel= P_velocity + _TimeStep * (force + _Gravity) / _ParticleMass;
+	_ParticleVelocityBuffer[P_ID].vel= P_velocity + _TimeStep * (force + transferForce + _Gravity) / _ParticleMass;
 }
 
 
@@ -287,12 +350,14 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 	if(IsActive(p))
 	{
 		float3 acceleration = _ParticleForceBuffer[P_ID].force;
+		float3 transferTorque = _ParticleForceBuffer[P_ID].transferTorque;
 		float3 velocity = _ParticleVelocityBuffer[P_ID].vel;
 
 		if(p.type == PT_FLUID)
 		{
 			p.vel = velocity + _TimeStep * acceleration / _ParticleMass;
 			p.pos += _TimeStep * p.vel;
+			p.w +=  _Vorticity * _TimeStep * (transferTorque + _NU_EXT) / (_ParticleMass * _Theta);
 		}
 		else
 		{

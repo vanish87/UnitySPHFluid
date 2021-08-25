@@ -52,6 +52,7 @@ namespace FluidSPH3D
 		{
 			Density,
 			Vorticity,
+			VorticityConfinement,
 			Viscosity,
 			Pressure,
 			Integrate,
@@ -123,6 +124,7 @@ namespace FluidSPH3D
 				this.sphData.particleBuffer.CPUData[i].col = 1;
 				this.sphData.particleBuffer.CPUData[i].pos = this.Configure.D.simulationSpace.TRS.MultiplyPoint(rand);
 				this.sphData.particleBuffer.CPUData[i].vel = 0;
+				this.sphData.particleBuffer.CPUData[i].w = 0;
 				this.sphData.particleBuffer.CPUData[i].type = ParticleType.Inactive;
 			}
 			this.sphData.particleBuffer.SetToGPUBuffer(true);

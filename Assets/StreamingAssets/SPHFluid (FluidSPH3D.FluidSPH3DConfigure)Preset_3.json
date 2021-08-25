@@ -37,6 +37,10 @@
     "restDensity": 1000.0,
     "particleMass": 2.0,
     "viscosity": 10.0,
+    "vorticity": 1.0,
+    "nu_t": 1.0,
+    "nu_ext": 0.0,
+    "theta": 1.0,
     "gravity": {
         "x": 0.0,
         "y": -9.800000190734864,

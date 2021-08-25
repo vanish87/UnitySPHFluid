@@ -312,6 +312,7 @@ MonoBehaviour:
       z: 0
     timeStep: 0.005
     particleScale: 0.5
+    addSimulationBoundary: 0
 --- !u!114 &468932072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -340,7 +341,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 0
   emitterGPUData:
-    particlePerEmit: 2560
+    particlePerEmit: 512
   boundaryGPUData:
     boundarySize: 0
   fluidSortedCS: {fileID: 7200000, guid: 549639aea11b573459f719cee082cf9c, type: 3}
@@ -785,6 +786,7 @@ MonoBehaviour:
       z: 0
     timeStep: 0.01
     particleScale: 1
+    addSimulationBoundary: 0
 --- !u!4 &1230081217
 Transform:
   m_ObjectHideFlags: 0

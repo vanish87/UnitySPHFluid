@@ -29,6 +29,8 @@ namespace FluidSPH3D
 			[Shader(Name = "_TimeStep")] public float timeStep = 0.001f;
 
 			[Shader(Name = "_ParticleScale")] public float particleScale = 1f;
+
+			public bool addSimulationBoundary = false;
 		}
 
 		protected void OnDrawGizmos()

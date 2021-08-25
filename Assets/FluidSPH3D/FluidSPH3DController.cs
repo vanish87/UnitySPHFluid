@@ -116,15 +116,17 @@ namespace FluidSPH3D
 		{
 			this.boundaryGPUData.boundaryBuffer.InitBuffer(1024 * 8 * 4, true, true);
 
+			if(this.Configure.D.addSimulationBoundary)
+			{
+				var simSpace = this.Configure.D.simulationSpace;
+				var samples = new List<float3>();
+				samples.AddRange(Sampler.SampleXY(simSpace, 2));
+				samples.AddRange(Sampler.SampleYZ(simSpace, 2));
+				samples.AddRange(Sampler.SampleXZ(simSpace, 2));
+				this.AddSamples(samples);
+			}
+
 			var boundary = this.gameObject.GetComponentsInChildren<IBoundarySampler>();
-			var simSpace = this.Configure.D.simulationSpace;
-
-			var samples = new List<float3>();
-			samples.AddRange(Sampler.SampleXY(simSpace, 2));
-			samples.AddRange(Sampler.SampleYZ(simSpace, 2));
-			samples.AddRange(Sampler.SampleXZ(simSpace, 2));
-			this.AddSamples(samples);
-
 			foreach(var b in boundary)
 			{
 				this.AddSamples(b.Sample());

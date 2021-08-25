@@ -116,20 +116,32 @@ namespace FluidSPH3D
 		{
 			this.boundaryGPUData.boundaryBuffer.InitBuffer(1024 * 8 * 4, true, true);
 
-			var boundary = this.gameObject.GetComponentsInChildren<BoundarySampler>();
+			var boundary = this.gameObject.GetComponentsInChildren<IBoundarySampler>();
+			var simSpace = this.Configure.D.simulationSpace;
+
+			var samples = new List<float3>();
+			samples.AddRange(Sampler.SampleXY(simSpace, 2));
+			samples.AddRange(Sampler.SampleYZ(simSpace, 2));
+			samples.AddRange(Sampler.SampleXZ(simSpace, 2));
+			this.AddSamples(samples);
+
 			foreach(var b in boundary)
 			{
-				var samples = b.Sample(1f/32f);
-				var count = 0;
-				foreach(var p in samples)
-				{
-					this.boundaryGPUData.boundaryBuffer.CPUData[count++] = p;
-				}
-				this.boundaryGPUData.boundarySize = samples.Count;
-
-				this.fluidDispatcher.Dispatch(SPHKernel.AddBoundary, samples.Count);
+				this.AddSamples(b.Sample());
 			}
 
+		}
+
+		protected void AddSamples(List<float3> samples)
+		{
+			var count = 0;
+			foreach (var p in samples)
+			{
+				this.boundaryGPUData.boundaryBuffer.CPUData[count++] = p;
+			}
+			this.boundaryGPUData.boundarySize = samples.Count;
+
+			this.fluidDispatcher.Dispatch(SPHKernel.AddBoundary, samples.Count);
 		}
 
 		protected void Emit()

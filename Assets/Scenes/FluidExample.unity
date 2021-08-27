@@ -148,8 +148,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 372068199}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 1.74}
-  m_LocalScale: {x: 3, y: 4, z: 0.1}
+  m_LocalPosition: {x: 0, y: 1, z: 1.74}
+  m_LocalScale: {x: 3, y: 3, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
   m_RootOrder: 2
@@ -169,7 +169,7 @@ MonoBehaviour:
   plane:
     center:
       x: 0
-      y: 0.5
+      y: 1
       z: 1.74
     rotation:
       value:
@@ -179,7 +179,7 @@ MonoBehaviour:
         w: 1
     scale:
       x: 3
-      y: 4
+      y: 3
       z: 0.1
     displayAxis: 0
     displayText: 0
@@ -359,22 +359,26 @@ MonoBehaviour:
     numOfParticle: 262144
     smoothlen: 0.1
     pressureK:
-      x: 100
+      x: 200
       y: 3
     restDensity: 1000
-    particleMass: 0.8
-    viscosity: 200
+    particleMass: 1
+    viscosity: 800
     vorticity: 1
-    nu_t: 0.5
+    nu_t: 0.6
     nu_ext: 0
-    theta: 20
+    theta: 1
     gravity:
       x: 0
       y: -9.8
       z: 0
     timeStep: 0.005
+    stepIteration: 4
     particleScale: 0.5
-    addSimulationBoundary: 0
+    particleLife:
+      x: 20
+      y: 30
+    addSimulationBoundary: 1
 --- !u!114 &468932072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -402,6 +406,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
+  sphData:
+    deltaTime: 0.001
   emitterGPUData:
     particlePerEmit: 1024
   boundaryGPUData:
@@ -432,13 +438,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 521483101}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.06731874, y: 0, z: 0, w: 0.99773157}
   m_LocalPosition: {x: 0, y: 0, z: 2.5}
   m_LocalScale: {x: 3, y: 5, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 7.72, y: 0, z: 0}
 --- !u!114 &521483103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -458,13 +464,105 @@ MonoBehaviour:
       z: 2.5
     rotation:
       value:
-        x: 0
+        x: 0.06731874
         y: 0
         z: 0
-        w: 1
+        w: 0.99773157
     scale:
       x: 3
       y: 5
+      z: 0.1
+    displayAxis: 0
+    displayText: 0
+    displayBound: 1
+    color: {r: 0, g: 1, b: 1, a: 1}
+--- !u!1 &545423272
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 545423273}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &545423273
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 545423272}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &608634619
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 608634620}
+  - component: {fileID: 608634621}
+  m_Layer: 0
+  m_Name: Floor (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &608634620
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608634619}
+  m_LocalRotation: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
+  m_LocalPosition: {x: -0.562, y: 0.324, z: 2.235}
+  m_LocalScale: {x: 0.5, y: 0.2, z: 0.1}
+  m_Children: []
+  m_Father: {fileID: 1191804042}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 90, y: 90, z: 90}
+--- !u!114 &608634621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608634619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  plane:
+    center:
+      x: -0.562
+      y: 0.324
+      z: 2.235
+    rotation:
+      value:
+        x: 0.70710677
+        y: 0
+        z: 0
+        w: 0.70710677
+    scale:
+      x: 0.5
+      y: 0.2
       z: 0.1
     displayAxis: 0
     displayText: 0
@@ -486,7 +584,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &613812949
 Transform:
   m_ObjectHideFlags: 0
@@ -526,6 +624,68 @@ MonoBehaviour:
         w: 0.27685654
     scale:
       x: 1
+      y: 0.5
+      z: 0.1
+    displayAxis: 0
+    displayText: 0
+    displayBound: 1
+    color: {r: 0, g: 1, b: 1, a: 1}
+--- !u!1 &677958906
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 677958907}
+  - component: {fileID: 677958908}
+  m_Layer: 0
+  m_Name: Floor (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &677958907
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 677958906}
+  m_LocalRotation: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
+  m_LocalPosition: {x: 0.659, y: 0.905, z: 2.14}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.1}
+  m_Children: []
+  m_Father: {fileID: 1191804042}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 90, y: 90, z: 90}
+--- !u!114 &677958908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 677958906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  plane:
+    center:
+      x: 0.659
+      y: 0.905
+      z: 2.14
+    rotation:
+      value:
+        x: 0.70710677
+        y: 0
+        z: 0
+        w: 0.70710677
+    scale:
+      x: 0.5
       y: 0.5
       z: 0.1
     displayAxis: 0
@@ -724,7 +884,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1100891124
 Transform:
   m_ObjectHideFlags: 0
@@ -795,7 +955,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1109521283}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 2.17}
+  m_LocalPosition: {x: 0, y: 2.03, z: 2.17}
   m_LocalScale: {x: 2, y: 0.5, z: 0.2}
   m_Children: []
   m_Father: {fileID: 468932070}
@@ -816,7 +976,7 @@ MonoBehaviour:
   space:
     center:
       x: 0
-      y: 2
+      y: 2.03
       z: 2.17
     rotation:
       value:
@@ -929,6 +1089,8 @@ Transform:
   - {fileID: 1117675062}
   - {fileID: 1434565393}
   - {fileID: 1438899368}
+  - {fileID: 677958907}
+  - {fileID: 608634620}
   m_Father: {fileID: 468932070}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -978,6 +1140,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
+  sphData:
+    deltaTime: 0.001
   emitterGPUData:
     particlePerEmit: 256
   boundaryGPUData:
@@ -1040,7 +1204,11 @@ MonoBehaviour:
       y: -1
       z: 0
     timeStep: 0.01
+    stepIteration: 4
     particleScale: 1
+    particleLife:
+      x: 1
+      y: 20
     addSimulationBoundary: 0
 --- !u!4 &1230081217
 Transform:

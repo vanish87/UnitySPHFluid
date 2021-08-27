@@ -1,0 +1,36 @@
+﻿{
+    "emitters": [
+        {
+            "name": "Emiiter1",
+            "space": {
+                "center": {
+                    "x": -2.440000057220459,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "rotation": {
+                    "value": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0,
+                        "w": 1.0
+                    }
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 0.10000000149011612
+                },
+                "displayAxis": false,
+                "displayText": false,
+                "displayBound": true,
+                "color": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 1.0,
+                    "a": 1.0
+                }
+            }
+        }
+    ]
+}

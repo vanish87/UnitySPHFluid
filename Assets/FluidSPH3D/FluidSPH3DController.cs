@@ -172,6 +172,12 @@ namespace FluidSPH3D
 				this.fluidDispatcher.AddParameter(k, this.boundaryGPUData);
 			}
 
+		}
+		protected void UpdateRuntimeParameter()
+		{
+			this.sphData.deltaTime = Time.deltaTime / this.Configure.D.stepIteration;
+
+			//CFL
 			const float lambda = 0.4f;
 			float h = this.Configure.D.smoothlen;
 			float maxSpeed = this.Configure.D.maxSpeed;
@@ -214,8 +220,7 @@ namespace FluidSPH3D
 		{
 			foreach(var i in Enumerable.Range(0, this.Configure.D.stepIteration))
 			{
-				this.sphData.deltaTime = Time.deltaTime / this.Configure.D.stepIteration;
-
+				this.UpdateRuntimeParameter();
 
 				if (this.mode == RunMode.SortedGrid)
 				{

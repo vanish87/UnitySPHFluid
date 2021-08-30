@@ -46,16 +46,22 @@
         "y": -9.800000190734864,
         "z": 0.0
     },
-    "timeStep": 0.004999999888241291,
+    "timeStep": 0.004000000189989805,
+    "maxSpeed": 10.0,
     "stepIteration": 4,
     "particleScale": 0.5,
     "particleLife": {
         "x": 20.0,
         "y": 40.0
     },
-    "addSimulationBoundary": {
+    "addSimulationSpaceBounds": {
         "x": true,
-        "y": false,
+        "y": true,
         "z": true
+    },
+    "addSimulationBoundaryParticle": {
+        "x": false,
+        "y": false,
+        "z": false
     }
 }

@@ -27,12 +27,14 @@ namespace FluidSPH3D
 			[Shader(Name = "_Theta")] public float theta = 1f;
 			[Shader(Name = "_Gravity")] public float3 gravity = new float3(0, -2, 0);
 			[Shader(Name = "_TimeStep")] public float timeStep = 0.001f;
+			[Shader(Name = "_MaxSpeed")] public float maxSpeed = 1f;
 			public int stepIteration = 4;
 
 			[Shader(Name = "_ParticleScale")] public float particleScale = 1f;
 			[Shader(Name = "_ParticleLife")] public float2 particleLife = new float2(1, 20);
+			[Shader(Name = "_SimulationSpaceBounds")] public bool3 addSimulationSpaceBounds = false;
 
-			public bool3 addSimulationBoundary = false;
+			public bool3 addSimulationBoundaryParticle = false;
 		}
 
 		protected void OnDrawGizmos()

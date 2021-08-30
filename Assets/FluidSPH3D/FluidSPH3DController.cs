@@ -109,9 +109,9 @@ namespace FluidSPH3D
 			var density = 1.0f/16;
 
 			var config = this.Configure.D;
-			if(config.addSimulationBoundary.x) this.AddSamples(Sampler.SampleYZ(config.simulationSpace, 2, density));
-			if(config.addSimulationBoundary.y) this.AddSamples(Sampler.SampleXZ(config.simulationSpace, 2, density));
-			if(config.addSimulationBoundary.z) this.AddSamples(Sampler.SampleXY(config.simulationSpace, 2, density));
+			if(config.addSimulationBoundaryParticle.x) this.AddSamples(Sampler.SampleYZ(config.simulationSpace, 2, density));
+			if(config.addSimulationBoundaryParticle.y) this.AddSamples(Sampler.SampleXZ(config.simulationSpace, 2, density));
+			if(config.addSimulationBoundaryParticle.z) this.AddSamples(Sampler.SampleXY(config.simulationSpace, 2, density));
 
 		
 			foreach(var b in this.BoundaryController.Boundaries)

@@ -24,8 +24,11 @@ float _Viscosity;
 float _Vorticity;
 float3 _Gravity;
 float _TimeStep;
+float _MaxSpeed;
 float _DeltaTime;
 float2 _ParticleLife;
+
+bool3 _SimulationSpaceBounds;
 
 
 float _NU_T;
@@ -341,6 +344,41 @@ void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 	_ParticleCount[P_ID] = count;
 }
 
+#define LIMIT_MIN(space, p, axis, b)\
+if(space.axis && p.pos.axis < b.axis){\
+p.vel.axis = 0; p.pos.axis = b.axis;}
+
+#define LIMIT_MAX(space, p, axis, b)\
+if(space.axis && p.pos.axis > b.axis){\
+p.vel.axis = 0; p.pos.axis = b.axis;}
+
+#define INACTIVE_IF_INVALID(p, gmin, gmax)\
+if(any(p.pos < gmin) || any(p.pos > gmax)) p.type = PT_INACTIVE;
+
+Particle CheckBounds(Particle p)
+{
+	float3 gmin = _GridMin;
+	float3 gmax = _GridMax;
+
+	bool3 space = _SimulationSpaceBounds;
+
+	LIMIT_MIN(space, p, x, gmin)
+	LIMIT_MAX(space, p, x, gmax)
+
+	LIMIT_MIN(space, p, y, gmin)
+	LIMIT_MAX(space, p, y, gmax)
+
+	LIMIT_MIN(space, p, z, gmin)
+	LIMIT_MAX(space, p, z, gmax)
+
+	INACTIVE_IF_INVALID(p, gmin, gmax)
+
+		// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
+		// p.pos.y = gmax.y - _GridSpacing.y;
+	return p;
+}
+
+
 //--------------------------------------------------------------------------------------
 // Integration
 //--------------------------------------------------------------------------------------
@@ -355,56 +393,15 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 		float3 transferTorque = _ParticleForceBuffer[P_ID].transferTorque;
 		float3 velocity = _ParticleVelocityBuffer[P_ID].vel;
 
-		if(p.type == PT_FLUID)
-		{
-			p.vel = velocity + _TimeStep * acceleration / _ParticleMass;
-			p.vel = clamp(p.vel, -5, 5);
-			p.pos += _TimeStep * p.vel;
-			p.w +=  _Vorticity * _TimeStep * (transferTorque + _NU_EXT) / (_ParticleMass * _Theta);
-		}
-		else
-		{
-		}
+		p.vel = velocity + _TimeStep * acceleration / _ParticleMass;
 
-		float3 gmin = _GridMin;
-		float3 gmax = _GridMax;
+		float speed = length(p.vel);
+		if(speed > _MaxSpeed) p.vel = normalize(p.vel) * _MaxSpeed;
 
-		float scale = 0.1f;
-		if (p.pos.x < gmin.x) {
-			p.vel.x = -p.vel.x * scale;
-			p.pos.x = gmin.x;
-		}
-		if (p.pos.x > gmax.x) {
-			p.vel.x = -p.vel.x * scale;
-			p.pos.x = gmax.x;
-		}
-		if (p.pos.y < gmin.y) {
-			p.vel.y = 0;
-			p.pos.y = gmin.y;
-			// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
-			// p.pos.y = gmax.y - _GridSpacing.y;
-		}
-		if (p.pos.y > gmax.y) {
-			p.vel.y = 0;
-			p.pos.y = gmax.y;
-		}
+		p.pos += _TimeStep * p.vel;
+		p.w +=  _Vorticity * _TimeStep * (transferTorque + _NU_EXT) / (_ParticleMass * _Theta);
 
-		if (p.pos.z > gmax.z) {
-			p.vel.z = -p.vel.z * scale;
-			p.pos.z = gmax.z;
-		}
-		if (p.pos.z < gmin.z) {
-			p.vel.z = -p.vel.z * scale;
-			p.pos.z = gmin.z;
-
-			if(p.pos.y < gmin.y + _GridSpacing.y * 5)
-			{
-			// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
-			// p.vel.z = 0;
-			// p.pos.y = gmax.y - _GridSpacing.y;
-			// p.pos.z = gmax.z - _GridSpacing.z * 20;
-			}
-		}
+		p = CheckBounds(p);
 
 		p.life -= _DeltaTime;
 		if(p.life < 0)
@@ -416,6 +413,7 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 	//Rebuild append index buffer
 	if(!IsActive(p))
 	{
+		p = DeactiveParticle(p);
 		_ParticleBufferIndexAppend.Append(P_ID);
 	}
 

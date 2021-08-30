@@ -41,6 +41,12 @@ Particle RandomParticle(int idx, float4x4 localToWorld = IDENTITY)
 	return p;
 }
 
+Particle DeactiveParticle(Particle p)
+{
+	p = (Particle)0;
+	return p;
+}
+
 Particle EmitParticle(int idx, Emitter e)
 {
 	if(!e.enabled) return (Particle)0;

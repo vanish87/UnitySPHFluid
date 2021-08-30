@@ -139,7 +139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &109613724
 Transform:
   m_ObjectHideFlags: 0
@@ -152,7 +152,7 @@ Transform:
   m_LocalScale: {x: 3, y: 1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 90, y: 90, z: 90}
 --- !u!114 &109613725
 MonoBehaviour:
@@ -166,25 +166,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plane:
-    center:
-      x: 0
-      y: 5.5
-      z: 2.14
-    rotation:
-      value:
-        x: 0.70710677
-        y: 0
-        z: 0
-        w: 0.70710677
-    scale:
-      x: 3
-      y: 1
-      z: 0.1
-    displayAxis: 0
-    displayText: 0
-    displayBound: 1
-    color: {r: 0, g: 1, b: 1, a: 1}
+  data:
+    name: 
+    space:
+      center:
+        x: 0
+        y: 5.5
+        z: 2.14
+      rotation:
+        value:
+          x: 0.70710677
+          y: 0
+          z: 0
+          w: 0.70710677
+      scale:
+        x: 3
+        y: 1
+        z: 0.1
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &372068199
 GameObject:
   m_ObjectHideFlags: 0
@@ -201,7 +203,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &372068200
 Transform:
   m_ObjectHideFlags: 0
@@ -209,12 +211,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 372068199}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 2.5, z: 1.74}
   m_LocalScale: {x: 3, y: 6, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
-  m_RootOrder: 2
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &372068201
 MonoBehaviour:
@@ -228,25 +230,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plane:
-    center:
-      x: 0
-      y: 2.5
-      z: 1.74
-    rotation:
-      value:
+  data:
+    name: Wall
+    space:
+      center:
         x: 0
-        y: 0
-        z: 0
-        w: 1
-    scale:
-      x: 3
-      y: 6
-      z: 0.1
-    displayAxis: 0
-    displayText: 0
-    displayBound: 1
-    color: {r: 0, g: 1, b: 1, a: 1}
+        y: 2.5
+        z: 1.74
+      rotation:
+        value:
+          x: -0
+          y: -0
+          z: -0
+          w: 1
+      scale:
+        x: 3
+        y: 6
+        z: 0.1
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &384872006
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,6 +378,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 384872007}
+  - {fileID: 750578337}
   - {fileID: 545423273}
   - {fileID: 1191804042}
   m_Father: {fileID: 0}
@@ -425,9 +430,9 @@ MonoBehaviour:
       y: 3
     restDensity: 1000
     particleMass: 1
-    viscosity: 800
+    viscosity: 1000
     vorticity: 1
-    nu_t: 0.6
+    nu_t: 1
     nu_ext: 0
     theta: 1
     gravity:
@@ -438,9 +443,12 @@ MonoBehaviour:
     stepIteration: 4
     particleScale: 0.5
     particleLife:
-      x: 2
-      y: 10
-    addSimulationBoundary: 0
+      x: 20
+      y: 40
+    addSimulationBoundary:
+      x: 0
+      y: 0
+      z: 1
 --- !u!114 &468932072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -490,7 +498,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &521483102
 Transform:
   m_ObjectHideFlags: 0
@@ -503,7 +511,7 @@ Transform:
   m_LocalScale: {x: 3, y: 5, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 7.72, y: 0, z: 0}
 --- !u!114 &521483103
 MonoBehaviour:
@@ -517,25 +525,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plane:
-    center:
-      x: 0
-      y: 0
-      z: 2.5
-    rotation:
-      value:
-        x: 0.06731874
+  data:
+    name: 
+    space:
+      center:
+        x: 0
         y: 0
-        z: 0
-        w: 0.99773157
-    scale:
-      x: 3
-      y: 5
-      z: 0.1
-    displayAxis: 0
-    displayText: 0
-    displayBound: 1
-    color: {r: 0, g: 1, b: 1, a: 1}
+        z: 2.5
+      rotation:
+        value:
+          x: 0.06731874
+          y: 0
+          z: 0
+          w: 0.99773157
+      scale:
+        x: 3
+        y: 5
+        z: 0.1
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &545423272
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,7 +577,7 @@ Transform:
   m_Children:
   - {fileID: 1109521284}
   m_Father: {fileID: 468932070}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &545423274
 MonoBehaviour:
@@ -595,9 +605,9 @@ MonoBehaviour:
       particlePerEmit: 128
       space:
         center:
-          x: -2.44
-          y: 0
-          z: 0
+          x: -0.73
+          y: 6.25
+          z: 2.25
         rotation:
           value:
             x: 0
@@ -606,20 +616,20 @@ MonoBehaviour:
             w: 1
         scale:
           x: 1
-          y: 1
+          y: 2
           z: 0.1
         displayAxis: 0
         displayText: 0
         displayBound: 1
         color: {r: 0, g: 0, b: 1, a: 1}
     - name: Emiiter2
-      isActive: 0
-      particlePerEmit: 128
+      isActive: 1
+      particlePerEmit: 320
       space:
         center:
-          x: 2.39
-          y: 0
-          z: 0
+          x: -0.46
+          y: 6.77
+          z: 2.25
         rotation:
           value:
             x: 0
@@ -628,7 +638,29 @@ MonoBehaviour:
             w: 1
         scale:
           x: 1
-          y: 1
+          y: 0.05
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 0, g: 0, b: 1, a: 1}
+    - name: Emiiter3
+      isActive: 1
+      particlePerEmit: 384
+      space:
+        center:
+          x: 0.58
+          y: 6.28
+          z: 2.25
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 1
+          y: 0.2
           z: 0.1
         displayAxis: 0
         displayText: 0
@@ -662,7 +694,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &608634620
 Transform:
   m_ObjectHideFlags: 0
@@ -675,7 +707,7 @@ Transform:
   m_LocalScale: {x: 0.5, y: 0.2, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 90, y: 90, z: 90}
 --- !u!114 &608634621
 MonoBehaviour:
@@ -689,25 +721,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plane:
-    center:
-      x: -0.562
-      y: 0.324
-      z: 2.235
-    rotation:
-      value:
-        x: 0.70710677
-        y: 0
-        z: 0
-        w: 0.70710677
-    scale:
-      x: 0.5
-      y: 0.2
-      z: 0.1
-    displayAxis: 0
-    displayText: 0
-    displayBound: 1
-    color: {r: 0, g: 1, b: 1, a: 1}
+  data:
+    name: 
+    space:
+      center:
+        x: -0.562
+        y: 0.324
+        z: 2.235
+      rotation:
+        value:
+          x: 0.70710677
+          y: 0
+          z: 0
+          w: 0.70710677
+      scale:
+        x: 0.5
+        y: 0.2
+        z: 0.1
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &613812948
 GameObject:
   m_ObjectHideFlags: 0
@@ -751,25 +785,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plane:
-    center:
-      x: 0.96
-      y: -0.77
-      z: 2.14
-    rotation:
-      value:
-        x: -0.27685654
-        y: 0.6506539
-        z: -0.6506539
-        w: 0.27685654
-    scale:
-      x: 1
-      y: 0.5
-      z: 0.1
-    displayAxis: 0
-    displayText: 0
-    displayBound: 1
-    color: {r: 0, g: 1, b: 1, a: 1}
+  data:
+    name: 
+    space:
+      center:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+      scale:
+        x: 0
+        y: 0
+        z: 0
+      displayAxis: 1
+      displayText: 1
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &677958906
 GameObject:
   m_ObjectHideFlags: 0
@@ -786,7 +822,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &677958907
 Transform:
   m_ObjectHideFlags: 0
@@ -799,7 +835,7 @@ Transform:
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 90, y: 90, z: 90}
 --- !u!114 &677958908
 MonoBehaviour:
@@ -813,25 +849,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plane:
-    center:
-      x: 0.659
-      y: 0.905
-      z: 2.14
-    rotation:
-      value:
-        x: 0.70710677
-        y: 0
-        z: 0
-        w: 0.70710677
-    scale:
-      x: 0.5
-      y: 0.5
-      z: 0.1
-    displayAxis: 0
-    displayText: 0
-    displayBound: 1
-    color: {r: 0, g: 1, b: 1, a: 1}
+  data:
+    name: 
+    space:
+      center:
+        x: 0.659
+        y: 0.905
+        z: 2.14
+      rotation:
+        value:
+          x: 0.70710677
+          y: 0
+          z: 0
+          w: 0.70710677
+      scale:
+        x: 0.5
+        y: 0.5
+        z: 0.1
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -925,6 +963,131 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &750578336
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 750578337}
+  - component: {fileID: 750578338}
+  - component: {fileID: 750578339}
+  m_Layer: 0
+  m_Name: BoundaryController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &750578337
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 750578336}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 468932070}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &750578338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 750578336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2d5b2a5b26ba84478345f9e9c87eb05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveMode: 1
+  saveType: 1
+  openKey: 0
+  saveKey: 0
+  loadKey: 0
+  preset: 0
+  isSyncing: 0
+  data:
+    boundaries:
+    - name: WallFront
+      space:
+        center:
+          x: 0
+          y: 3.5
+          z: 1.75
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 3
+          y: 8
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 1, g: 0, b: 0, a: 1}
+    - name: WallLeft
+      space:
+        center:
+          x: -1.5
+          y: 2.5
+          z: 2.125
+        rotation:
+          value:
+            x: 0
+            y: 0.7071068
+            z: 0
+            w: 0.7071068
+        scale:
+          x: 0.75
+          y: 10
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 1, g: 0, b: 0, a: 1}
+    - name: WallRight
+      space:
+        center:
+          x: 1.5
+          y: 2.5
+          z: 2.125
+        rotation:
+          value:
+            x: 0
+            y: -0.7071068
+            z: 0
+            w: 0.7071068
+        scale:
+          x: 0.75
+          y: 10
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 1, g: 0, b: 0, a: 1}
+--- !u!114 &750578339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 750578336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4eb010a6b4867047bf9601044ffc6a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1051,25 +1214,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plane:
-    center:
-      x: -0.86
-      y: -0.74
-      z: 2.14
-    rotation:
-      value:
-        x: 0.6506539
-        y: -0.27685654
-        z: -0.27685654
-        w: 0.6506539
-    scale:
-      x: 1
-      y: 0.5
-      z: 0.1
-    displayAxis: 0
-    displayText: 0
-    displayBound: 1
-    color: {r: 0, g: 1, b: 1, a: 1}
+  data:
+    name: 
+    space:
+      center:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+      scale:
+        x: 0
+        y: 0
+        z: 0
+      displayAxis: 1
+      displayText: 1
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1109521283
 GameObject:
   m_ObjectHideFlags: 0
@@ -1086,7 +1251,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1109521284
 Transform:
   m_ObjectHideFlags: 0
@@ -1095,7 +1260,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1109521283}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 5.14, z: 2.17}
+  m_LocalPosition: {x: 0, y: 7, z: 2.25}
   m_LocalScale: {x: 2, y: 0.5, z: 0.2}
   m_Children: []
   m_Father: {fileID: 545423273}
@@ -1120,8 +1285,8 @@ MonoBehaviour:
     space:
       center:
         x: 0
-        y: 5.14
-        z: 2.17
+        y: 7
+        z: 2.25
       rotation:
         value:
           x: -0
@@ -1152,7 +1317,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1117675062
 Transform:
   m_ObjectHideFlags: 0
@@ -1165,7 +1330,7 @@ Transform:
   m_LocalScale: {x: 1, y: 8, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &1117675063
 MonoBehaviour:
@@ -1179,25 +1344,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plane:
-    center:
-      x: 1.424
-      y: 1.5
-      z: 2
-    rotation:
-      value:
-        x: 0
-        y: 0.7071068
-        z: 0
-        w: 0.7071068
-    scale:
-      x: 1
-      y: 8
-      z: 0.1
-    displayAxis: 0
-    displayText: 0
-    displayBound: 1
-    color: {r: 0, g: 1, b: 1, a: 1}
+  data:
+    name: 
+    space:
+      center:
+        x: 1.424
+        y: 1.5
+        z: 2
+      rotation:
+        value:
+          x: 0
+          y: 0.7071068
+          z: 0
+          w: 0.7071068
+      scale:
+        x: 1
+        y: 8
+        z: 0.1
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1191804041
 GameObject:
   m_ObjectHideFlags: 0
@@ -1213,7 +1380,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1191804042
 Transform:
   m_ObjectHideFlags: 0
@@ -1227,7 +1394,6 @@ Transform:
   m_Children:
   - {fileID: 613812949}
   - {fileID: 1100891124}
-  - {fileID: 372068200}
   - {fileID: 521483102}
   - {fileID: 1849580566}
   - {fileID: 1117675062}
@@ -1236,8 +1402,9 @@ Transform:
   - {fileID: 677958907}
   - {fileID: 608634620}
   - {fileID: 109613724}
+  - {fileID: 372068200}
   m_Father: {fileID: 468932070}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1230081213
 GameObject:
@@ -1352,7 +1519,10 @@ MonoBehaviour:
     particleLife:
       x: 1
       y: 20
-    addSimulationBoundary: 0
+    addSimulationBoundary:
+      x: 0
+      y: 0
+      z: 0
 --- !u!4 &1230081217
 Transform:
   m_ObjectHideFlags: 0
@@ -1384,7 +1554,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1434565393
 Transform:
   m_ObjectHideFlags: 0
@@ -1397,7 +1567,7 @@ Transform:
   m_LocalScale: {x: 1, y: 2, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 45, z: 0}
 --- !u!114 &1434565394
 MonoBehaviour:
@@ -1411,25 +1581,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plane:
-    center:
-      x: -0.99
-      y: -1.5
-      z: 1.12
-    rotation:
-      value:
-        x: 0
-        y: 0.38268343
-        z: 0
-        w: 0.92387956
-    scale:
-      x: 1
-      y: 2
-      z: 0.1
-    displayAxis: 0
-    displayText: 0
-    displayBound: 1
-    color: {r: 0, g: 1, b: 1, a: 1}
+  data:
+    name: 
+    space:
+      center:
+        x: -0.99
+        y: -1.5
+        z: 1.12
+      rotation:
+        value:
+          x: 0
+          y: 0.38268343
+          z: 0
+          w: 0.92387956
+      scale:
+        x: 1
+        y: 2
+        z: 0.1
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1438899367
 GameObject:
   m_ObjectHideFlags: 0
@@ -1446,7 +1618,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1438899368
 Transform:
   m_ObjectHideFlags: 0
@@ -1459,7 +1631,7 @@ Transform:
   m_LocalScale: {x: 1, y: 2, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: -45, z: 0}
 --- !u!114 &1438899369
 MonoBehaviour:
@@ -1473,25 +1645,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plane:
-    center:
-      x: 1.11
-      y: -1.5
-      z: 1.1
-    rotation:
-      value:
-        x: 0
-        y: -0.38268343
-        z: 0
-        w: 0.92387956
-    scale:
-      x: 1
-      y: 2
-      z: 0.1
-    displayAxis: 0
-    displayText: 0
-    displayBound: 1
-    color: {r: 0, g: 1, b: 1, a: 1}
+  data:
+    name: 
+    space:
+      center:
+        x: 1.11
+        y: -1.5
+        z: 1.1
+      rotation:
+        value:
+          x: 0
+          y: -0.38268343
+          z: 0
+          w: 0.92387956
+      scale:
+        x: 1
+        y: 2
+        z: 0.1
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1849580565
 GameObject:
   m_ObjectHideFlags: 0
@@ -1508,7 +1682,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1849580566
 Transform:
   m_ObjectHideFlags: 0
@@ -1521,7 +1695,7 @@ Transform:
   m_LocalScale: {x: 1, y: 8, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &1849580567
 MonoBehaviour:
@@ -1535,25 +1709,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plane:
-    center:
-      x: -1.307
-      y: 1.5
-      z: 2
-    rotation:
-      value:
-        x: 0
-        y: 0.7071068
-        z: 0
-        w: 0.7071068
-    scale:
-      x: 1
-      y: 8
-      z: 0.1
-    displayAxis: 0
-    displayText: 0
-    displayBound: 1
-    color: {r: 0, g: 1, b: 1, a: 1}
+  data:
+    name: 
+    space:
+      center:
+        x: -1.307
+        y: 1.5
+        z: 2
+      rotation:
+        value:
+          x: 0
+          y: 0.7071068
+          z: 0
+          w: 0.7071068
+      scale:
+        x: 1
+        y: 8
+        z: 0.1
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1999563368
 GameObject:
   m_ObjectHideFlags: 0

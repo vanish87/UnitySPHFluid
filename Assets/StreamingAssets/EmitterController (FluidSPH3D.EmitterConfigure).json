@@ -6,9 +6,9 @@
             "particlePerEmit": 128,
             "space": {
                 "center": {
-                    "x": -2.440000057220459,
-                    "y": 0.0,
-                    "z": 0.0
+                    "x": -0.7300000190734863,
+                    "y": 6.25,
+                    "z": 2.25
                 },
                 "rotation": {
                     "value": {
@@ -20,7 +20,7 @@
                 },
                 "scale": {
                     "x": 1.0,
-                    "y": 1.0,
+                    "y": 2.0,
                     "z": 0.10000000149011612
                 },
                 "displayAxis": false,
@@ -36,13 +36,13 @@
         },
         {
             "name": "Emiiter2",
-            "isActive": false,
-            "particlePerEmit": 128,
+            "isActive": true,
+            "particlePerEmit": 240,
             "space": {
                 "center": {
-                    "x": 2.390000104904175,
-                    "y": 0.0,
-                    "z": 0.0
+                    "x": -0.46000000834465029,
+                    "y": 6.769999980926514,
+                    "z": 2.25
                 },
                 "rotation": {
                     "value": {
@@ -54,7 +54,41 @@
                 },
                 "scale": {
                     "x": 1.0,
-                    "y": 1.0,
+                    "y": 0.05000000074505806,
+                    "z": 0.10000000149011612
+                },
+                "displayAxis": false,
+                "displayText": false,
+                "displayBound": true,
+                "color": {
+                    "r": 0.0,
+                    "g": 0.0,
+                    "b": 1.0,
+                    "a": 1.0
+                }
+            }
+        },
+        {
+            "name": "Emiiter3",
+            "isActive": true,
+            "particlePerEmit": 320,
+            "space": {
+                "center": {
+                    "x": 0.5799999833106995,
+                    "y": 6.28000020980835,
+                    "z": 2.25
+                },
+                "rotation": {
+                    "value": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0,
+                        "w": 1.0
+                    }
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 0.20000000298023225,
                     "z": 0.10000000149011612
                 },
                 "displayAxis": false,

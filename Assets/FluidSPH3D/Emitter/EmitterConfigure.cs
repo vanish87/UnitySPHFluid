@@ -25,7 +25,7 @@ namespace FluidSPH3D
 
         public void OnDrawGizmos()
         {
-			foreach (var e in this.D.emitters) e.space?.OnDrawGizmos();
+			foreach (var e in this.D.emitters) if (e.isActive) e.space?.OnDrawGizmos();
         }
 	}
 }

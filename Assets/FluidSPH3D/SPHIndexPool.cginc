@@ -67,15 +67,16 @@ void InitIndexPool(uint3 DTid : SV_DispatchThreadID)
 void Emit(uint3 EmitterID : SV_GroupID, uint ParticleID : SV_GroupIndex)
 {
 	int eid = EmitterID.x;
-	int pid = ParticleID;
-
 	Emitter e = _EmitterBuffer[eid];
+
+	int pid = ParticleID;
+	int total = e.particlePerEmit;
 	if(e.enabled)
 	{
-		int iter = ceil(e.particlePerEmit * 1.0f / MAX_PARTICLE_PER_EMITTER);
+		int iter = ceil(total * 1.0f / MAX_PARTICLE_PER_EMITTER);
 		for(int i = 0; i < iter; ++i)
 		{
-			if((pid + i * MAX_PARTICLE_PER_EMITTER)< e.particlePerEmit)
+			if((pid + i * MAX_PARTICLE_PER_EMITTER)< total)
 			{
 				const int P_ID = _ParticleBufferIndexConsume.Consume();
 				_ParticleBuffer[P_ID] = EmitParticle(P_ID, e);

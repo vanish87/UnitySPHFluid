@@ -123,6 +123,68 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &109613723
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 109613724}
+  - component: {fileID: 109613725}
+  m_Layer: 0
+  m_Name: Floor (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &109613724
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 109613723}
+  m_LocalRotation: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
+  m_LocalPosition: {x: 0, y: 5.5, z: 2.14}
+  m_LocalScale: {x: 3, y: 1, z: 0.1}
+  m_Children: []
+  m_Father: {fileID: 1191804042}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 90, y: 90, z: 90}
+--- !u!114 &109613725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 109613723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b591e0f0bdab04eac6464b25215ddd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  plane:
+    center:
+      x: 0
+      y: 5.5
+      z: 2.14
+    rotation:
+      value:
+        x: 0.70710677
+        y: 0
+        z: 0
+        w: 0.70710677
+    scale:
+      x: 3
+      y: 1
+      z: 0.1
+    displayAxis: 0
+    displayText: 0
+    displayBound: 1
+    color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &372068199
 GameObject:
   m_ObjectHideFlags: 0
@@ -148,8 +210,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 372068199}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 1.74}
-  m_LocalScale: {x: 3, y: 3, z: 0.1}
+  m_LocalPosition: {x: 0, y: 2.5, z: 1.74}
+  m_LocalScale: {x: 3, y: 6, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
   m_RootOrder: 2
@@ -169,7 +231,7 @@ MonoBehaviour:
   plane:
     center:
       x: 0
-      y: 1
+      y: 2.5
       z: 1.74
     rotation:
       value:
@@ -179,7 +241,7 @@ MonoBehaviour:
         w: 1
     scale:
       x: 3
-      y: 3
+      y: 6
       z: 0.1
     displayAxis: 0
     displayText: 0
@@ -313,7 +375,6 @@ Transform:
   m_Children:
   - {fileID: 384872007}
   - {fileID: 545423273}
-  - {fileID: 1109521284}
   - {fileID: 1191804042}
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -341,7 +402,7 @@ MonoBehaviour:
     simulationSpace:
       center:
         x: 0
-        y: 0
+        y: 2.5
         z: 0
       rotation:
         value:
@@ -351,7 +412,7 @@ MonoBehaviour:
           w: 1
       scale:
         x: 8
-        y: 5
+        y: 10
         z: 5
       displayAxis: 0
       displayText: 0
@@ -503,7 +564,8 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1109521284}
   m_Father: {fileID: 468932070}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -529,9 +591,33 @@ MonoBehaviour:
   data:
     emitters:
     - name: Emiiter1
+      isActive: 0
+      particlePerEmit: 128
       space:
         center:
           x: -2.44
+          y: 0
+          z: 0
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 1
+          y: 1
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 0, g: 0, b: 1, a: 1}
+    - name: Emiiter2
+      isActive: 0
+      particlePerEmit: 128
+      space:
+        center:
+          x: 2.39
           y: 0
           z: 0
         rotation:
@@ -1000,7 +1086,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1109521284
 Transform:
   m_ObjectHideFlags: 0
@@ -1008,12 +1094,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1109521283}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.03, z: 2.17}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 5.14, z: 2.17}
   m_LocalScale: {x: 2, y: 0.5, z: 0.2}
   m_Children: []
-  m_Father: {fileID: 468932070}
-  m_RootOrder: 2
+  m_Father: {fileID: 545423273}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1109521285
 MonoBehaviour:
@@ -1027,6 +1113,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2b9373f810da964f85488fede67e450, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  data:
+    name: GameEmitter
+    isActive: 1
+    particlePerEmit: 1024
+    space:
+      center:
+        x: 0
+        y: 5.14
+        z: 2.17
+      rotation:
+        value:
+          x: -0
+          y: -0
+          z: -0
+          w: 1
+      scale:
+        x: 2
+        y: 0.5
+        z: 0.2
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1117675061
 GameObject:
   m_ObjectHideFlags: 0
@@ -1052,8 +1161,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1117675061}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 1.424, y: 0, z: 2}
-  m_LocalScale: {x: 1, y: 5, z: 0.1}
+  m_LocalPosition: {x: 1.424, y: 1.5, z: 2}
+  m_LocalScale: {x: 1, y: 8, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
   m_RootOrder: 5
@@ -1073,7 +1182,7 @@ MonoBehaviour:
   plane:
     center:
       x: 1.424
-      y: 0
+      y: 1.5
       z: 2
     rotation:
       value:
@@ -1083,7 +1192,7 @@ MonoBehaviour:
         w: 0.7071068
     scale:
       x: 1
-      y: 5
+      y: 8
       z: 0.1
     displayAxis: 0
     displayText: 0
@@ -1104,7 +1213,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1191804042
 Transform:
   m_ObjectHideFlags: 0
@@ -1126,8 +1235,9 @@ Transform:
   - {fileID: 1438899368}
   - {fileID: 677958907}
   - {fileID: 608634620}
+  - {fileID: 109613724}
   m_Father: {fileID: 468932070}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1230081213
 GameObject:
@@ -1407,8 +1517,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1849580565}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -1.307, y: 0, z: 2}
-  m_LocalScale: {x: 1, y: 5, z: 0.1}
+  m_LocalPosition: {x: -1.307, y: 1.5, z: 2}
+  m_LocalScale: {x: 1, y: 8, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1191804042}
   m_RootOrder: 4
@@ -1428,7 +1538,7 @@ MonoBehaviour:
   plane:
     center:
       x: -1.307
-      y: 0
+      y: 1.5
       z: 2
     rotation:
       value:
@@ -1438,7 +1548,7 @@ MonoBehaviour:
         w: 0.7071068
     scale:
       x: 1
-      y: 5
+      y: 8
       z: 0.1
     displayAxis: 0
     displayText: 0

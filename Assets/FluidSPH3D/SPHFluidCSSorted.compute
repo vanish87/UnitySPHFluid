@@ -349,7 +349,7 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
 
 	Particle p = _ParticleBufferSorted[P_ID];
-	if(IsActive(p))
+	if(IsFluid(p))
 	{
 		float3 acceleration = _ParticleForceBuffer[P_ID].force;
 		float3 transferTorque = _ParticleForceBuffer[P_ID].transferTorque;
@@ -418,7 +418,7 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 	{
 		_ParticleBufferIndexAppend.Append(P_ID);
 	}
-	
+
 	// Update
 	_ParticleBuffer[P_ID] = p;
 }

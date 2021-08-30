@@ -48,7 +48,7 @@ namespace FluidSPH3D
 		}
 		protected void OnDrawGizmos()
 		{
-			(this.data.space as Space3D)?.OnDrawGizmos();
+			if (this.data.isActive) (this.data.space as Space3D)?.OnDrawGizmos();
 		}
 	}
 

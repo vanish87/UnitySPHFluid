@@ -96,7 +96,6 @@ void AddBoundary(uint3 DTid : SV_DispatchThreadID)
 	const uint P_ID = _ParticleBufferIndexConsume.Consume();
 
 	Particle p = _ParticleBuffer[P_ID];
-	if(IsActive(p)) return;
 
 	p.type = PT_BOUNDARY;
 	p.pos = _BoundaryBuffer[pid];

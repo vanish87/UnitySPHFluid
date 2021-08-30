@@ -4,6 +4,26 @@ using UnityEngine;
 
 namespace FluidSPH3D
 {
+    [CustomEditor(typeof(BoundaryConfigure))]
+    public class BoundaryConfigureEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            var configure = target as BoundaryConfigure;
+            if (configure == null) return;
+
+            if (GUILayout.Button("Save"))
+            {
+                configure.Save();
+            }
+            if (GUILayout.Button("Load"))
+            {
+                configure.Load();
+                configure.NotifyChange();
+            }
+            base.OnInspectorGUI();
+        }
+    }
     [CustomEditor(typeof(EmitterConfigure))]
     public class EmitterConfigureEditor : Editor
     {

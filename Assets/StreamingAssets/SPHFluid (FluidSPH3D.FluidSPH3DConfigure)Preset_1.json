@@ -2,7 +2,7 @@
     "simulationSpace": {
         "center": {
             "x": 0.0,
-            "y": 0.0,
+            "y": 2.5,
             "z": 0.0
         },
         "rotation": {
@@ -15,7 +15,7 @@
         },
         "scale": {
             "x": 8.0,
-            "y": 5.0,
+            "y": 10.0,
             "z": 5.0
         },
         "displayAxis": false,
@@ -51,7 +51,7 @@
     "particleScale": 0.5,
     "particleLife": {
         "x": 20.0,
-        "y": 30.0
+        "y": 40.0
     },
-    "addSimulationBoundary": true
+    "addSimulationBoundary": false
 }

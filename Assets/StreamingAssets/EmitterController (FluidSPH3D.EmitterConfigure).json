@@ -2,8 +2,8 @@
     "emitters": [
         {
             "name": "Emiiter1",
-            "isActive": true,
-            "particlePerEmit": 512,
+            "isActive": false,
+            "particlePerEmit": 128,
             "space": {
                 "center": {
                     "x": -2.440000057220459,
@@ -36,8 +36,8 @@
         },
         {
             "name": "Emiiter2",
-            "isActive": true,
-            "particlePerEmit": 8,
+            "isActive": false,
+            "particlePerEmit": 128,
             "space": {
                 "center": {
                     "x": 2.390000104904175,

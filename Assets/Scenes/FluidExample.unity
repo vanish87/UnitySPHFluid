@@ -439,14 +439,15 @@ MonoBehaviour:
       x: 0
       y: -9.8
       z: 0
-    timeStep: 0.005
+    timeStep: 0.040000003
+    maxSpeed: 10
     stepIteration: 4
     particleScale: 0.5
     particleLife:
       x: 20
       y: 40
     addSimulationSpaceBounds:
-      x: 0
+      x: 1
       y: 1
       z: 1
     addSimulationBoundaryParticle:
@@ -1518,6 +1519,7 @@ MonoBehaviour:
       y: -1
       z: 0
     timeStep: 0.01
+    maxSpeed: 1
     stepIteration: 4
     particleScale: 1
     particleLife:

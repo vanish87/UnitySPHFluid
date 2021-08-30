@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityTools;
+using UnityTools.Attributes;
 using UnityTools.Common;
 
 namespace FluidSPH3D
@@ -26,7 +27,7 @@ namespace FluidSPH3D
 			[Shader(Name = "_NU_EXT")] public float nu_ext = 0f;
 			[Shader(Name = "_Theta")] public float theta = 1f;
 			[Shader(Name = "_Gravity")] public float3 gravity = new float3(0, -2, 0);
-			[Shader(Name = "_TimeStep")] public float timeStep = 0.001f;
+			[Shader(Name = "_TimeStep"), DisableEdit] public float timeStep = 0.001f;
 			[Shader(Name = "_MaxSpeed")] public float maxSpeed = 1f;
 			public int stepIteration = 4;
 

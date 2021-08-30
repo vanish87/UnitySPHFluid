@@ -67,6 +67,8 @@ namespace FluidSPH3D
 		protected SPHGrid sphGrid;
 		protected EmitterController EmitterController => this.emitterController ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<EmitterController>();
 		protected EmitterController emitterController;
+		protected BoundaryController BoundaryController => this.boundaryController ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<BoundaryController>();
+		protected BoundaryController boundaryController;
 		protected ComputeShaderDispatcher<SPHKernel> fluidDispatcher;
 
 		protected void Init()
@@ -74,9 +76,11 @@ namespace FluidSPH3D
 			this.Configure.Initialize();
 			this.InitSPH();
 			this.InitParticle();
-
 			this.InitIndexPool();
-			this.InitBoundary();
+
+			this.BoundaryController.Init();
+			this.EmitterController.Init();
+			this.AddBoundary();
 		}
 		protected void InitParticle()
 		{
@@ -99,26 +103,21 @@ namespace FluidSPH3D
 			this.fluidDispatcher.Dispatch(SPHKernel.InitIndexPool, this.Configure.D.numOfParticle);
 		}
 
-		protected void InitBoundary()
+		protected void AddBoundary()
 		{
-			this.boundaryGPUData.boundaryBuffer.InitBuffer(1024 * 32, true, true);
-
+			this.boundaryGPUData.boundaryBuffer.InitBuffer(1024 * 32 * 2, true, true);
 			var density = 1.0f/16;
 
-			if(this.Configure.D.addSimulationBoundary)
-			{
-				var simSpace = this.Configure.D.simulationSpace;
-				this.AddSamples(Sampler.SampleXY(simSpace, 2, density));
-				this.AddSamples(Sampler.SampleYZ(simSpace, 2, density));
-				// this.AddSamples(Sampler.SampleXZ(simSpace, 2, density));
-			}
+			var config = this.Configure.D;
+			if(config.addSimulationBoundary.x) this.AddSamples(Sampler.SampleYZ(config.simulationSpace, 2, density));
+			if(config.addSimulationBoundary.y) this.AddSamples(Sampler.SampleXZ(config.simulationSpace, 2, density));
+			if(config.addSimulationBoundary.z) this.AddSamples(Sampler.SampleXY(config.simulationSpace, 2, density));
 
-			var boundary = this.gameObject.GetComponentsInChildren<IBoundarySampler>();
-			foreach(var b in boundary)
+		
+			foreach(var b in this.BoundaryController.Boundaries)
 			{
 				this.AddSamples(b.Sample(density));
 			}
-
 		}
 
 		protected void AddSamples(List<float3> samples)
@@ -136,8 +135,8 @@ namespace FluidSPH3D
 
 		protected void Emit()
 		{
-			var ec  = this.emitterController.EmitterGPUData;
-			var num = this.emitterController.CurrentParticleEmit;
+			var ec  = this.EmitterController.EmitterGPUData;
+			var num = this.EmitterController.CurrentParticleEmit;
 			var poolNum = this.sphData.particleBufferIndexConsume.GetCounter();
 			if(poolNum < num)
 			{
@@ -193,6 +192,9 @@ namespace FluidSPH3D
 		{
 			this.sphData?.Release();
 			this.boundaryGPUData?.Release();
+
+			this.BoundaryController.Deinit();
+			this.emitterController.Deinit();
 		}
 		protected void OnEnable()
 		{
@@ -209,6 +211,7 @@ namespace FluidSPH3D
 			{
 				this.sphData.deltaTime = Time.deltaTime / this.Configure.D.stepIteration;
 
+
 				if (this.mode == RunMode.SortedGrid)
 				{
 					GPUBufferVariable<Particle> sorted;
@@ -224,10 +227,10 @@ namespace FluidSPH3D
 				this.InitParticle();
 
 				this.InitIndexPool();
-				this.InitBoundary();
+				this.AddBoundary();
 			}
-			if (Input.GetKey(KeyCode.E)) this.Emit();
-			// this.Emit();
+			this.Emit();
+			// if (Input.GetKey(KeyCode.E)) this.Emit();
 
 			if(Input.GetKeyDown(KeyCode.V))
 			{

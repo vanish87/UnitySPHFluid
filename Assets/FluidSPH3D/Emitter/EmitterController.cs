@@ -21,7 +21,7 @@ namespace FluidSPH3D
 		protected List<IEmitter> emitters = new List<IEmitter>();
 		protected EmitterContainer emitterContainer = new EmitterContainer();
 
-		protected void Init()
+		public void Init()
 		{
             this.emitters.Clear();
             this.emitters.AddRange(this.gameObject.GetComponentsInChildren<IEmitter>());
@@ -39,7 +39,7 @@ namespace FluidSPH3D
 
             this.emitterContainer.emitterBuffer.InitBuffer(MAX_NUM_EMITTER, true, true);
 		}
-		protected void Deinit()
+		public void Deinit()
 		{
 			this.emitterContainer?.Release();
 		}
@@ -50,7 +50,7 @@ namespace FluidSPH3D
 			foreach (var e in this.emitters)
 			{
 				eCPU[ecount].enabled = e.IsActive;
-				eCPU[ecount].particlePerEmit = e.particlePerEmit;
+				eCPU[ecount].particlePerEmit = Mathf.CeilToInt(e.particlePerEmit * UnityEngine.Random.value);
 				eCPU[ecount].localToWorld = e.Space.TRS;
 				ecount++;
 			}
@@ -60,14 +60,13 @@ namespace FluidSPH3D
 		{
 			this.UpdateEmitterData();
 		}
-
 		protected void OnEnable()
 		{
-			this.Init();
+			// this.Init();
 		}
 		protected void OnDisable()
 		{
-			this.Deinit();
+			// this.Deinit();
 		}
 	}
 }

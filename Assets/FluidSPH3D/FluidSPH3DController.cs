@@ -171,6 +171,11 @@ namespace FluidSPH3D
 				this.fluidDispatcher.AddParameter(k, this.EmitterController.EmitterGPUData);
 				this.fluidDispatcher.AddParameter(k, this.boundaryGPUData);
 			}
+
+			const float lambda = 0.4f;
+			float h = this.Configure.D.smoothlen;
+			float maxSpeed = this.Configure.D.maxSpeed;
+			this.Configure.D.timeStep = lambda * (h / maxSpeed);
 		}
 		protected void SPHStep()
 		{

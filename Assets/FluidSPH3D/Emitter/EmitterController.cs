@@ -12,10 +12,9 @@ namespace FluidSPH3D
         public class EmitterContainer : GPUContainer
         {
 			[Shader(Name = "_EmitterBuffer")] public GPUBufferVariable<EmitterGPUData> emitterBuffer = new GPUBufferVariable<EmitterGPUData>();
-			[Shader(Name = "_MaxParticlePerEmitter")] public int maxParticlePerEmitter = 1024;
         }
         public EmitterContainer EmitterGPUData => this.emitterContainer;
-		public int ActiveEmitterNum => this.emitters.Count(e => e.enabled);
+		public int CurrentParticleEmit => this.emitters.Sum(e => e.particlePerEmit);
 		protected const int MAX_NUM_EMITTER = 128;
 		protected EmitterConfigure configure;
 		protected EmitterConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<EmitterConfigure>();
@@ -25,6 +24,7 @@ namespace FluidSPH3D
 		protected void Init()
 		{
             this.emitters.Clear();
+            this.emitters.AddRange(this.gameObject.GetComponentsInChildren<IEmitter>());
 
 			this.Configure.Initialize();
 			foreach (var ec in this.Configure.D.emitters)
@@ -32,7 +32,7 @@ namespace FluidSPH3D
 				var go = new GameObject(ec.name);
 				go.transform.parent = this.gameObject.transform;
 				var e = go.AddComponent<Emitter>();
-				e.Space = ec.space;
+                e.Init(ec);
 
                 this.emitters.Add(e);
 			}
@@ -49,7 +49,8 @@ namespace FluidSPH3D
 			var eCPU = this.emitterContainer.emitterBuffer.CPUData;
 			foreach (var e in this.emitters)
 			{
-				eCPU[ecount].enabled = true;
+				eCPU[ecount].enabled = e.IsActive;
+				eCPU[ecount].particlePerEmit = e.particlePerEmit;
 				eCPU[ecount].localToWorld = e.Space.TRS;
 				ecount++;
 			}

@@ -18,6 +18,8 @@ namespace FluidSPH3D
         public class EData
         {
             public string name;
+            public bool isActive;
+            public int particlePerEmit = 8;
             public Space3D space = new Space3D();
         }
 

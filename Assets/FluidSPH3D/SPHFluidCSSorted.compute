@@ -409,14 +409,16 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 		p.life -= _DeltaTime;
 		if(p.life < 0)
 		{
-			// p = ReEmitParticle(p, P_ID);
 			p.type = PT_INACTIVE;
 		}
 	}
+
+	//Rebuild append index buffer
 	if(!IsActive(p))
 	{
 		_ParticleBufferIndexAppend.Append(P_ID);
 	}
+	
 	// Update
 	_ParticleBuffer[P_ID] = p;
 }

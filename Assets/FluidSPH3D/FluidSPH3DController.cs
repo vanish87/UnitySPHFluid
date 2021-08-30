@@ -136,14 +136,14 @@ namespace FluidSPH3D
 		protected void Emit()
 		{
 			var ec  = this.emitterController.EmitterGPUData;
-			var num = ec.maxParticlePerEmitter * this.emitterController.ActiveEmitterNum;
+			var num = this.emitterController.CurrentParticleEmit;
 			var poolNum = this.sphData.particleBufferIndexConsume.GetCounter();
 			if(poolNum < num)
 			{
 				LogTool.Log("pool particle " + poolNum + " not enough to emit " + num, LogLevel.Warning);
 				return;
 			}
-			this.fluidDispatcher.Dispatch(SPHKernel.Emit, ec.emitterBuffer.Size);
+			this.fluidDispatcher.DispatchNoneTthread(SPHKernel.Emit, ec.emitterBuffer.Size);
 		}
 
 		protected void InitSPH()

@@ -7,6 +7,8 @@ AppendStructuredBuffer<uint> _ParticleBufferIndexAppend;
 ConsumeStructuredBuffer<uint> _ParticleBufferIndexConsume;
 int _ParticleBufferIndexConsumeCount;
 
+const static float4x4 IDENTITY = float4x4 (1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+
 
 float wang_hash01(uint seed)
 {
@@ -25,40 +27,29 @@ float3 GenerateRandomPos01(int idx)
 	return float3(wang_hash01(idx + offset.x), wang_hash01(idx + offset.y), wang_hash01(idx + offset.z));
 }
 
-Particle EmitParticle(Particle p, int idx, Emitter e)
+Particle RandomParticle(int idx, float4x4 localToWorld = IDENTITY)
 {
-	if(!e.enabled) return p;
-
+	Particle p = (Particle)0;
 	float4 pos = float4(GenerateRandomPos01(idx) - 0.5f, 1);
-	pos = mul(e.localToWorld, pos);
+	pos = mul(localToWorld, pos);
 	pos /= pos.w;
 
-	// p = (Particle)0;
-	p.type = PT_FLUID;
+	p.type = PT_INACTIVE;
 	p.pos = pos.xyz;
-	p.life = lerp(_ParticleLife.x, _ParticleLife.y, wang_hash01(idx));
+	p.col = 1;
 
 	return p;
 }
 
-Particle ReEmitParticle(Particle p, int idx)
+Particle EmitParticle(int idx, Emitter e)
 {
-	int ecount = 0;
-	for(int eid = 0; eid < _EmitterBufferCount; ++eid)
-	{
-		Emitter emi = _EmitterBuffer[eid];
-		if(emi.enabled)
-		{
-		}
-		ecount++;
-	}
+	if(!e.enabled) return (Particle)0;
 
-	int rand = ecount>0?1:0;
-	Emitter e = _EmitterBuffer[rand];
-
-	return EmitParticle(p, idx, e);
+	Particle p = RandomParticle(idx, e.localToWorld);
+	p.type = PT_FLUID;
+	p.life = lerp(_ParticleLife.x, _ParticleLife.y, wang_hash01(idx));
+	return p;
 }
-
 
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void InitIndexPool(uint3 DTid : SV_DispatchThreadID)
@@ -72,18 +63,25 @@ void InitIndexPool(uint3 DTid : SV_DispatchThreadID)
 	_ParticleBufferIndexAppend.Append(P_ID);
 }
 
-[numthreads(1024, 1, 1)]
-void Emit(uint3 EmitterID : SV_GroupID)
+[numthreads(MAX_PARTICLE_PER_EMITTER, 1, 1)]
+void Emit(uint3 EmitterID : SV_GroupID, uint ParticleID : SV_GroupIndex)
 {
 	int eid = EmitterID.x;
-	if(eid >= _EmitterBufferCount) return;
+	int pid = ParticleID;
 
 	Emitter e = _EmitterBuffer[eid];
 	if(e.enabled)
 	{
-		const int P_ID = _ParticleBufferIndexConsume.Consume();
-		Particle p = _ParticleBuffer[P_ID];
-		_ParticleBuffer[P_ID] = EmitParticle(p, P_ID, e);;
+		int iter = ceil(e.particlePerEmit * 1.0f / MAX_PARTICLE_PER_EMITTER);
+		for(int i = 0; i < iter; ++i)
+		{
+			if((pid + i * MAX_PARTICLE_PER_EMITTER)< e.particlePerEmit)
+			{
+				const int P_ID = _ParticleBufferIndexConsume.Consume();
+				_ParticleBuffer[P_ID] = EmitParticle(P_ID, e);
+			}
+
+		}
 	}
 }
 

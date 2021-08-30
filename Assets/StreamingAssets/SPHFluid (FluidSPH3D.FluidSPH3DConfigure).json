@@ -2,7 +2,7 @@
     "simulationSpace": {
         "center": {
             "x": 0.0,
-            "y": 0.0,
+            "y": 2.5,
             "z": 0.0
         },
         "rotation": {
@@ -14,9 +14,9 @@
             }
         },
         "scale": {
-            "x": 2.0,
-            "y": 4.0,
-            "z": 0.4000000059604645
+            "x": 8.0,
+            "y": 10.0,
+            "z": 5.0
         },
         "displayAxis": false,
         "displayText": false,
@@ -28,17 +28,17 @@
             "a": 1.0
         }
     },
-    "numOfParticle": 65536,
-    "smoothlen": 0.05000000074505806,
+    "numOfParticle": 262144,
+    "smoothlen": 0.10000000149011612,
     "pressureK": {
-        "x": 0.05000000074505806,
+        "x": 200.0,
         "y": 3.0
     },
     "restDensity": 1000.0,
-    "particleMass": 2.0,
-    "viscosity": 100.0,
+    "particleMass": 1.0,
+    "viscosity": 1000.0,
     "vorticity": 1.0,
-    "nu_t": 0.10000000149011612,
+    "nu_t": 1.0,
     "nu_ext": 0.0,
     "theta": 1.0,
     "gravity": {
@@ -46,12 +46,22 @@
         "y": -9.800000190734864,
         "z": 0.0
     },
-    "timeStep": 0.003000000026077032,
+    "timeStep": 0.004000000189989805,
+    "maxSpeed": 10.0,
     "stepIteration": 4,
-    "particleScale": 1.0,
+    "particleScale": 0.5,
     "particleLife": {
-        "x": 1.0,
-        "y": 20.0
+        "x": 20.0,
+        "y": 40.0
     },
-    "addSimulationBoundary": false
+    "addSimulationSpaceBounds": {
+        "x": true,
+        "y": true,
+        "z": true
+    },
+    "addSimulationBoundaryParticle": {
+        "x": false,
+        "y": false,
+        "z": false
+    }
 }

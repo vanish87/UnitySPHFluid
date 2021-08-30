@@ -272,7 +272,7 @@ MonoBehaviour:
   openKey: 0
   saveKey: 0
   loadKey: 0
-  preset: 1
+  preset: 0
   isSyncing: 0
   data:
     simulationSpace:
@@ -322,9 +322,9 @@ MonoBehaviour:
       y: 1
       z: 1
     addSimulationBoundaryParticle:
-      x: 0
-      y: 0
-      z: 0
+      x: 1
+      y: 1
+      z: 1
 --- !u!114 &468932072
 MonoBehaviour:
   m_ObjectHideFlags: 0

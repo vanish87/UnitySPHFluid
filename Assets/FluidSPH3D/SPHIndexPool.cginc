@@ -18,42 +18,72 @@ float wang_hash01(uint seed)
 	return float(seed) / 4294967295.0; // 2^32-1
 }
 
+float3 GenerateRandomPos01(int idx)
+{
+	uint t = (uint)fmod(_Time * 8, 65535.0);
+	int3 offset = int3(0, 173, 839) + t;
+	return float3(wang_hash01(idx + offset.x), wang_hash01(idx + offset.y), wang_hash01(idx + offset.z));
+}
+
+Particle EmitParticle(Particle p, int idx, Emitter e)
+{
+	if(!e.enabled) return p;
+
+	float4 pos = float4(GenerateRandomPos01(idx) - 0.5f, 1);
+	pos = mul(e.localToWorld, pos);
+	pos /= pos.w;
+
+	// p = (Particle)0;
+	p.type = PT_FLUID;
+	p.pos = pos.xyz;
+	p.life = lerp(_ParticleLife.x, _ParticleLife.y, wang_hash01(idx));
+
+	return p;
+}
+
+Particle ReEmitParticle(Particle p, int idx)
+{
+	int ecount = 0;
+	for(int eid = 0; eid < _EmitterBufferCount; ++eid)
+	{
+		Emitter emi = _EmitterBuffer[eid];
+		if(emi.enabled)
+		{
+		}
+		ecount++;
+	}
+
+	int rand = ecount>0?1:0;
+	Emitter e = _EmitterBuffer[rand];
+
+	return EmitParticle(p, idx, e);
+}
+
+
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void InitIndexPool(uint3 DTid : SV_DispatchThreadID)
 {
 	RETURN_IF_INVALID(DTid);
 
 	const uint P_ID = DTid.x;
-	_ParticleBuffer[P_ID].type = PT_INACTIVE;
+	Particle p = _ParticleBuffer[P_ID];
+	p.type = PT_INACTIVE;
+	_ParticleBuffer[P_ID] = p;
 	_ParticleBufferIndexAppend.Append(P_ID);
 }
 
-[numthreads(1, THREAD_PER_EMITTER, 1)]
-void Emit(uint3 DTid : SV_DispatchThreadID)
+[numthreads(1024, 1, 1)]
+void Emit(uint3 EmitterID : SV_GroupID)
 {
-	int eid = DTid.x;
+	int eid = EmitterID.x;
 	if(eid >= _EmitterBufferCount) return;
 
 	Emitter e = _EmitterBuffer[eid];
 	if(e.enabled)
 	{
-		const uint P_ID = _ParticleBufferIndexConsume.Consume();
-
+		const int P_ID = _ParticleBufferIndexConsume.Consume();
 		Particle p = _ParticleBuffer[P_ID];
-		if(IsActive(p)) return;
-
-		float3 np = PosToNormalized01(p.pos, _GridMin, _GridMax);
-		float4 pos = float4(wang_hash01((np.x + _Time.y)*10321), wang_hash01(DTid.y * np.y * _Time.z * 388), wang_hash01(DTid.y * _Time.x), 1);
-		pos -= 0.5f;
-		pos.w = 1;
-
-		p.type = PT_FLUID;
-		pos = mul(e.localToWorld, pos);
-		pos /= pos.w;
-		p.pos = pos.xyz;
-		p.vel = 0;
-		p.life = lerp(_ParticleLife.x, _ParticleLife.y, wang_hash01(P_ID));
-		_ParticleBuffer[P_ID] = p;
+		_ParticleBuffer[P_ID] = EmitParticle(p, P_ID, e);;
 	}
 }
 

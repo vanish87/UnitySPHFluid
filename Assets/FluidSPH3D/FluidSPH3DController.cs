@@ -143,7 +143,7 @@ namespace FluidSPH3D
 				LogTool.Log("pool particle " + poolNum + " not enough to emit " + num, LogLevel.Warning);
 				return;
 			}
-			this.fluidDispatcher.Dispatch(SPHKernel.Emit, ec.emitterBuffer.Size, ec.maxParticlePerEmitter);
+			this.fluidDispatcher.Dispatch(SPHKernel.Emit, ec.emitterBuffer.Size);
 		}
 
 		protected void InitSPH()
@@ -179,6 +179,10 @@ namespace FluidSPH3D
 			this.fluidDispatcher.Dispatch(SPHKernel.Vorticity, num);
 			this.fluidDispatcher.Dispatch(SPHKernel.Viscosity, num);
 			this.fluidDispatcher.Dispatch(SPHKernel.Pressure, num);
+
+			//intergrate will also update index buffer
+			//so append index buffer should be reset
+			this.sphData.particleBufferIndexAppend.ResetCounter();
 			this.fluidDispatcher.Dispatch(SPHKernel.Integrate, num);
 
 			// this.sphData.particleCount.GetToCPUData();
@@ -223,6 +227,26 @@ namespace FluidSPH3D
 			}
 			if (Input.GetKey(KeyCode.E)) this.Emit();
 			// this.Emit();
+
+			if(Input.GetKeyDown(KeyCode.V))
+			{
+				this.sphData.particleBuffer.GetToCPUData();
+				var count = 0;
+				foreach(var p in this.sphData.particleBuffer.CPUData)
+				{
+					if(p.type != ParticleType.Inactive) count++;
+				}
+
+				Debug.Log(count);
+			}
+		}
+
+		protected void OnGUI()
+		{
+			var count = this.sphData.particleBufferIndexAppend.GetCounter();
+			var ccount = this.sphData.particleBufferIndexConsume.GetCounter();
+			GUILayout.Label(count.ToString() + " Consume " + ccount);
+			GUILayout.Label("Diff " + (this.Configure.D.numOfParticle - count));
 		}
 
 	}

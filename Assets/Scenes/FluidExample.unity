@@ -312,6 +312,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 384872007}
+  - {fileID: 545423273}
   - {fileID: 1109521284}
   - {fileID: 1191804042}
   m_Father: {fileID: 0}
@@ -376,9 +377,9 @@ MonoBehaviour:
     stepIteration: 4
     particleScale: 0.5
     particleLife:
-      x: 20
-      y: 30
-    addSimulationBoundary: 1
+      x: 2
+      y: 10
+    addSimulationBoundary: 0
 --- !u!114 &468932072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,8 +409,6 @@ MonoBehaviour:
   mode: 0
   sphData:
     deltaTime: 0.001
-  emitterGPUData:
-    particlePerEmit: 1024
   boundaryGPUData:
     boundarySize: 0
   fluidSortedCS: {fileID: 7200000, guid: 549639aea11b573459f719cee082cf9c, type: 3}
@@ -485,8 +484,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 545423273}
+  - component: {fileID: 545423274}
+  - component: {fileID: 545423275}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: EmitterController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -499,13 +500,66 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 545423272}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_Father: {fileID: 468932070}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &545423274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 545423272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44c122e5cf23f1f4091466ae271120e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveMode: 1
+  saveType: 1
+  openKey: 0
+  saveKey: 0
+  loadKey: 0
+  preset: 0
+  isSyncing: 0
+  data:
+    emitters:
+    - name: Emiiter1
+      space:
+        center:
+          x: -2.44
+          y: 0
+          z: 0
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 1
+          y: 1
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 0, g: 0, b: 1, a: 1}
+--- !u!114 &545423275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 545423272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eccbe7ea2c7c7ee48b1a864b1ddd3637, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &608634619
 GameObject:
   m_ObjectHideFlags: 0
@@ -946,7 +1000,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1109521284
 Transform:
   m_ObjectHideFlags: 0
@@ -959,7 +1013,7 @@ Transform:
   m_LocalScale: {x: 2, y: 0.5, z: 0.2}
   m_Children: []
   m_Father: {fileID: 468932070}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1109521285
 MonoBehaviour:
@@ -973,25 +1027,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2b9373f810da964f85488fede67e450, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  space:
-    center:
-      x: 0
-      y: 2.03
-      z: 2.17
-    rotation:
-      value:
-        x: 0
-        y: 0
-        z: 0
-        w: 1
-    scale:
-      x: 2
-      y: 0.5
-      z: 0.2
-    displayAxis: 0
-    displayText: 0
-    displayBound: 1
-    color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &1117675061
 GameObject:
   m_ObjectHideFlags: 0
@@ -1069,7 +1104,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1191804042
 Transform:
   m_ObjectHideFlags: 0
@@ -1092,7 +1127,7 @@ Transform:
   - {fileID: 677958907}
   - {fileID: 608634620}
   m_Father: {fileID: 468932070}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1230081213
 GameObject:
@@ -1142,8 +1177,6 @@ MonoBehaviour:
   mode: 0
   sphData:
     deltaTime: 0.001
-  emitterGPUData:
-    particlePerEmit: 256
   boundaryGPUData:
     boundarySize: 0
   fluidSortedCS: {fileID: 7200000, guid: 549639aea11b573459f719cee082cf9c, type: 3}

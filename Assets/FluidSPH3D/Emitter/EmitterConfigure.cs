@@ -6,7 +6,6 @@ using UnityTools.Common;
 
 namespace FluidSPH3D
 {
-    [ExecuteInEditMode]
 	public class EmitterConfigure : Configure<EmitterConfigure.Data>
 	{
 		[System.Serializable]

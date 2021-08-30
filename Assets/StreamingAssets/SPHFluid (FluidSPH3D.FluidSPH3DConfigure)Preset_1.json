@@ -36,9 +36,9 @@
     },
     "restDensity": 1000.0,
     "particleMass": 1.0,
-    "viscosity": 800.0,
+    "viscosity": 1000.0,
     "vorticity": 1.0,
-    "nu_t": 0.6000000238418579,
+    "nu_t": 1.0,
     "nu_ext": 0.0,
     "theta": 1.0,
     "gravity": {
@@ -53,5 +53,9 @@
         "x": 20.0,
         "y": 40.0
     },
-    "addSimulationBoundary": false
+    "addSimulationBoundary": {
+        "x": true,
+        "y": false,
+        "z": true
+    }
 }

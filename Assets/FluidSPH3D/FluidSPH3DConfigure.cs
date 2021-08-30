@@ -32,7 +32,7 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleScale")] public float particleScale = 1f;
 			[Shader(Name = "_ParticleLife")] public float2 particleLife = new float2(1, 20);
 
-			public bool addSimulationBoundary = false;
+			public bool3 addSimulationBoundary = false;
 		}
 
 		protected void OnDrawGizmos()

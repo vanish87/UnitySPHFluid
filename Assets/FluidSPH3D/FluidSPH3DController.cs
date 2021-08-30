@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityTools;
+using UnityTools.Attributes;
 using UnityTools.Common;
 using UnityTools.ComputeShaderTool;
 using UnityTools.Debuging;
@@ -51,7 +52,7 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleVelocityBuffer")] public GPUBufferVariable<ParticleVelocity> particleVelocity = new GPUBufferVariable<ParticleVelocity>();
 			[Shader(Name = "_ParticleVorticityBuffer")] public GPUBufferVariable<ParticleVorticity> particleVorticity = new GPUBufferVariable<ParticleVorticity>();
 			[Shader(Name = "_ParticleCount")] public GPUBufferVariable<int> particleCount = new GPUBufferVariable<int>();
-			[Shader(Name = "_DeltaTime")] public float deltaTime = 0.001f;
+			[Shader(Name = "_DeltaTime"), DisableEdit] public float deltaTime = 0.001f;
 		}
 		public GPUBufferVariable<Particle> Buffer => this.sphData.particleBuffer;
 		[SerializeField] protected RunMode mode = RunMode.SharedMemory;

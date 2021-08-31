@@ -2,6 +2,8 @@
     "boundaries": [
         {
             "name": "WallFront",
+            "type": 0,
+            "density": 0.0625,
             "space": {
                 "center": {
                     "x": 0.0,
@@ -34,6 +36,8 @@
         },
         {
             "name": "WallLeft",
+            "type": 0,
+            "density": 0.0625,
             "space": {
                 "center": {
                     "x": -1.5,
@@ -66,6 +70,8 @@
         },
         {
             "name": "WallRight",
+            "type": 0,
+            "density": 0.0625,
             "space": {
                 "center": {
                     "x": 1.5,
@@ -82,6 +88,40 @@
                 },
                 "scale": {
                     "x": 0.75,
+                    "y": 10.0,
+                    "z": 0.10000000149011612
+                },
+                "displayAxis": false,
+                "displayText": false,
+                "displayBound": true,
+                "color": {
+                    "r": 1.0,
+                    "g": 0.0,
+                    "b": 0.0,
+                    "a": 1.0
+                }
+            }
+        },
+        {
+            "name": "WallBack",
+            "type": 0,
+            "density": 0.0625,
+            "space": {
+                "center": {
+                    "x": 0.0,
+                    "y": 2.5,
+                    "z": 2.5
+                },
+                "rotation": {
+                    "value": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0,
+                        "w": 1.0
+                    }
+                },
+                "scale": {
+                    "x": 3.0,
                     "y": 10.0,
                     "z": 0.10000000149011612
                 },

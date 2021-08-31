@@ -48,6 +48,7 @@ RWStructuredBuffer<int>  _ParticleCount;
 StructuredBuffer<uint2> _GridBuffer;
 
 #include "SPHIndexPool.cginc"
+#include "SDF.cginc"
 
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
@@ -103,6 +104,7 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 
 
 	// nonPressureForce += _Gravity;
+	nonPressureForce += GetSDFForce(P_position);
 
     int3 cid = PosToCellIndex(P_position, _GridMin, _GridMax, _GridSpacing);
 	int3 range = 1;
@@ -275,18 +277,6 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 		}
 	}
 	// P_velocity + _TimeStep * (force) / _ParticleMass;
-
-	// float alpha = 2.0f;
-	// P_velocity += alpha * force;
-
-	// force = 0;
-	// if(distance(P_position, float3(0.1,0.3,0)) < 0.2 * 5) force += normalize(P_position-float3(0.1,0.3,0)) * 500;
-	// if(distance(P_position, float3(0.8 * 5,0.1,0)) < 0.2 * 5) force += normalize(P_position-float3(0.8 * 5,0.1,0)) * 500;
-	// if(distance(P_position, float3(-0.5 * 5,0.5 * 10,0)) < 0.4 * 5) force += normalize(P_position-float3(-0.4 * 5,0.5 * 10,0)) * 500;
-	// if(distance(P_position, float3(0.1,0.3,0)) < 0.2) force += normalize(P_position-float3(0.1,0.3,0)) * 500;
-	// if(distance(P_position, float3(0.8 ,0.1,0)) < 0.2) force += normalize(P_position-float3(0.8,0.1,0)) * 500;
-	// if(distance(P_position, float3(-0.5,0.5 ,0)) < 0.4 ) force += normalize(P_position-float3(-0.4,0.5,0)) * 500;
-	// force += (sdBox(P_position, float3(0.5,0.5,0.1)) < 0)?float3(0,100,0):0;
 
 	_ParticleVelocityBuffer[P_ID].vel= P_velocity + _TimeStep * (force + transferForce + _Gravity) / _ParticleMass;
 }

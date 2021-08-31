@@ -16,6 +16,7 @@ namespace FluidSPH3D
 	{
 		Plane,
 		Sphere,
+		SDFSphere,
 	}
 
 }

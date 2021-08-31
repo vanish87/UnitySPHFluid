@@ -83,13 +83,14 @@ namespace FluidSPH3D
 
 		protected void Init()
 		{
+			this.BoundaryController.Init();
+			this.EmitterController.Init();
+
 			this.Configure.Initialize();
 			this.InitSPH();
 			this.InitParticle();
 			this.InitIndexPool();
 
-			this.BoundaryController.Init();
-			this.EmitterController.Init();
 			this.AddBoundary();
 		}
 		protected void InitParticle()
@@ -134,16 +135,19 @@ namespace FluidSPH3D
 
 		protected void AddSamples(List<float3> samples)
 		{
-			var count = 0;
-			foreach (var p in samples)
+			if(samples.Count > 0)
 			{
-				this.boundaryGPUData.boundaryBuffer.CPUData[count++] = p;
+				var count = 0;
+				foreach (var p in samples)
+				{
+					this.boundaryGPUData.boundaryBuffer.CPUData[count++] = p;
+				}
+				this.boundaryGPUData.boundarySize = samples.Count;
+
+				this.fluidDispatcher.Dispatch(SPHKernel.AddBoundary, samples.Count);
+
+				this.staticsData.BoundaryParticleNum += samples.Count;
 			}
-			this.boundaryGPUData.boundarySize = samples.Count;
-
-			this.fluidDispatcher.Dispatch(SPHKernel.AddBoundary, samples.Count);
-
-			this.staticsData.BoundaryParticleNum += samples.Count;
 		}
 
 
@@ -184,6 +188,7 @@ namespace FluidSPH3D
 				this.fluidDispatcher.AddParameter(k, this.SPHGrid.GridGPUData);
 				this.fluidDispatcher.AddParameter(k, this.EmitterController.EmitterGPUData);
 				this.fluidDispatcher.AddParameter(k, this.boundaryGPUData);
+				this.fluidDispatcher.AddParameter(k, this.BoundaryController.SDFBoundaires);
 			}
 
 		}

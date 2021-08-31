@@ -423,6 +423,72 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eccbe7ea2c7c7ee48b1a864b1ddd3637, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &581664376
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 581664377}
+  - component: {fileID: 581664378}
+  m_Layer: 0
+  m_Name: SDFSphere
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &581664377
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 581664376}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.22, z: 2.09}
+  m_LocalScale: {x: 0.5, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 750578337}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &581664378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 581664376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bca95913663e4a9449e81d6d3a7a4874, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    name: SDF Sphere
+    type: 2
+    density: 0.03125
+    space:
+      center:
+        x: 0
+        y: 2.22
+        z: 2.09
+      rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+      scale:
+        x: 0.5
+        y: 1
+        z: 1
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -547,6 +613,7 @@ Transform:
   m_Children:
   - {fileID: 1734346022}
   - {fileID: 1341735099}
+  - {fileID: 581664377}
   m_Father: {fileID: 468932070}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -770,7 +837,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1341735099
 Transform:
   m_ObjectHideFlags: 0
@@ -794,7 +861,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1341735098}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 007a5135b23b23545a2c2172ed309cc9, type: 3}
+  m_Script: {fileID: 11500000, guid: bfa758b858222514e85ab2bf7f39ab86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   data:
@@ -836,7 +903,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1734346022
 Transform:
   m_ObjectHideFlags: 0
@@ -860,7 +927,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1734346021}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 007a5135b23b23545a2c2172ed309cc9, type: 3}
+  m_Script: {fileID: 11500000, guid: bfa758b858222514e85ab2bf7f39ab86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   data:

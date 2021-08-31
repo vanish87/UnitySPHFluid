@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using UnityTools.Debuging.EditorTool;
 
 namespace FluidSPH3D
 {
@@ -7,7 +8,10 @@ namespace FluidSPH3D
 	{
 		protected override void OnDrawGizmos()
 		{
-			Gizmos.DrawWireSphere(this.data.space.Center, this.data.space.Scale.x);
+			using(new GizmosScope(this.Space.Color, Matrix4x4.identity))
+			{
+				Gizmos.DrawWireSphere(this.data.space.Center, this.data.space.Scale.x);
+			}
 		}
 		
 

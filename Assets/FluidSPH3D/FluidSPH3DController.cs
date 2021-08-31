@@ -54,6 +54,13 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleCount")] public GPUBufferVariable<int> particleCount = new GPUBufferVariable<int>();
 			[Shader(Name = "_DeltaTime"), DisableEdit] public float deltaTime = 0.001f;
 		}
+		[System.Serializable]
+		public class StaticsData
+		{
+			public int BoundaryParticleNum = 0;
+			public int ActiveParticleNum = 0;
+
+		}
 		public GPUBufferVariable<Particle> Buffer => this.sphData.particleBuffer;
 		[SerializeField] protected RunMode mode = RunMode.SharedMemory;
 		[SerializeField] protected SPHGPUData sphData = new SPHGPUData();
@@ -70,6 +77,9 @@ namespace FluidSPH3D
 		protected BoundaryController BoundaryController => this.boundaryController ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<BoundaryController>();
 		protected BoundaryController boundaryController;
 		protected ComputeShaderDispatcher<SPHKernel> fluidDispatcher;
+
+
+		protected StaticsData staticsData = new StaticsData();
 
 		protected void Init()
 		{
@@ -105,6 +115,8 @@ namespace FluidSPH3D
 
 		protected void AddBoundary()
 		{
+			this.staticsData.BoundaryParticleNum = 0;
+
 			this.boundaryGPUData.boundaryBuffer.InitBuffer(1024 * 32 * 2, true, true);
 			var density = 1.0f/16;
 
@@ -130,6 +142,8 @@ namespace FluidSPH3D
 			this.boundaryGPUData.boundarySize = samples.Count;
 
 			this.fluidDispatcher.Dispatch(SPHKernel.AddBoundary, samples.Count);
+
+			this.staticsData.BoundaryParticleNum += samples.Count;
 		}
 
 
@@ -253,14 +267,16 @@ namespace FluidSPH3D
 
 				Debug.Log(count);
 			}
+
+			this.staticsData.ActiveParticleNum = this.Configure.D.numOfParticle - this.sphData.particleBufferIndexConsume.GetCounter();
 		}
 
 		protected void OnGUI()
 		{
-			var count = this.sphData.particleBufferIndexAppend.GetCounter();
-			var ccount = this.sphData.particleBufferIndexConsume.GetCounter();
-			GUILayout.Label(count.ToString() + " Consume " + ccount);
-			GUILayout.Label("Diff " + (this.Configure.D.numOfParticle - count));
+			var pcount = this.staticsData.ActiveParticleNum;
+			var bcount = this.staticsData.BoundaryParticleNum;
+			GUILayout.Label("Boundary Count " + bcount);
+			GUILayout.Label("Active Count " + pcount);
 		}
 
 	}

@@ -6,7 +6,7 @@ using UnityTools.Common;
 namespace FluidSPH3D
 {
 	[ExecuteInEditMode]
-	public class PrimeBoundary : MonoBehaviour, IBoundary
+	public class PrimitiveBoundary : MonoBehaviour, IBoundary
 	{
 		public ISpace Space => this.data.space;
 
@@ -45,7 +45,7 @@ namespace FluidSPH3D
 			this.data.space.Scale = this.gameObject.transform.localScale;
 		}
 
-		protected void OnDrawGizmos()
+		protected virtual void OnDrawGizmos()
 		{
 			this.data.space?.OnDrawGizmos();
 		}

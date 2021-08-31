@@ -26,6 +26,31 @@ namespace UnityTools.Common
 			}
 			return ret;
 		}
+
+		static public List<float3> SampleSphereSurface(ISpace space, float density = 1f / 32)
+		{
+			var ret = new List<float3>();
+			var radius = space.Scale.x / 2;
+			var num = Mathf.CeilToInt(space.Scale.x / density);
+
+			foreach(var z in Enumerable.Range(0, num))
+			{
+				var t = 1.0f * z / num;
+				t = Mathf.Lerp(-1, 1, t);
+				var posZ = t * 0.5f;
+				
+				t = 1 - Mathf.Abs(t);
+				var currentNum = Mathf.CeilToInt(Mathf.Lerp(1, num, t));
+				var offset = 1.0f / currentNum * Mathf.PI * 2;
+				var r = radius * t;
+				foreach (var i in Enumerable.Range(0, currentNum))
+				{
+					var p = new float3(Mathf.Cos(offset * i) * r, Mathf.Sin(offset * i) * r, posZ);
+					ret.Add(p + space.Center);
+				}
+			}
+			return ret;
+		}
 		static public List<float3> SampleXY(ISpace space, int depth = 1, float density = 1f / 32f)
 		{
 			var bpos = new float3(-0.5f, -0.5f, depth == 1 ? 0 : -0.5f);

@@ -41,9 +41,10 @@ Particle RandomParticle(int idx, float4x4 localToWorld = IDENTITY)
 	return p;
 }
 
-Particle DeactiveParticle(Particle p)
+Particle DeactiveParticle(Particle p, int idx)
 {
 	p = (Particle)0;
+	p.pos = _GridMin + GenerateRandomPos01(idx) * (_GridMax - _GridMin);
 	return p;
 }
 

@@ -52,7 +52,7 @@
     "particleScale": 0.5,
     "particleLife": {
         "x": 20.0,
-        "y": 40.0
+        "y": 60.0
     },
     "addSimulationSpaceBounds": {
         "x": true,

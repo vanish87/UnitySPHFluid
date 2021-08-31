@@ -413,7 +413,7 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 	//Rebuild append index buffer
 	if(!IsActive(p))
 	{
-		p = DeactiveParticle(p);
+		// p = DeactiveParticle(p);
 		_ParticleBufferIndexAppend.Append(P_ID);
 	}
 

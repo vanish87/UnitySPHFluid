@@ -33,20 +33,14 @@ namespace UnityTools.Common
 			var radius = space.Scale.x / 2;
 			var num = Mathf.CeilToInt(space.Scale.x / density);
 
-			foreach(var z in Enumerable.Range(0, num))
+			foreach(var theta in Enumerable.Range(0, num))
 			{
-				var t = 1.0f * z / num;
-				t = Mathf.Lerp(-1, 1, t);
-				var posZ = t * 0.5f;
-				
-				t = 1 - Mathf.Abs(t);
-				var currentNum = Mathf.CeilToInt(Mathf.Lerp(1, num, t));
-				var offset = 1.0f / currentNum * Mathf.PI * 2;
-				var r = radius * t;
-				foreach (var i in Enumerable.Range(0, currentNum))
+				foreach(var phi in Enumerable.Range(0, num))
 				{
-					var p = new float3(Mathf.Cos(offset * i) * r, Mathf.Sin(offset * i) * r, posZ);
-					ret.Add(p + space.Center);
+					var t = theta * 1.0f / math.max(num - 1, 1) * math.PI;
+					var p = phi * 1.0f / math.max(num - 1, 1) * math.PI * 2;
+					var np = new float3(math.cos(p) * math.sin(t), math.sin(p) * math.sin(t), math.cos(t)) * radius;
+					ret.Add(np + space.Center);
 				}
 			}
 			return ret;

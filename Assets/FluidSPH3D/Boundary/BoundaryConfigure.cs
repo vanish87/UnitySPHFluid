@@ -17,6 +17,8 @@ namespace FluidSPH3D
 		public class BData
 		{
             public string name;
+            public BoundaryType type = BoundaryType.Plane;
+			public float density = 1 / 32f;
 			public Space3D space = new Space3D();
 		}
 

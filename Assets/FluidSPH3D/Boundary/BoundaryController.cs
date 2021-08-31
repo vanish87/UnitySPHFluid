@@ -23,14 +23,14 @@ namespace FluidSPH3D
 			{
 				var go = new GameObject(bc.name);
 				go.transform.parent = this.gameObject.transform;
-				var b = go.AddComponent<PlaneBoundary>();
-                b.Init(bc);
+				var b = go.AddComponent<PrimeBoundary>();
+				b.Init(bc);
 				this.boundaries.Add(b);
 			}
 		}
 		public void Deinit()
 		{
-            this.boundaries.Clear();
+			this.boundaries.Clear();
 		}
 
 		protected void OnEnable()

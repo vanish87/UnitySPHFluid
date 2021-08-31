@@ -6,15 +6,18 @@ using UnityTools.Common;
 namespace FluidSPH3D
 {
 	[ExecuteInEditMode]
-	public class PlaneBoundary : MonoBehaviour, IBoundary
+	public class PrimeBoundary : MonoBehaviour, IBoundary
 	{
-		public ISpace Space { get => this.data.space;}
+		public ISpace Space => this.data.space;
+
+		public BoundaryType Type => this.data.type;
+
 		[SerializeField] protected BoundaryConfigure.BData data = new BoundaryConfigure.BData();
 
 		public void Init(BoundaryConfigure.BData data)
 		{
 			this.data = data;
-			
+
 			var space = this.data.space;
 			this.gameObject.transform.localPosition = space.Center;
 			this.gameObject.transform.localRotation = space.Rotation;
@@ -23,8 +26,16 @@ namespace FluidSPH3D
 
 		public List<float3> Sample(float density = 1 / 32f)
 		{
-			//only sample xy plane
-			return Sampler.SampleXY(this.data.space, 1, density);
+			if (this.data.type == BoundaryType.Plane)
+			{
+				//only sample xy plane
+				return Sampler.SampleXY(this.data.space, 1, this.data.density);
+			}
+			else if (this.data.type == BoundaryType.Sphere)
+			{
+				return Sampler.SampleSphereSurface(this.data.space, this.data.density);
+			}
+			return new List<float3>();
 		}
 
 		protected void Update()

@@ -3,7 +3,7 @@
         {
             "name": "Emiiter1",
             "isActive": false,
-            "particlePerEmit": 128,
+            "particlePerSecond": 128,
             "space": {
                 "center": {
                     "x": -0.7300000190734863,
@@ -37,7 +37,7 @@
         {
             "name": "Emiiter2",
             "isActive": true,
-            "particlePerEmit": 240,
+            "particlePerSecond": 384,
             "space": {
                 "center": {
                     "x": -0.46000000834465029,
@@ -71,7 +71,7 @@
         {
             "name": "Emiiter3",
             "isActive": true,
-            "particlePerEmit": 320,
+            "particlePerSecond": 256,
             "space": {
                 "center": {
                     "x": 0.5799999833106995,

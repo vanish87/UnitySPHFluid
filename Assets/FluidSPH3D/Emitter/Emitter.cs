@@ -28,7 +28,7 @@ namespace FluidSPH3D
 		public bool IsActive => this.data.isActive;
 		public ISpace Space => this.data.space;
 
-		public int particlePerEmit => this.data. particlePerEmit;
+		public int particlePerEmit => this.data. particlePerSecond;
 
 		[SerializeField] protected EmitterConfigure.EData data;
 		protected void Update()

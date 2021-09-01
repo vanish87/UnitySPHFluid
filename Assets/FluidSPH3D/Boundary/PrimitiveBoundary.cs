@@ -24,7 +24,7 @@ namespace FluidSPH3D
 			this.gameObject.transform.localScale = space.Scale;
 		}
 
-		public List<float3> Sample(float density = 1 / 32f)
+		public virtual List<float3> Sample(float density = 1 / 32f)
 		{
 			if (this.data.type == BoundaryType.Plane)
 			{
@@ -38,7 +38,7 @@ namespace FluidSPH3D
 			return new List<float3>();
 		}
 
-		protected void Update()
+		protected virtual void Update()
 		{
 			this.data.space.Center = this.gameObject.transform.localPosition;
 			this.data.space.Rotation = this.gameObject.transform.localRotation;

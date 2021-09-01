@@ -107,7 +107,7 @@ void AddBoundary(uint3 DTid : SV_DispatchThreadID)
 
 	p.type = PT_BOUNDARY;
 	p.pos = _BoundaryBuffer[pid];
-	p.col = float4(1,0,0,0.1);
+	p.col = float4(1,0,0,1);
 	_ParticleBuffer[P_ID] = p;
 
 }

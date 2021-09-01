@@ -10,14 +10,14 @@ namespace FluidSPH3D
 		ISpace Space { get; }
 		string Name { get; }
 		bool IsActive { get; }
-		int particlePerEmit { get; }
+		int ParticlePerSecond { get; }
 
 	}
 	[System.Serializable]
 	public struct EmitterGPUData
 	{
 		public BlittableBool enabled;
-		public int particlePerEmit;
+		public int particlePerSecond;
 		public float4x4 localToWorld;
 	}
 	[ExecuteInEditMode]
@@ -28,7 +28,7 @@ namespace FluidSPH3D
 		public bool IsActive => this.data.isActive;
 		public ISpace Space => this.data.space;
 
-		public int particlePerEmit => this.data. particlePerSecond;
+		public int ParticlePerSecond => this.data. particlePerSecond;
 
 		[SerializeField] protected EmitterConfigure.EData data;
 		protected void Update()

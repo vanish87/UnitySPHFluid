@@ -14,7 +14,7 @@ namespace FluidSPH3D
 			[Shader(Name = "_EmitterBuffer")] public GPUBufferVariable<EmitterGPUData> emitterBuffer = new GPUBufferVariable<EmitterGPUData>();
         }
         public EmitterContainer EmitterGPUData => this.emitterContainer;
-		public int CurrentParticleEmit => this.emitters.Sum(e => e.particlePerEmit);
+		public int CurrentParticleEmit => this.emitters.Sum(e => e.ParticlePerSecond);
 		protected const int MAX_NUM_EMITTER = 128;
 		protected EmitterConfigure configure;
 		protected EmitterConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<EmitterConfigure>();
@@ -50,7 +50,7 @@ namespace FluidSPH3D
 			foreach (var e in this.emitters)
 			{
 				eCPU[ecount].enabled = e.IsActive;
-				eCPU[ecount].particlePerEmit = Mathf.CeilToInt(e.particlePerEmit * UnityEngine.Random.value);
+				eCPU[ecount].particlePerSecond = Mathf.CeilToInt(e.ParticlePerSecond * UnityEngine.Random.value);
 				eCPU[ecount].localToWorld = e.Space.TRS;
 				ecount++;
 			}

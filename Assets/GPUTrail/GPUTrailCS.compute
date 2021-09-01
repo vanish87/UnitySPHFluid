@@ -1,0 +1,14 @@
+#pragma kernel Init
+
+#define TRAIL_BLOCK_SIZE 256
+
+#include "GPUTrailData.cginc"
+
+RWStructuredBuffer<TrailNode> _TrailNodeBuffer;
+RWStructuredBuffer<TrailHeader> _TrailHeaderBuffer;
+
+[numthreads(TRAIL_BLOCK_SIZE,1,1)]
+void Init (uint3 id : SV_DispatchThreadID)
+{
+    
+}

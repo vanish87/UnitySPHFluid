@@ -64,6 +64,38 @@ Shader "Unlit/TrailShader"
 		return o;
 	}
 
+	float4x4  _InvViewMatrix;
+	static const float3 g_positions[4] =
+	{
+		float3(-1, 1, 0),
+		float3(1, 1, 0),
+		float3(-1,-1, 0),
+		float3(1,-1, 0),
+	};
+	static const float2 g_texcoords[4] =
+	{
+		float2(0, 0),
+		float2(1, 0),
+		float2(0, 1),
+		float2(1, 1),
+	};
+
+    void AddQuad(float3 pos, float4 col, inout TriangleStream<g2f> outStream)
+    {
+		g2f o = (g2f)0;
+		[unroll]
+		for (int i = 0; i < 4; i++)
+		{
+			float3 position = g_positions[i] * 0.01f;
+			position = mul(_InvViewMatrix, position) + pos;
+			o.pos = UnityObjectToClipPos(float4(position, 1.0));
+            o.col = col;
+
+			outStream.Append(o);
+		}
+
+		outStream.RestartStrip();
+    }
 	[maxvertexcount(4)]
 	void geom(point v2g p[1], inout TriangleStream<g2f> outStream)
 	{

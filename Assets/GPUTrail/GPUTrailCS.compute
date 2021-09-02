@@ -1,4 +1,5 @@
 #pragma kernel Init
+#pragma kernel UpdateParticle
 #pragma kernel UpdateFromParticle
 
 #define TRAIL_BLOCK_SIZE 256
@@ -8,8 +9,14 @@
 
 StructuredBuffer<Particle> _ParticleBuffer;
 
+RWStructuredBuffer<Particle> _FixedParticleBuffer;
+AppendStructuredBuffer<int> _ActiveParticleIndexBufferAppend;
+StructuredBuffer<int> _ActiveParticleIndexBuffer;
+int _ActiveParticleCount;
+
 RWStructuredBuffer<TrailNode> _TrailNodeBuffer;
 RWStructuredBuffer<TrailHeader> _TrailHeaderBuffer;
+int _TrailHeaderBufferCount;
 int _MaxNodeNumPerTrail;
 
 
@@ -34,16 +41,34 @@ void Init (uint3 id : SV_DispatchThreadID)
     _TrailHeaderBuffer[tid] = header;
 }
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
+void UpdateParticle (uint3 id : SV_DispatchThreadID)
+{
+    const int pid = id.x;
+    Particle p = _ParticleBuffer[pid];
+    const int uuid = p.uuid;
+
+    if(IsFluid(p))
+    {
+        _ActiveParticleIndexBufferAppend.Append(uuid);
+    }
+    _FixedParticleBuffer[uuid] = p;
+
+}
+
+[numthreads(TRAIL_BLOCK_SIZE,1,1)]
 void UpdateFromParticle (uint3 id : SV_DispatchThreadID)
 {
-    const uint tid = id.x;
-    Particle p = _ParticleBuffer[tid];
+    const int tid = id.x;
+    const int count = min(_ActiveParticleCount, _TrailHeaderBufferCount);
+    if(tid >= count) return;
 
     TrailHeader header = _TrailHeaderBuffer[tid];
-    const uint hid = header.head;
+    const int hid = header.head;
+    const int uuid = _ActiveParticleIndexBuffer[tid];
+
+    Particle p = _FixedParticleBuffer[uuid];
 
     TrailNode node = _TrailNodeBuffer[hid];
     node.pos = p.pos;
-
     _TrailNodeBuffer[hid] = node;
 }

@@ -22,7 +22,7 @@ namespace GPUTrail
         }
 		protected override void Draw(Material material)
 		{
-			if (this.buffer == null || material == null || this.trailBuffer == null)
+			if (this.buffer == null || this.buffer.Buffer.Size == 0 || material == null || this.trailBuffer == null)
 			{
 				LogTool.Log("Draw buffer is null, nothing to draw", LogLevel.Warning);
 				return;

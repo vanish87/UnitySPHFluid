@@ -209,6 +209,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trailCS: {fileID: 7200000, guid: acf4ffbebc3fc634a9643a5518f2f7da, type: 3}
+  trailData:
+    activeParticleCount: 0
 --- !u!114 &63783544
 MonoBehaviour:
   m_ObjectHideFlags: 0

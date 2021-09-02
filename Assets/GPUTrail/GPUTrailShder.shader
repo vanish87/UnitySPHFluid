@@ -204,11 +204,22 @@ Shader "Unlit/TrailShader"
 		outStream.Append(pIn);
 		
 		outStream.RestartStrip();
+    }
+
+	[maxvertexcount(4)]
+	void geomParticle(point v2g p[1], inout TriangleStream<g2f> outStream)
+	{
+        float3 p0 = p[0].prev;
+		float3 p1 = p[0].pos;
+		float3 p2 = p[0].curr;
+		float3 p3 = p[0].next;
+        
         // AddQuad(p0, float4(1,0,0,1), outStream);
         AddQuad(p1, float4(1,1,1,1), outStream);
         // AddQuad(p2, float4(0,1,0,1), outStream);
         // AddQuad(p3, float4(0,0,1,1), outStream);
 	}
+
 
 	fixed4 frag(g2f i) : SV_Target
 	{

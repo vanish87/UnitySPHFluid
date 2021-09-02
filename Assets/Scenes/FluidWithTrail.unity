@@ -134,13 +134,14 @@ GameObject:
   - component: {fileID: 63783541}
   - component: {fileID: 63783542}
   - component: {fileID: 63783543}
+  - component: {fileID: 63783544}
   m_Layer: 0
   m_Name: GPUTrail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &63783541
 Transform:
   m_ObjectHideFlags: 0
@@ -208,6 +209,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trailCS: {fileID: 7200000, guid: acf4ffbebc3fc634a9643a5518f2f7da, type: 3}
+--- !u!114 &63783544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 63783540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d431d4aa7f7809499253f576cbcef68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dataShader: {fileID: 0}
 --- !u!1 &262512132
 GameObject:
   m_ObjectHideFlags: 0
@@ -290,7 +304,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &311666222
 Transform:
   m_ObjectHideFlags: 0
@@ -319,7 +333,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data:
     name: center
-    isActive: 1
+    isActive: 0
     particlePerSecond: 640
     space:
       center:
@@ -731,8 +745,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7ff4e2e70a25b745b0ad508df87ab10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  particleShader: {fileID: 4800000, guid: 1804d500abf0b48498e49442c17acc04, type: 3}
-  particleMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  dataShader: {fileID: 4800000, guid: 1804d500abf0b48498e49442c17acc04, type: 3}
+  mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!114 &1172243131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -811,6 +825,7 @@ MonoBehaviour:
     maxSpeed: 10
     stepIteration: 4
     particleScale: 0.5
+    renderBoundaryParticle: 1
     particleLife:
       x: 20
       y: 60

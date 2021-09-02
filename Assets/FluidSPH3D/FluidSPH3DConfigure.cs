@@ -32,6 +32,7 @@ namespace FluidSPH3D
 			public int stepIteration = 4;
 
 			[Shader(Name = "_ParticleScale")] public float particleScale = 1f;
+			[Shader(Name = "_RenderBoundaryParticle")] public bool renderBoundaryParticle = true;
 			[Shader(Name = "_ParticleLife")] public float2 particleLife = new float2(1, 20);
 			[Shader(Name = "_SimulationSpaceBounds")] public bool3 addSimulationSpaceBounds = false;
 

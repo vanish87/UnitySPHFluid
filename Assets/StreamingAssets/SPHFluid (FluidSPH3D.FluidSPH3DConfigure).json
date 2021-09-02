@@ -50,6 +50,7 @@
     "maxSpeed": 10.0,
     "stepIteration": 4,
     "particleScale": 0.5,
+    "renderBoundaryParticle": true,
     "particleLife": {
         "x": 20.0,
         "y": 40.0

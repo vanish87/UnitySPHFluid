@@ -20,41 +20,42 @@ float wang_hash01(uint seed)
 	return float(seed) / 4294967295.0; // 2^32-1
 }
 
-float3 GenerateRandomPos01(int idx)
+float3 GenerateRandomPos01(int did, int uuid)
 {
 	uint t = (uint)fmod(_Time * 8, 65535.0);
 	int3 offset = int3(0, 173, 839) + t;
-	return float3(wang_hash01(idx + offset.x), wang_hash01(idx + offset.y), wang_hash01(idx + offset.z));
+	return float3(wang_hash01(uuid + offset.x), wang_hash01(uuid + offset.y), wang_hash01(uuid + offset.z));
 }
 
-Particle RandomParticle(int idx, float4x4 localToWorld = IDENTITY)
+Particle RandomParticle(int did, int uuid, float4x4 localToWorld = IDENTITY)
 {
 	Particle p = (Particle)0;
-	float4 pos = float4(GenerateRandomPos01(idx) - 0.5f, 1);
+	float4 pos = float4(GenerateRandomPos01(did, uuid) - 0.5f, 1);
 	pos = mul(localToWorld, pos);
 	pos /= pos.w;
 
 	p.type = PT_INACTIVE;
+	p.uuid = uuid;
 	p.pos = pos.xyz;
 	p.col = 1;
 
 	return p;
 }
 
-Particle DeactiveParticle(Particle p, int idx)
+Particle DeactiveParticle(Particle p, int did)
 {
-	p = (Particle)0;
-	p.pos = _GridMin + GenerateRandomPos01(idx) * (_GridMax - _GridMin);
+	p.pos = _GridMin + GenerateRandomPos01(did, p.uuid) * (_GridMax - _GridMin);
+	p.type = PT_INACTIVE;
 	return p;
 }
 
-Particle EmitParticle(int idx, Emitter e)
+Particle EmitParticle(int did, int uuid, Emitter e)
 {
 	if(!e.enabled) return (Particle)0;
 
-	Particle p = RandomParticle(idx, e.localToWorld);
+	Particle p = RandomParticle(did, uuid, e.localToWorld);
 	p.type = PT_FLUID;
-	p.life = lerp(_ParticleLife.x, _ParticleLife.y, wang_hash01(idx));
+	p.life = lerp(_ParticleLife.x, _ParticleLife.y, wang_hash01(uuid));
 	return p;
 }
 
@@ -64,9 +65,7 @@ void InitIndexPool(uint3 DTid : SV_DispatchThreadID)
 	RETURN_IF_INVALID(DTid);
 
 	const uint P_ID = DTid.x;
-	Particle p = _ParticleBuffer[P_ID];
-	p.type = PT_INACTIVE;
-	_ParticleBuffer[P_ID] = p;
+	_ParticleBuffer[P_ID].type = PT_INACTIVE;
 	_ParticleBufferIndexAppend.Append(P_ID);
 }
 
@@ -86,7 +85,8 @@ void Emit(uint3 EmitterID : SV_GroupID, uint ParticleID : SV_GroupIndex)
 			if((pid + i * MAX_PARTICLE_PER_EMITTER)< total)
 			{
 				const int P_ID = _ParticleBufferIndexConsume.Consume();
-				_ParticleBuffer[P_ID] = EmitParticle(P_ID, e);
+				const int uuid = _ParticleBuffer[P_ID].uuid;
+				_ParticleBuffer[P_ID] = EmitParticle(P_ID, uuid, e);
 			}
 
 		}

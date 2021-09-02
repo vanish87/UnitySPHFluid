@@ -13,7 +13,7 @@ using UnityTools.Rendering;
 
 namespace FluidSPH3D
 {
-	public class FluidSPH3DController : MonoBehaviour, IParticleBuffer<Particle>
+	public class FluidSPH3DController : MonoBehaviour, IDataBuffer<Particle>
 	{
 		public enum RunMode
 		{

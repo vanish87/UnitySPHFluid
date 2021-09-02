@@ -204,6 +204,10 @@ Shader "Unlit/TrailShader"
 		outStream.Append(pIn);
 		
 		outStream.RestartStrip();
+        // AddQuad(p0, float4(1,0,0,1), outStream);
+        AddQuad(p1, float4(1,1,1,1), outStream);
+        // AddQuad(p2, float4(0,1,0,1), outStream);
+        // AddQuad(p3, float4(0,0,1,1), outStream);
 	}
 
 	fixed4 frag(g2f i) : SV_Target

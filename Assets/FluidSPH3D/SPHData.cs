@@ -11,6 +11,7 @@ namespace FluidSPH3D
 	}
 	public struct Particle
 	{
+		public int uuid;
 		public float3 pos;
 		public float3 vel;
 		public float3 w;

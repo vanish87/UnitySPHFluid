@@ -2,6 +2,7 @@
 
 struct Particle 
 {
+	int uuid;
 	float3 pos;
 	float3 vel;
 	float3 w;//angular velocity

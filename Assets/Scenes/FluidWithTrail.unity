@@ -195,7 +195,7 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    trailNum: 16384
+    trailNum: 262144
 --- !u!114 &63783543
 MonoBehaviour:
   m_ObjectHideFlags: 0

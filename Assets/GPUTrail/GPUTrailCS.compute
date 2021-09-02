@@ -23,15 +23,15 @@ int _MaxNodeNumPerTrail;
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
 void Init (uint3 id : SV_DispatchThreadID)
 {
-    const uint tid = id.x;
+    const int tid = id.x;
     TrailHeader header = _TrailHeaderBuffer[tid];
     header.head = tid * _MaxNodeNumPerTrail;
     header.length = _MaxNodeNumPerTrail;
 
-    const uint hid = header.head;
+    const int hid = header.head;
     for(int i = 0; i < _MaxNodeNumPerTrail; ++i)
     {
-        const uint nid = hid + i;
+        const int nid = hid + i;
         TrailNode node = _TrailNodeBuffer[nid];
         node.head = hid;
         node.pos = 0;
@@ -64,11 +64,17 @@ void UpdateFromParticle (uint3 id : SV_DispatchThreadID)
 
     TrailHeader header = _TrailHeaderBuffer[tid];
     const int hid = header.head;
+    const int len = header.length;
     const int uuid = _ActiveParticleIndexBuffer[tid];
 
     Particle p = _FixedParticleBuffer[uuid];
 
-    TrailNode node = _TrailNodeBuffer[hid];
-    node.pos = p.pos;
-    _TrailNodeBuffer[hid] = node;
+    for(int i = len-1 ; i > 0; --i)
+    {
+        _TrailNodeBuffer[hid + i] = _TrailNodeBuffer[hid + (i-1)];
+    }
+
+    TrailNode head = _TrailNodeBuffer[hid];
+    head.pos = p.pos;
+    _TrailNodeBuffer[hid] = head;
 }

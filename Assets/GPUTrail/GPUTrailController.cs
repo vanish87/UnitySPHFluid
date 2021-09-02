@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityTools;
 using UnityTools.Common;
@@ -11,7 +12,8 @@ namespace GPUTrail
 	{
 		public enum Kernel
 		{
-
+			Init,
+			UpdateFromParticle
 		}
 		public class GPUTrailData : GPUContainer
 		{
@@ -27,15 +29,16 @@ namespace GPUTrail
 		[SerializeField] protected ComputeShader trailCS;
 
 		protected GPUTrailConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<GPUTrailConfigure>();
-
-
 		protected GPUTrailConfigure configure;
 		protected bool inited = false;
 		protected GPUTrailData trailData = new GPUTrailData();
 		protected ComputeShaderDispatcher<Kernel> dispatcher;
+		protected IDataBuffer<FluidSPH3D.Particle> particleBuffer;
 
 		public void Init()
 		{
+			this.particleBuffer = ObjectTool.FindAllObject<IDataBuffer<FluidSPH3D.Particle>>().FirstOrDefault();
+
 			var trailNum = this.Configure.D.trailNum;
 			this.trailData.trailNodeBuffer.InitBuffer(GPUTrailData.MAX_NODE_PER_TRAIL * trailNum);
 			this.trailData.trailHeaderBuffer.InitBuffer(trailNum);
@@ -45,7 +48,10 @@ namespace GPUTrail
 			{
 				this.dispatcher.AddParameter(k, this.Configure.D);
 				this.dispatcher.AddParameter(k, this.trailData);
+				this.dispatcher.AddParameter(k, this.particleBuffer.Buffer);
 			}
+
+			this.dispatcher.Dispatch(Kernel.Init, trailNum);
 
 			this.inited = true;
 		}
@@ -55,6 +61,11 @@ namespace GPUTrail
 			this.trailData?.Release();
 		}
 
+		protected void Update()
+		{
+			var trailNum = this.Configure.D.trailNum;
+			this.dispatcher.Dispatch(Kernel.UpdateFromParticle, trailNum);
+		}
 		protected void OnEnable()
 		{
 			if (!this.Inited) this.Init();

@@ -1,14 +1,49 @@
 #pragma kernel Init
+#pragma kernel UpdateFromParticle
 
 #define TRAIL_BLOCK_SIZE 256
 
 #include "GPUTrailData.cginc"
+#include "../FluidSPH3D/SPHData.cginc"
+
+StructuredBuffer<Particle> _ParticleBuffer;
 
 RWStructuredBuffer<TrailNode> _TrailNodeBuffer;
 RWStructuredBuffer<TrailHeader> _TrailHeaderBuffer;
+int _MaxNodeNumPerTrail;
+
 
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
 void Init (uint3 id : SV_DispatchThreadID)
 {
-    
+    const uint tid = id.x;
+    TrailHeader header = _TrailHeaderBuffer[tid];
+    header.head = tid * _MaxNodeNumPerTrail;
+    header.length = _MaxNodeNumPerTrail;
+
+    const uint hid = header.head;
+    for(int i = 0; i < _MaxNodeNumPerTrail; ++i)
+    {
+        const uint nid = hid + i;
+        TrailNode node = _TrailNodeBuffer[nid];
+        node.head = hid;
+        node.pos = 0;
+        _TrailNodeBuffer[nid] = node;
+    }
+
+    _TrailHeaderBuffer[tid] = header;
+}
+[numthreads(TRAIL_BLOCK_SIZE,1,1)]
+void UpdateFromParticle (uint3 id : SV_DispatchThreadID)
+{
+    const uint tid = id.x;
+    Particle p = _ParticleBuffer[tid];
+
+    TrailHeader header = _TrailHeaderBuffer[tid];
+    const uint hid = header.head;
+
+    TrailNode node = _TrailNodeBuffer[hid];
+    node.pos = p.pos;
+
+    _TrailNodeBuffer[hid] = node;
 }

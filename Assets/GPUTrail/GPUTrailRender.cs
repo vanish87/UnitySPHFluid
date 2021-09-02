@@ -27,6 +27,9 @@ namespace GPUTrail
 				LogTool.Log("Draw buffer is null, nothing to draw", LogLevel.Warning);
 				return;
 			}
+            var inverseViewMatrix = Camera.main.worldToCameraMatrix.inverse;
+            material.SetMatrix("_InvViewMatrix", inverseViewMatrix);
+
             material.SetBuffer("_TrailHeaderBuffer", this.buffer.Buffer);
             material.SetBuffer("_TrailNodeBuffer", this.trailBuffer.NodeBuffer);
             material.SetInt("_MaxNodePerTrail", this.trailBuffer.MaxNodePerTrail);

@@ -8,22 +8,19 @@ Shader "Unlit/TrailShader"
 
 	CGINCLUDE
 	#include "UnityCG.cginc"
-    #include "GPPUTrailData.cginc"
+    #include "GPUTrailData.cginc"
 
-	struct appdata
+	struct v2g
 	{
-		float4 vertex : POSITION;
-		float2 uv : TEXCOORD0;
-		uint vid : SV_VertexID;
-		UNITY_VERTEX_INPUT_INSTANCE_ID
+		float3 position : TEXCOORD0;
+		float4 color    : COLOR;
+		float  size : TEXCOORD1;
 	};
-
-	struct v2f
+	struct g2f
 	{
-		float4 position : SV_POSITION;
-		float2 uv : TEXCOORD0;
-		float4 color : COLOR;
-		UNITY_VERTEX_INPUT_INSTANCE_ID
+		float4 position : POSITION;
+		float2 texcoord : TEXCOORD0;
+		float4 color    : COLOR;
 	};
 
 	sampler2D _MainTex;
@@ -37,19 +34,54 @@ Shader "Unlit/TrailShader"
 
     int _MaxNodePerTrail;
 
-	v2f vert(uint iid : SV_VertexID) 
+	v2g vert(uint id : SV_VertexID) 
 	{
-		v2f o = (v2f)0;
+		v2g o = (v2g)0;
 
-        TrailHeader header = _TrailHeaderBuffer[iid];
+        TrailHeader header = _TrailHeaderBuffer[id];
+        TrailNode node = _TrailNodeBuffer[header.head];
 
 		// float4 wp = float4(i.vertex.xyz * 0.01f + _TrailHeaderBuffer[iid].pos,1);
-		o.position = UnityObjectToClipPos(wp);
+		o.position = node.pos;
 		o.color = 1;
 		return o;
 	}
 
-	fixed4 frag(v2f i) : SV_Target
+	float4x4  _InvViewMatrix;
+	static const float3 g_positions[4] =
+	{
+		float3(-1, 1, 0),
+		float3(1, 1, 0),
+		float3(-1,-1, 0),
+		float3(1,-1, 0),
+	};
+	static const float2 g_texcoords[4] =
+	{
+		float2(0, 0),
+		float2(1, 0),
+		float2(0, 1),
+		float2(1, 1),
+	};
+	[maxvertexcount(4)]
+	void geom(point v2g In[1], inout TriangleStream<g2f> SpriteStream)
+	{
+		g2f o = (g2f)0;
+		[unroll]
+		for (int i = 0; i < 4; i++)
+		{
+			float3 position = g_positions[i] * 0.01;
+			position = mul(_InvViewMatrix, position) + In[0].position;
+			o.position = UnityObjectToClipPos(float4(position, 1.0));
+
+			o.color = In[0].color;
+			o.texcoord = g_texcoords[i];
+
+			SpriteStream.Append(o);
+		}
+
+		SpriteStream.RestartStrip();
+	}
+	fixed4 frag(g2f i) : SV_Target
 	{
 		return i.color;
 	}
@@ -72,6 +104,7 @@ Shader "Unlit/TrailShader"
 		{
 			CGPROGRAM
 			#pragma vertex vert
+			#pragma geometry geom
 			#pragma fragment frag
 			ENDCG
 		}

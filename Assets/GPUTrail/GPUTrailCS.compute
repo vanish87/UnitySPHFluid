@@ -2,7 +2,7 @@
 #pragma kernel UpdateParticle
 #pragma kernel UpdateFromParticle
 
-#define TRAIL_BLOCK_SIZE 1
+#define TRAIL_BLOCK_SIZE 256
 
 #include "GPUTrailData.cginc"
 #include "../FluidSPH3D/SPHData.cginc"
@@ -10,9 +10,6 @@
 StructuredBuffer<Particle> _ParticleBuffer;
 
 RWStructuredBuffer<Particle> _FixedParticleBuffer;
-AppendStructuredBuffer<int> _ActiveParticleIndexBufferAppend;
-StructuredBuffer<int> _ActiveParticleIndexBuffer;
-int _ActiveParticleCount;
 
 RWStructuredBuffer<TrailNode> _TrailNodeBuffer;
 RWStructuredBuffer<TrailHeader> _TrailHeaderBuffer;
@@ -33,7 +30,8 @@ void Init (uint3 id : SV_DispatchThreadID)
     {
         const int nid = hid + i;
         TrailNode node = _TrailNodeBuffer[nid];
-        node.pos = float3(i, tid * sin(i * 2 * 3.14f /_MaxNodeNumPerTrail), 0);
+        // node.pos = float3(i, tid + 10 * sin(i * 2 * 3.14f /_MaxNodeNumPerTrail), 0);
+        node.pos = 0;
         _TrailNodeBuffer[nid] = node;
     }
 
@@ -44,39 +42,30 @@ void UpdateParticle (uint3 id : SV_DispatchThreadID)
 {
     const int pid = id.x;
     Particle p = _ParticleBuffer[pid];
-    const int uuid = p.uuid;
-
-    if(IsFluid(p))
-    {
-        _ActiveParticleIndexBufferAppend.Append(uuid);
-    }
-    _FixedParticleBuffer[uuid] = p;
-
+    _FixedParticleBuffer[p.uuid] = _ParticleBuffer[pid];
 }
 
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
 void UpdateFromParticle (uint3 id : SV_DispatchThreadID)
 {
     const int tid = id.x;
-    const int count = min(_ActiveParticleCount, _TrailHeaderBufferCount);
-    if(tid >= count) 
-    {
-        return;
-    }
 
     TrailHeader header = _TrailHeaderBuffer[tid];
-    // const int hid = header.head;
-    // const int len = header.length;
-    // const int uuid = _ActiveParticleIndexBuffer[tid];
+    Particle p = _FixedParticleBuffer[tid];
+    const int hid = header.headNodeIndex;
+    const int len = header.length;
 
-    // Particle p = _FixedParticleBuffer[uuid];
 
-    // for(int i = len-1 ; i > 0; --i)
-    // {
-    //     _TrailNodeBuffer[hid + i] = _TrailNodeBuffer[hid + (i-1)];
-    // }
+    float dis = distance(p.pos, _TrailNodeBuffer[hid + 1].pos);
+    bool shouldUpdate = dis < 7 && (hid%(4096*0.5)==0);
 
-    // TrailNode head = _TrailNodeBuffer[hid];
-    // head.pos = p.pos;
-    // _TrailNodeBuffer[hid] = head;
+    for(int i = len-1 ; i > 0; --i)
+    {
+        _TrailNodeBuffer[hid + i] = _TrailNodeBuffer[hid + (i-1)];
+        if(!shouldUpdate) _TrailNodeBuffer[hid + i].pos = 0;
+    }
+
+    TrailNode head = _TrailNodeBuffer[hid];
+    head.pos = p.pos;
+    _TrailNodeBuffer[hid] = head;
 }

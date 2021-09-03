@@ -238,7 +238,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &262512133
 Transform:
   m_ObjectHideFlags: 0
@@ -617,7 +617,7 @@ MonoBehaviour:
   openKey: 0
   saveKey: 0
   loadKey: 0
-  preset: 1
+  preset: 0
   isSyncing: 0
   data:
     emitters:
@@ -645,7 +645,7 @@ MonoBehaviour:
         color: {r: 0, g: 0, b: 1, a: 1}
     - name: Emiiter2
       isActive: 1
-      particlePerSecond: 48
+      particlePerSecond: 384
       space:
         center:
           x: -0.46
@@ -667,7 +667,7 @@ MonoBehaviour:
         color: {r: 0, g: 0, b: 1, a: 1}
     - name: Emiiter3
       isActive: 1
-      particlePerSecond: 32
+      particlePerSecond: 256
       space:
         center:
           x: 0.58

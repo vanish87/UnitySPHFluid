@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &63783541
 Transform:
   m_ObjectHideFlags: 0
@@ -195,7 +195,7 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    trailNum: 262144
+    trailNum: 32
 --- !u!114 &63783543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -622,7 +622,73 @@ MonoBehaviour:
   preset: 0
   isSyncing: 0
   data:
-    emitters: []
+    emitters:
+    - name: Emiiter1
+      isActive: 0
+      particlePerSecond: 128
+      space:
+        center:
+          x: -0.73
+          y: 6.25
+          z: 2.25
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 1
+          y: 2
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 0, g: 0, b: 1, a: 1}
+    - name: Emiiter2
+      isActive: 1
+      particlePerSecond: 1
+      space:
+        center:
+          x: -0.46
+          y: 6.77
+          z: 2.25
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 1
+          y: 0.05
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 0, g: 0, b: 1, a: 1}
+    - name: Emiiter3
+      isActive: 0
+      particlePerSecond: 256
+      space:
+        center:
+          x: 0.58
+          y: 6.28
+          z: 2.25
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 1
+          y: 0.02
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 0, g: 0, b: 1, a: 1}
 --- !u!1 &983096801
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,7 +808,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1172243129}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e7ff4e2e70a25b745b0ad508df87ab10, type: 3}
   m_Name: 
@@ -807,7 +873,7 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    numOfParticle: 262144
+    numOfParticle: 32768
     smoothlen: 0.1
     pressureK:
       x: 200

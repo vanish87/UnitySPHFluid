@@ -12,10 +12,11 @@ Shader "Unlit/TrailShader"
 
 	struct v2g
 	{
-		float3 prev : TEXCOORD0;
-		float3 pos  : TEXCOORD1;
-		float3 curr : TEXCOORD2;
-		float3 next : TEXCOORD3;
+		float3 p0 : TEXCOORD0;
+		float3 p1 : TEXCOORD1;
+		float3 p2 : TEXCOORD2;
+		float3 p3 : TEXCOORD3;
+		float life : TEXCOORD4;
 	};
 
 	struct g2f
@@ -40,26 +41,63 @@ Shader "Unlit/TrailShader"
 
     int GetIndex(int base, int offset, int len)
     {
-        return clamp(base + offset, 0, base + len);
+        offset = clamp(offset, 0, len);
+        return base + offset;
     }
 
 	v2g vert(uint id : SV_VertexID) 
 	{
 		v2g o = (v2g)0;
 
-        TrailHeader header = _TrailHeaderBuffer[id];
-        const int hid = header.head;
-        const int len = header.length;
+        TrailNode node = _TrailNodeBuffer[id];
 
-        const int prev = GetIndex(hid, -1, len);
-        const int this = GetIndex(hid,  0, len);
-        const int curr = GetIndex(hid,  1, len);
-        const int next = GetIndex(hid,  2, len);
+        _MaxNodePerTrail = 128;
 
-        o.prev = _TrailNodeBuffer[prev].pos;
-        o.pos  = _TrailNodeBuffer[this].pos;
-        o.curr = _TrailNodeBuffer[curr].pos;
-        o.next = _TrailNodeBuffer[next].pos;
+        const int headerID = id/_MaxNodePerTrail;
+        const int localID = id%_MaxNodePerTrail;
+        TrailHeader header = _TrailHeaderBuffer[headerID];
+        // const int len = header.length;
+        const int hid = header.headNodeIndex;
+        const int len = _MaxNodePerTrail-1;
+
+
+        const int i0 = GetIndex(hid, localID-1, len);
+        const int i1 = GetIndex(hid, localID+0, len);
+        const int i2 = GetIndex(hid, localID+1, len);
+        const int i3 = GetIndex(hid, localID+2, len);
+
+        float4 p0 = float4(_TrailNodeBuffer[i0].pos,1);
+        float4 p1 = float4(_TrailNodeBuffer[i1].pos,1);
+        float4 p2 = float4(_TrailNodeBuffer[i2].pos,1);
+        float4 p3 = float4(_TrailNodeBuffer[i3].pos,1);
+
+        // p0 = UnityObjectToClipPos(p0);
+        // p1 = UnityObjectToClipPos(p1);
+        // p2 = UnityObjectToClipPos(p2);
+        // p3 = UnityObjectToClipPos(p3);
+
+        // p0 /= p0.w;
+        // p1 /= p1.w;
+        // p2 /= p2.w;
+        // p3 /= p3.w;
+
+        // p0 = float4(1,0,0,1);
+        // p1 = float4(1,1,0,1);
+        // p2 = float4(1,2,0,1);
+        // p3 = float4(4,1,0,1);
+        
+        // float offset = headerID * 5;
+        // p0 += float4(0, offset, 0, 0);
+        // p1 += float4(0, offset, 0, 0);
+        // p2 += float4(0, offset, 0, 0);
+        // p3 += float4(0, offset, 0, 0);
+
+        o.p0 = p0;
+        o.p1 = p1;
+        o.p2 = p2;
+        o.p3 = p3;
+        
+        o.life = (localID < 1 || localID >= len )?-1:1;
 
 		return o;
 	}
@@ -86,7 +124,7 @@ Shader "Unlit/TrailShader"
 		[unroll]
 		for (int i = 0; i < 4; i++)
 		{
-			float3 position = g_positions[i] * 0.01f;
+			float3 position = g_positions[i] * 0.002f;
 			position = mul(_InvViewMatrix, position) + pos;
 			o.pos = UnityObjectToClipPos(float4(position, 1.0));
             o.col = col;
@@ -99,16 +137,18 @@ Shader "Unlit/TrailShader"
 	[maxvertexcount(4)]
 	void geom(point v2g p[1], inout TriangleStream<g2f> outStream)
 	{
-        const float _MITER_LIMIT = 0.75;
+        if(p[0].life <= 0) return;
 
-        float3 p0 = p[0].prev;
-		float3 p1 = p[0].pos;
-		float3 p2 = p[0].curr;
-		float3 p3 = p[0].next;
+        const float _MITER_LIMIT = 0.5;
+
+        float3 p0 = p[0].p0;
+		float3 p1 = p[0].p1;
+		float3 p2 = p[0].p2;
+		float3 p3 = p[0].p3;
 
 		float2 uv = 0;//p[0].uv.xy;
 
-		float  thickness = 0.05;
+		float  thickness = 0.01;
 		
 		// determine the direction of each of the 3 segments (previous, current, next)
 		float2 v0 = normalize(p1.xy - p0.xy);
@@ -209,15 +249,15 @@ Shader "Unlit/TrailShader"
 	[maxvertexcount(4)]
 	void geomParticle(point v2g p[1], inout TriangleStream<g2f> outStream)
 	{
-        float3 p0 = p[0].prev;
-		float3 p1 = p[0].pos;
-		float3 p2 = p[0].curr;
-		float3 p3 = p[0].next;
-        
-        // AddQuad(p0, float4(1,0,0,1), outStream);
+        float3 p0 = p[0].p0;
+		float3 p1 = p[0].p1;
+		float3 p2 = p[0].p2;
+		float3 p3 = p[0].p3;
+
+        AddQuad(p0, float4(1,0,0,1), outStream);
         AddQuad(p1, float4(1,1,1,1), outStream);
-        // AddQuad(p2, float4(0,1,0,1), outStream);
-        // AddQuad(p3, float4(0,0,1,1), outStream);
+        AddQuad(p2, float4(0,1,0,1), outStream);
+        AddQuad(p3, float4(0,0,1,1), outStream);
 	}
 
 
@@ -238,7 +278,8 @@ Shader "Unlit/TrailShader"
 		// Blend SrcAlpha OneMinusSrcAlpha
 	
 		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
-        ZWrite On
+        ZWrite Off
+        Cull Off
         Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass
@@ -246,6 +287,7 @@ Shader "Unlit/TrailShader"
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma geometry geom
+			// #pragma geometry geomParticle
 			#pragma fragment frag
 			ENDCG
 		}

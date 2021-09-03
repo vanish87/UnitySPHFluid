@@ -4,12 +4,11 @@ namespace GPUTrail
 {
 	public struct TrailHeader
 	{
-		public int head;
+		public int headNodeIndex;
 		public int length;
 	}
 	public struct TrailNode
 	{
-		public int head;
 		public float3 pos;
 	}
 }

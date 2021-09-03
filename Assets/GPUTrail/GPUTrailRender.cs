@@ -34,7 +34,7 @@ namespace GPUTrail
             material.SetBuffer("_TrailNodeBuffer", this.trailBuffer.NodeBuffer);
             material.SetInt("_MaxNodePerTrail", this.trailBuffer.MaxNodePerTrail);
 			var b = new Bounds(Vector3.zero, Vector3.one * 10000);
-			Graphics.DrawProcedural(material, b, MeshTopology.Points, this.buffer.Buffer.Size);
+			Graphics.DrawProcedural(material, b, MeshTopology.Points, this.trailBuffer.NodeBuffer.Size);
 		}
 	}
 }

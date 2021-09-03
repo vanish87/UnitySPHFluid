@@ -2,7 +2,7 @@
 #pragma kernel UpdateParticle
 #pragma kernel UpdateFromParticle
 
-#define TRAIL_BLOCK_SIZE 256
+#define TRAIL_BLOCK_SIZE 1
 
 #include "GPUTrailData.cginc"
 #include "../FluidSPH3D/SPHData.cginc"
@@ -25,16 +25,15 @@ void Init (uint3 id : SV_DispatchThreadID)
 {
     const int tid = id.x;
     TrailHeader header = _TrailHeaderBuffer[tid];
-    header.head = tid * _MaxNodeNumPerTrail;
+    header.headNodeIndex = tid * _MaxNodeNumPerTrail;
     header.length = _MaxNodeNumPerTrail;
 
-    const int hid = header.head;
+    const int hid = header.headNodeIndex;
     for(int i = 0; i < _MaxNodeNumPerTrail; ++i)
     {
         const int nid = hid + i;
         TrailNode node = _TrailNodeBuffer[nid];
-        node.head = hid;
-        node.pos = 0;
+        node.pos = float3(i, tid * sin(i * 2 * 3.14f /_MaxNodeNumPerTrail), 0);
         _TrailNodeBuffer[nid] = node;
     }
 
@@ -60,21 +59,24 @@ void UpdateFromParticle (uint3 id : SV_DispatchThreadID)
 {
     const int tid = id.x;
     const int count = min(_ActiveParticleCount, _TrailHeaderBufferCount);
-    if(tid >= count) return;
-
-    TrailHeader header = _TrailHeaderBuffer[tid];
-    const int hid = header.head;
-    const int len = header.length;
-    const int uuid = _ActiveParticleIndexBuffer[tid];
-
-    Particle p = _FixedParticleBuffer[uuid];
-
-    for(int i = len-1 ; i > 0; --i)
+    if(tid >= count) 
     {
-        _TrailNodeBuffer[hid + i] = _TrailNodeBuffer[hid + (i-1)];
+        return;
     }
 
-    TrailNode head = _TrailNodeBuffer[hid];
-    head.pos = p.pos;
-    _TrailNodeBuffer[hid] = head;
+    TrailHeader header = _TrailHeaderBuffer[tid];
+    // const int hid = header.head;
+    // const int len = header.length;
+    // const int uuid = _ActiveParticleIndexBuffer[tid];
+
+    // Particle p = _FixedParticleBuffer[uuid];
+
+    // for(int i = len-1 ; i > 0; --i)
+    // {
+    //     _TrailNodeBuffer[hid + i] = _TrailNodeBuffer[hid + (i-1)];
+    // }
+
+    // TrailNode head = _TrailNodeBuffer[hid];
+    // head.pos = p.pos;
+    // _TrailNodeBuffer[hid] = head;
 }

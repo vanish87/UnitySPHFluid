@@ -1,12 +1,11 @@
 
 struct TrailHeader
 {
-	int head;
+	int headNodeIndex;
 	int length;
 };
 
 struct TrailNode
 {
-	int head;
 	float3 pos;
 };

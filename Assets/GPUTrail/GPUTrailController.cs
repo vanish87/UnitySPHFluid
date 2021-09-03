@@ -28,9 +28,9 @@ namespace GPUTrail
 			//particle buffer from fluid sph is rearranged every frame
 			//we need fixed particle buffer to update trails
 			[Shader(Name = "_FixedParticleBuffer")] public GPUBufferVariable<FluidSPH3D.Particle> fixedParticleBuffer = new GPUBufferVariable<FluidSPH3D.Particle>();
-			[Shader(Name = "_ActiveParticleIndexBufferAppend")] public GPUBufferAppendConsume<int> activeParticleIndexBufferAppend = new GPUBufferAppendConsume<int>();
-			[Shader(Name = "_ActiveParticleIndexBuffer")] public GPUBufferVariable<int> activeParticleIndexBuffer = new GPUBufferVariable<int>();
-			[Shader(Name = "_ActiveParticleCount")] public int activeParticleCount = 0;
+			// [Shader(Name = "_ActiveParticleIndexBufferAppend")] public GPUBufferAppendConsume<int> activeParticleIndexBufferAppend = new GPUBufferAppendConsume<int>();
+			// [Shader(Name = "_ActiveParticleIndexBuffer")] public GPUBufferVariable<int> activeParticleIndexBuffer = new GPUBufferVariable<int>();
+			// [Shader(Name = "_ActiveParticleCount")] public int activeParticleCount = 0;
 		}
 		public bool Inited => this.inited;
 		public GPUBufferVariable<TrailHeader> Buffer => this.trailData.trailHeaderBuffer;
@@ -82,8 +82,6 @@ namespace GPUTrail
 			this.Configure.D.trailNum = tsize;
 
 			this.trailData.fixedParticleBuffer.InitBuffer(tsize);
-			this.trailData.activeParticleIndexBufferAppend.InitAppendBuffer(tsize);
-			this.trailData.activeParticleIndexBuffer.InitBuffer(this.trailData.activeParticleIndexBufferAppend);
 
 			if (this.trailData.trailHeaderBuffer.Size != tsize)
 			{
@@ -98,8 +96,6 @@ namespace GPUTrail
 
 		protected void Update()
 		{
-			return;
-
 			if (this.trailData.fixedParticleBuffer.Size != this.particleBuffer.Buffer.Size)
 			{
 				//Update trail buffer after particle buffer created
@@ -110,10 +106,7 @@ namespace GPUTrail
 			var trailNum = this.Configure.D.trailNum;
 			var pNum = this.particleBuffer.Buffer.Size;
 
-			this.trailData.activeParticleIndexBufferAppend.ResetCounter();
 			this.dispatcher.Dispatch(Kernel.UpdateParticle, pNum);
-
-			this.trailData.activeParticleCount = this.trailData.activeParticleIndexBufferAppend.GetCounter();
 			this.dispatcher.Dispatch(Kernel.UpdateFromParticle, trailNum);
 		}
 		protected void OnEnable()

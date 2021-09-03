@@ -148,12 +148,12 @@ Shader "Unlit/TrailShader"
 
 		float2 uv = 0;//p[0].uv.xy;
 
-		float  thickness = 0.01;
+		float  thickness = 0.004;
 		
 		// determine the direction of each of the 3 segments (previous, current, next)
-		float2 v0 = normalize(p1.xy - p0.xy);
-		float2 v1 = normalize(p2.xy - p1.xy);
-		float2 v2 = normalize(p3.xy - p2.xy);
+		float2 v0 = normalize(p1.xz - p0.xz);
+		float2 v1 = normalize(p2.xz - p1.xz);
+		float2 v2 = normalize(p3.xz - p2.xz);
 
 		// determine the normal of each of the 3 segments (previous, current, next)
 		float2 n0 = float2(-v0.y, v0.x);

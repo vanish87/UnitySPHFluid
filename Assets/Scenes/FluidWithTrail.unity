@@ -195,7 +195,7 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    trailNum: 32
+    trailNum: 32768
 --- !u!114 &63783543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,8 +209,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trailCS: {fileID: 7200000, guid: acf4ffbebc3fc634a9643a5518f2f7da, type: 3}
-  trailData:
-    activeParticleCount: 0
 --- !u!114 &63783544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -619,7 +617,7 @@ MonoBehaviour:
   openKey: 0
   saveKey: 0
   loadKey: 0
-  preset: 0
+  preset: 1
   isSyncing: 0
   data:
     emitters:
@@ -647,7 +645,7 @@ MonoBehaviour:
         color: {r: 0, g: 0, b: 1, a: 1}
     - name: Emiiter2
       isActive: 1
-      particlePerSecond: 1
+      particlePerSecond: 48
       space:
         center:
           x: -0.46
@@ -668,8 +666,8 @@ MonoBehaviour:
         displayBound: 1
         color: {r: 0, g: 0, b: 1, a: 1}
     - name: Emiiter3
-      isActive: 0
-      particlePerSecond: 256
+      isActive: 1
+      particlePerSecond: 32
       space:
         center:
           x: 0.58
@@ -795,7 +793,7 @@ GameObject:
   - component: {fileID: 1172243131}
   - component: {fileID: 1172243130}
   m_Layer: 0
-  m_Name: SPHFluid
+  m_Name: SPHFluidTrail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -873,7 +871,7 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    numOfParticle: 32768
+    numOfParticle: 131072
     smoothlen: 0.1
     pressureK:
       x: 200
@@ -891,11 +889,11 @@ MonoBehaviour:
       z: 0
     timeStep: 0.004
     maxSpeed: 10
-    stepIteration: 4
+    stepIteration: 8
     particleScale: 0.5
     renderBoundaryParticle: 1
     particleLife:
-      x: 20
+      x: 40
       y: 60
     addSimulationSpaceBounds:
       x: 1
@@ -992,7 +990,95 @@ MonoBehaviour:
   preset: 0
   isSyncing: 0
   data:
-    boundaries: []
+    boundaries:
+    - name: WallFront
+      type: 0
+      density: 0.0625
+      space:
+        center:
+          x: 0
+          y: 3.5
+          z: 1.75
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 3
+          y: 8
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 1, g: 0, b: 0, a: 1}
+    - name: WallLeft
+      type: 0
+      density: 0.0625
+      space:
+        center:
+          x: -1.5
+          y: 2.5
+          z: 2.125
+        rotation:
+          value:
+            x: 0
+            y: 0.7071068
+            z: 0
+            w: 0.7071068
+        scale:
+          x: 0.75
+          y: 10
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 1, g: 0, b: 0, a: 1}
+    - name: WallRight
+      type: 0
+      density: 0.0625
+      space:
+        center:
+          x: 1.5
+          y: 2.5
+          z: 2.125
+        rotation:
+          value:
+            x: 0
+            y: -0.7071068
+            z: 0
+            w: 0.7071068
+        scale:
+          x: 0.75
+          y: 10
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 1, g: 0, b: 0, a: 1}
+    - name: WallBack
+      type: 0
+      density: 0.0625
+      space:
+        center:
+          x: 0
+          y: 2.5
+          z: 2.5
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 3
+          y: 10
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1361117930
 GameObject:
   m_ObjectHideFlags: 0

@@ -87,6 +87,10 @@ namespace GPUTrail
 			this.trailData.trailHeaderBuffer.GetToCPUData();
 			this.trailData.trailNodeBuffer.GetToCPUData();
 
+			var idnex = new int[32];
+			this.trailData.trailNodeIndexBufferAppend.Data.GetData(idnex);
+
+
 			foreach(var d in this.trailData.trailHeaderBuffer.CPUData)
 			{
 				if(d.maxLength > 0) Debug.Log(d.headNodeIndex + " " + d.maxLength + " " + d.currentLength);
@@ -116,9 +120,20 @@ namespace GPUTrail
 			{
 				this.dispatcher.Dispatch(Kernel.UpdateFromParticle, headerNum);
 				this.trailData.trailHeaderBuffer.GetToCPUData();
-				foreach (var d in this.trailData.trailHeaderBuffer.CPUData)
+				this.trailData.trailNodeBuffer.GetToCPUData();
+				// foreach (var d in this.trailData.trailHeaderBuffer.CPUData)
+				// {
+				// 	if (d.currentLength > 0) Debug.Log(d.headNodeIndex + " " + d.maxLength + " " + d.currentLength);
+				// }
+
+				var hdata = this.trailData.trailHeaderBuffer.CPUData;
+				var ndata = this.trailData.trailNodeBuffer.CPUData;
+				var header = hdata.Where(hd=>hd.maxLength > 0).FirstOrDefault();
+				var n = header.headNodeIndex;
+				while(n != -1)
 				{
-					if (d.currentLength > 0) Debug.Log(d.headNodeIndex + " " + d.maxLength + " " + d.currentLength);
+					Debug.Log("idx:" + ndata[n].idx + " prev:" + ndata[n].prev + "next:"+ ndata[n].next);
+					n = ndata[n].next;
 				}
 			}
 		}
@@ -129,6 +144,22 @@ namespace GPUTrail
 		protected void OnDisable()
 		{
 			this.Deinit();
+		}
+		protected void OnDrawGizmos()
+		{
+
+				var hdata = this.trailData.trailHeaderBuffer.CPUData;
+				var ndata = this.trailData.trailNodeBuffer.CPUData;
+				var header = hdata[0];
+				var n = header.headNodeIndex;
+				while(n != -1)
+				{
+					var current = ndata[n];
+					// Debug.Log("idx:" + ndata[n].idx + " prev:" + ndata[n].prev + "next:"+ ndata[n].next);
+
+					if (current.prev != -1) Gizmos.DrawLine(current.pos, ndata[current.prev].pos);
+					n = ndata[n].next;
+				}
 		}
 	}
 }

@@ -134,7 +134,7 @@ void UpdateFromParticle (uint3 id : SV_DispatchThreadID)
     header.headNodeIndex = newid;
 
     node.pos = p.pos;
-    node.pos = float3(currentlength, 0, 0);
+    // node.pos = float3(currentlength, 0, 0);
 
     _TrailHeaderBuffer[hid] = header;
     _TrailNodeBuffer[newid] = node;

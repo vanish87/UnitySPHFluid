@@ -195,7 +195,8 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    trailNum: 32768
+    trailHeaderNum: 1024
+    trailNodeNum: 32
 --- !u!114 &63783543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,6 +210,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trailCS: {fileID: 7200000, guid: acf4ffbebc3fc634a9643a5518f2f7da, type: 3}
+  trailData:
+    emitTrailNum: 2
+    emitTrailLen: 32
 --- !u!114 &63783544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -304,7 +308,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &311666222
 Transform:
   m_ObjectHideFlags: 0
@@ -617,76 +621,10 @@ MonoBehaviour:
   openKey: 0
   saveKey: 0
   loadKey: 0
-  preset: 0
+  preset: 2
   isSyncing: 0
   data:
-    emitters:
-    - name: Emiiter1
-      isActive: 0
-      particlePerSecond: 128
-      space:
-        center:
-          x: -0.73
-          y: 6.25
-          z: 2.25
-        rotation:
-          value:
-            x: 0
-            y: 0
-            z: 0
-            w: 1
-        scale:
-          x: 1
-          y: 2
-          z: 0.1
-        displayAxis: 0
-        displayText: 0
-        displayBound: 1
-        color: {r: 0, g: 0, b: 1, a: 1}
-    - name: Emiiter2
-      isActive: 1
-      particlePerSecond: 384
-      space:
-        center:
-          x: -0.46
-          y: 6.77
-          z: 2.25
-        rotation:
-          value:
-            x: 0
-            y: 0
-            z: 0
-            w: 1
-        scale:
-          x: 1
-          y: 0.05
-          z: 0.1
-        displayAxis: 0
-        displayText: 0
-        displayBound: 1
-        color: {r: 0, g: 0, b: 1, a: 1}
-    - name: Emiiter3
-      isActive: 1
-      particlePerSecond: 256
-      space:
-        center:
-          x: 0.58
-          y: 6.28
-          z: 2.25
-        rotation:
-          value:
-            x: 0
-            y: 0
-            z: 0
-            w: 1
-        scale:
-          x: 1
-          y: 0.02
-          z: 0.1
-        displayAxis: 0
-        displayText: 0
-        displayBound: 1
-        color: {r: 0, g: 0, b: 1, a: 1}
+    emitters: []
 --- !u!1 &983096801
 GameObject:
   m_ObjectHideFlags: 0
@@ -871,7 +809,7 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    numOfParticle: 131072
+    numOfParticle: 16384
     smoothlen: 0.1
     pressureK:
       x: 200

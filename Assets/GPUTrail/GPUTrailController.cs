@@ -130,9 +130,10 @@ namespace GPUTrail
 				var ndata = this.trailData.trailNodeBuffer.CPUData;
 				var header = hdata.Where(hd=>hd.maxLength > 0).FirstOrDefault();
 				var n = header.headNodeIndex;
+				Debug.Log("hid:" + header.headNodeIndex + " current len:" + header.currentLength);
 				while(n != -1)
 				{
-					Debug.Log("idx:" + ndata[n].idx + " prev:" + ndata[n].prev + "next:"+ ndata[n].next);
+					Debug.Log("idx:" + ndata[n].idx + " prev:" + ndata[n].prev + " next:"+ ndata[n].next);
 					n = ndata[n].next;
 				}
 			}

@@ -51,8 +51,6 @@ Shader "Unlit/TrailShader"
 
         TrailNode node = _TrailNodeBuffer[id];
 
-        _MaxNodePerTrail = 128;
-
         const int headerID = id/_MaxNodePerTrail;
         const int localID = id%_MaxNodePerTrail;
         TrailHeader header = _TrailHeaderBuffer[headerID];
@@ -71,15 +69,15 @@ Shader "Unlit/TrailShader"
         float4 p2 = float4(_TrailNodeBuffer[i2].pos,1);
         float4 p3 = float4(_TrailNodeBuffer[i3].pos,1);
 
-        // p0 = UnityObjectToClipPos(p0);
-        // p1 = UnityObjectToClipPos(p1);
-        // p2 = UnityObjectToClipPos(p2);
-        // p3 = UnityObjectToClipPos(p3);
+        p0 = UnityObjectToClipPos(p0);
+        p1 = UnityObjectToClipPos(p1);
+        p2 = UnityObjectToClipPos(p2);
+        p3 = UnityObjectToClipPos(p3);
 
-        // p0 /= p0.w;
-        // p1 /= p1.w;
-        // p2 /= p2.w;
-        // p3 /= p3.w;
+        p0 /= p0.w;
+        p1 /= p1.w;
+        p2 /= p2.w;
+        p3 /= p3.w;
 
         // p0 = float4(1,0,0,1);
         // p1 = float4(1,1,0,1);
@@ -148,12 +146,12 @@ Shader "Unlit/TrailShader"
 
 		float2 uv = 0;//p[0].uv.xy;
 
-		float  thickness = 0.004;
+		float  thickness = 0.03;
 		
 		// determine the direction of each of the 3 segments (previous, current, next)
-		float2 v0 = normalize(p1.xz - p0.xz);
-		float2 v1 = normalize(p2.xz - p1.xz);
-		float2 v2 = normalize(p3.xz - p2.xz);
+		float2 v0 = normalize(p1.xy - p0.xy);
+		float2 v1 = normalize(p2.xy - p1.xy);
+		float2 v2 = normalize(p3.xy - p2.xy);
 
 		// determine the normal of each of the 3 segments (previous, current, next)
 		float2 n0 = float2(-v0.y, v0.x);
@@ -179,34 +177,34 @@ Shader "Unlit/TrailShader"
 			// close the gap
 			if( dot(v0, n1) > 0 )
 			{
-				pIn.pos = UnityObjectToClipPos(float4((p1.xy + thickness * n0), p1.z, 1.0 ));
+				pIn.pos = (float4((p1.xy + thickness * n0), p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(1.0, uv.y);
 				outStream.Append(pIn);
 
-				pIn.pos = UnityObjectToClipPos(float4((p1.xy + thickness * n1), p1.z, 1.0 ));
+				pIn.pos = (float4((p1.xy + thickness * n1), p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(1.0, uv.y);
 				outStream.Append(pIn);
 
-				pIn.pos = UnityObjectToClipPos(float4( p1.xy, p1.z, 1.0 ));
+				pIn.pos = (float4( p1.xy, p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(0.5, uv.y);
 				outStream.Append(pIn);
 				
 				outStream.RestartStrip();
 			} else {
-				pIn.pos = UnityObjectToClipPos(float4((p1.xy - thickness * n1), p1.z, 1.0 ));
+				pIn.pos = (float4((p1.xy - thickness * n1), p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(0.0, uv.y);
 				outStream.Append(pIn);
 
-				pIn.pos = UnityObjectToClipPos(float4((p1.xy - thickness * n0), p1.z, 1.0 ));
+				pIn.pos = (float4((p1.xy - thickness * n0), p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(0.0, uv.y);
 				outStream.Append(pIn);
 
-				pIn.pos = UnityObjectToClipPos(float4( p1.xy, p1.z, 1.0 ));
+				pIn.pos = (float4( p1.xy, p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(0.5, uv.y);
 				outStream.Append(pIn);
@@ -223,22 +221,22 @@ Shader "Unlit/TrailShader"
 		}
 
 		// generate the triangle strip
-		pIn.pos = UnityObjectToClipPos(float4( (p1.xy + length_a * miter_a), p1.z, 1.0 ));
+		pIn.pos = (float4( (p1.xy + length_a * miter_a), p1.z, 1.0 ));
 		pIn.col = _Color;
 		pIn.uv  = float2(1.0, uv.y);
 		outStream.Append(pIn);
 
-		pIn.pos = UnityObjectToClipPos(float4( (p1.xy - length_a * miter_a), p1.z, 1.0 ));
+		pIn.pos = (float4( (p1.xy - length_a * miter_a), p1.z, 1.0 ));
 		pIn.col =_Color;
 		pIn.uv  = float2(0.0, uv.y);
 		outStream.Append(pIn);
 
-		pIn.pos = UnityObjectToClipPos(float4( (p2.xy + length_b * miter_b), p2.z, 1.0 ));
+		pIn.pos = (float4( (p2.xy + length_b * miter_b), p2.z, 1.0 ));
 		pIn.col = _Color;
 		pIn.uv  = float2(1.0, uv.y);
 		outStream.Append(pIn);
 
-		pIn.pos = UnityObjectToClipPos(float4( (p2.xy - length_b * miter_b), p2.z, 1.0 ));
+		pIn.pos = (float4( (p2.xy - length_b * miter_b), p2.z, 1.0 ));
 		pIn.col = _Color;
 		pIn.uv  = float2(0.0, uv.y);
 		outStream.Append(pIn);
@@ -264,6 +262,7 @@ Shader "Unlit/TrailShader"
 	fixed4 frag(g2f i) : SV_Target
 	{
         return 1;
+        return float4(1,1,1,0.1);
 		return i.col;
 	}
 
@@ -278,8 +277,8 @@ Shader "Unlit/TrailShader"
 		// Blend SrcAlpha OneMinusSrcAlpha
 	
 		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
-        ZWrite Off
-        Cull Off
+        // ZWrite Off
+        // Cull On
         Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass

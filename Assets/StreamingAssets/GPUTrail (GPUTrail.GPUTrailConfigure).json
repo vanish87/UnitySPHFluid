@@ -28,5 +28,6 @@
             "a": 1.0
         }
     },
-    "trailNum": 32
+    "trailHeaderNum": 1024,
+    "trailNodeNum": 131072
 }

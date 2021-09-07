@@ -196,7 +196,7 @@ MonoBehaviour:
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
     trailHeaderNum: 1024
-    trailNodeNum: 32
+    trailNodeNum: 131072
 --- !u!114 &63783543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,8 +211,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trailCS: {fileID: 7200000, guid: acf4ffbebc3fc634a9643a5518f2f7da, type: 3}
   trailData:
-    emitTrailNum: 2
-    emitTrailLen: 32
+    emitTrailNum: 1024
+    emitTrailLen: 128
 --- !u!114 &63783544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -621,10 +621,76 @@ MonoBehaviour:
   openKey: 0
   saveKey: 0
   loadKey: 0
-  preset: 2
+  preset: 0
   isSyncing: 0
   data:
-    emitters: []
+    emitters:
+    - name: Emiiter1
+      isActive: 0
+      particlePerSecond: 128
+      space:
+        center:
+          x: -0.73
+          y: 6.25
+          z: 2.25
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 1
+          y: 2
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 0, g: 0, b: 1, a: 1}
+    - name: Emiiter2
+      isActive: 1
+      particlePerSecond: 384
+      space:
+        center:
+          x: -0.46
+          y: 6.77
+          z: 2.25
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 1
+          y: 0.05
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 0, g: 0, b: 1, a: 1}
+    - name: Emiiter3
+      isActive: 1
+      particlePerSecond: 256
+      space:
+        center:
+          x: 0.58
+          y: 6.28
+          z: 2.25
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 1
+          y: 0.02
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 0, g: 0, b: 1, a: 1}
 --- !u!1 &983096801
 GameObject:
   m_ObjectHideFlags: 0
@@ -744,7 +810,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1172243129}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e7ff4e2e70a25b745b0ad508df87ab10, type: 3}
   m_Name: 
@@ -809,7 +875,7 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    numOfParticle: 16384
+    numOfParticle: 131072
     smoothlen: 0.1
     pressureK:
       x: 200
@@ -829,7 +895,7 @@ MonoBehaviour:
     maxSpeed: 10
     stepIteration: 8
     particleScale: 0.5
-    renderBoundaryParticle: 1
+    renderBoundaryParticle: 0
     particleLife:
       x: 40
       y: 60
@@ -925,98 +991,10 @@ MonoBehaviour:
   openKey: 0
   saveKey: 0
   loadKey: 0
-  preset: 0
+  preset: 2
   isSyncing: 0
   data:
-    boundaries:
-    - name: WallFront
-      type: 0
-      density: 0.0625
-      space:
-        center:
-          x: 0
-          y: 3.5
-          z: 1.75
-        rotation:
-          value:
-            x: 0
-            y: 0
-            z: 0
-            w: 1
-        scale:
-          x: 3
-          y: 8
-          z: 0.1
-        displayAxis: 0
-        displayText: 0
-        displayBound: 1
-        color: {r: 1, g: 0, b: 0, a: 1}
-    - name: WallLeft
-      type: 0
-      density: 0.0625
-      space:
-        center:
-          x: -1.5
-          y: 2.5
-          z: 2.125
-        rotation:
-          value:
-            x: 0
-            y: 0.7071068
-            z: 0
-            w: 0.7071068
-        scale:
-          x: 0.75
-          y: 10
-          z: 0.1
-        displayAxis: 0
-        displayText: 0
-        displayBound: 1
-        color: {r: 1, g: 0, b: 0, a: 1}
-    - name: WallRight
-      type: 0
-      density: 0.0625
-      space:
-        center:
-          x: 1.5
-          y: 2.5
-          z: 2.125
-        rotation:
-          value:
-            x: 0
-            y: -0.7071068
-            z: 0
-            w: 0.7071068
-        scale:
-          x: 0.75
-          y: 10
-          z: 0.1
-        displayAxis: 0
-        displayText: 0
-        displayBound: 1
-        color: {r: 1, g: 0, b: 0, a: 1}
-    - name: WallBack
-      type: 0
-      density: 0.0625
-      space:
-        center:
-          x: 0
-          y: 2.5
-          z: 2.5
-        rotation:
-          value:
-            x: 0
-            y: 0
-            z: 0
-            w: 1
-        scale:
-          x: 3
-          y: 10
-          z: 0.1
-        displayAxis: 0
-        displayText: 0
-        displayBound: 1
-        color: {r: 1, g: 0, b: 0, a: 1}
+    boundaries: []
 --- !u!1 &1361117930
 GameObject:
   m_ObjectHideFlags: 0

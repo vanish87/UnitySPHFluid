@@ -5,7 +5,7 @@
 #pragma kernel UpdateParticle
 #pragma kernel UpdateFromParticle
 
-#define TRAIL_BLOCK_SIZE 1
+#define TRAIL_BLOCK_SIZE 256
 
 #include "GPUTrailData.cginc"
 #include "../FluidSPH3D/SPHData.cginc"

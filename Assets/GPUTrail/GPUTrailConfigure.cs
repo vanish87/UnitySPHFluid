@@ -9,7 +9,9 @@ namespace GPUTrail
 		public class Data : GPUContainer
 		{
 			public Space3D space = new Space3D();
-			public int trailNum = 1024 * 16;
+			public int trailHeaderNum = 1024 * 16;
+			public int trailNodeNum = 1024 * 16 * 128;
+
 		}
 
 		protected void OnDrawGizmos()

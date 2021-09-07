@@ -1,4 +1,7 @@
-#pragma kernel Init
+#pragma kernel InitHeader
+#pragma kernel InitNode
+#pragma kernel EmitTrail
+
 #pragma kernel UpdateParticle
 #pragma kernel UpdateFromParticle
 
@@ -8,35 +11,77 @@
 #include "../FluidSPH3D/SPHData.cginc"
 
 StructuredBuffer<Particle> _ParticleBuffer;
-
 RWStructuredBuffer<Particle> _FixedParticleBuffer;
 
 RWStructuredBuffer<TrailNode> _TrailNodeBuffer;
 RWStructuredBuffer<TrailHeader> _TrailHeaderBuffer;
-int _TrailHeaderBufferCount;
-int _MaxNodeNumPerTrail;
+
+AppendStructuredBuffer<int> _TrailHeaderIndexBufferAppend;
+ConsumeStructuredBuffer<int> _TrailHeaderIndexBufferConsume;
+
+AppendStructuredBuffer<int> _TrailNodeIndexBufferAppend;
+ConsumeStructuredBuffer<int> _TrailNodeIndexBufferConsume;
+
+int _EmitTrailNum;
+int _EmitTrailLen;
+
+TrailHeader InitHeader(int idx, TrailHeader header)
+{
+    header = (TrailHeader)0;
+    header.headNodeIndex = -1;
+    header.currentlength = -1;
+    header.maxLength = -1;
+    return header;
+}
+TrailNode InitNode(int idx, TrailNode node)
+{
+    node = (TrailNode)0;
+    node.prev = node.next = -1;
+    node.idx = idx;
+    node.pos = 0;
+    return node;
+}
 
 
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
-void Init (uint3 id : SV_DispatchThreadID)
+void InitHeader (uint3 id : SV_DispatchThreadID)
+{
+    const int hid = id.x;
+    TrailHeader header = _TrailHeaderBuffer[hid];
+    header = InitHeader(hid, header);
+    _TrailHeaderBuffer[hid] = header;
+
+    _TrailHeaderIndexBufferAppend.Append(hid);
+}
+ 
+[numthreads(TRAIL_BLOCK_SIZE,1,1)]
+void InitNode (uint3 id : SV_DispatchThreadID)
+{
+    const int nid = id.x;
+    TrailNode node = _TrailNodeBuffer[nid];
+    node = InitNode(nid, node);
+    _TrailNodeBuffer[nid] = node;
+
+    _TrailNodeIndexBufferAppend.Append(nid);
+}
+
+[numthreads(TRAIL_BLOCK_SIZE,1,1)]
+void EmitTrail (uint3 id : SV_DispatchThreadID)
 {
     const int tid = id.x;
-    TrailHeader header = _TrailHeaderBuffer[tid];
-    header.headNodeIndex = tid * _MaxNodeNumPerTrail;
-    header.length = _MaxNodeNumPerTrail;
+    if(tid >= _EmitTrailNum) return;
 
-    const int hid = header.headNodeIndex;
-    for(int i = 0; i < _MaxNodeNumPerTrail; ++i)
-    {
-        const int nid = hid + i;
-        TrailNode node = _TrailNodeBuffer[nid];
-        // node.pos = float3(i, tid + 10 * sin(i * 2 * 3.14f /_MaxNodeNumPerTrail), 0);
-        node.pos = 0;
-        _TrailNodeBuffer[nid] = node;
-    }
+    const int hid = _TrailHeaderIndexBufferConsume.Consume();
+    const int maxLength = _EmitTrailLen;
 
-    _TrailHeaderBuffer[tid] = header;
+    TrailHeader header = _TrailHeaderBuffer[hid];
+    header = InitHeader(hid, header);
+    header.currentlength = 0;
+    header.maxLength = maxLength;
+    _TrailHeaderBuffer[hid] = header;
 }
+
+
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
 void UpdateParticle (uint3 id : SV_DispatchThreadID)
 {
@@ -48,24 +93,46 @@ void UpdateParticle (uint3 id : SV_DispatchThreadID)
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
 void UpdateFromParticle (uint3 id : SV_DispatchThreadID)
 {
-    const int tid = id.x;
+    const int hid = id.x;
+    const int pid = hid;
+    TrailHeader header = _TrailHeaderBuffer[hid];
+    Particle p = _FixedParticleBuffer[pid];
 
-    TrailHeader header = _TrailHeaderBuffer[tid];
-    Particle p = _FixedParticleBuffer[tid];
-    const int hid = header.headNodeIndex;
-    const int len = header.length;
+    const int firstid = header.headNodeIndex;
+    const int currentlength = header.currentlength;
+    const int maxLength = header.maxLength;
 
+    if(maxLength <= 0) return;
 
-    float dis = distance(p.pos, _TrailNodeBuffer[hid + 1].pos);
-    bool shouldUpdate = dis < 7 && (hid%(4096*0.5)==0);
-
-    for(int i = len-1 ; i > 0; --i)
+    int newid = -1;
+    if(currentlength == maxLength)
     {
-        _TrailNodeBuffer[hid + i] = _TrailNodeBuffer[hid + (i-1)];
-        if(!shouldUpdate) _TrailNodeBuffer[hid + i].pos = 0;
+        int lastid = firstid;
+        while(_TrailNodeBuffer[lastid].next != -1) lastid = _TrailNodeBuffer[lastid].next;
+
+        int prev = _TrailNodeBuffer[lastid].prev;
+        _TrailNodeBuffer[prev].next = -1;
+
+        newid = lastid;
+    }
+    else
+    {
+        newid = _TrailNodeIndexBufferConsume.Consume();
+        header.currentlength = currentlength+1;
     }
 
-    TrailNode head = _TrailNodeBuffer[hid];
-    head.pos = p.pos;
-    _TrailNodeBuffer[hid] = head;
+    TrailNode node = _TrailNodeBuffer[newid];
+    node = InitNode(newid, node);
+    if(firstid != -1)
+    {
+        TrailNode first = _TrailNodeBuffer[firstid];
+        node.Append(first);
+    }
+    
+    header.headNodeIndex = newid;
+
+    node.pos = p.pos;
+
+    _TrailHeaderBuffer[hid] = header;
+    _TrailNodeBuffer[newid] = node;
 }

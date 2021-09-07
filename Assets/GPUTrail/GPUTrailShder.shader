@@ -29,21 +29,11 @@ Shader "Unlit/TrailShader"
 	sampler2D _MainTex;
 	float4 _ST;
 
-	StructuredBuffer<TrailHeader> _TrailHeaderBuffer;
-    int _TrailHeaderBufferCount;
-
 	StructuredBuffer<TrailNode> _TrailNodeBuffer;
     int _TrailNodeBufferConnt;
 
-    int _MaxNodePerTrail;
 
     float4 _Color;
-
-    int GetIndex(int base, int offset, int len)
-    {
-        offset = clamp(offset, 0, len);
-        return base + offset;
-    }
 
 	v2g vert(uint id : SV_VertexID) 
 	{
@@ -51,18 +41,17 @@ Shader "Unlit/TrailShader"
 
         TrailNode node = _TrailNodeBuffer[id];
 
-        const int headerID = id/_MaxNodePerTrail;
-        const int localID = id%_MaxNodePerTrail;
-        TrailHeader header = _TrailHeaderBuffer[headerID];
-        // const int len = header.length;
-        const int hid = header.headNodeIndex;
-        const int len = _MaxNodePerTrail-1;
+        if(node.idx == -1) return o;
 
+        const bool prev = node.prev != -1;
+        const bool next = node.next != -1;
+        const bool nnext = next && (_TrailNodeBuffer[node.next].next != -1);
 
-        const int i0 = GetIndex(hid, localID-1, len);
-        const int i1 = GetIndex(hid, localID+0, len);
-        const int i2 = GetIndex(hid, localID+1, len);
-        const int i3 = GetIndex(hid, localID+2, len);
+        const int i1 = node.idx;
+
+        const int i0 = node.prev == -1? i1:node.prev;
+        const int i2 = node.next == -1? i1:node.next;
+        const int i3 = node.next == -1? i1:(_TrailNodeBuffer[node.next].next == -1?i1:_TrailNodeBuffer[node.next].next);
 
         float4 p0 = float4(_TrailNodeBuffer[i0].pos,1);
         float4 p1 = float4(_TrailNodeBuffer[i1].pos,1);
@@ -95,7 +84,7 @@ Shader "Unlit/TrailShader"
         o.p2 = p2;
         o.p3 = p3;
         
-        o.life = (localID < 1 || localID >= len )?-1:1;
+        o.life = (!prev || !next )?-1:1;
 
 		return o;
 	}

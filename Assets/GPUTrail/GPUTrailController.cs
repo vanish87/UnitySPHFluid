@@ -13,29 +13,33 @@ namespace GPUTrail
 	{
 		public enum Kernel
 		{
-			Init,
+			InitHeader,
+			InitNode,
+			EmitTrail,
 			UpdateParticle,
 			UpdateFromParticle,
 		}
 		[System.Serializable]
 		public class GPUTrailData : GPUContainer
 		{
-			[Shader(Name = "_MaxNodeNumPerTrail")] public const int MAX_NODE_PER_TRAIL = 128;
 			[Shader(Name = "_TrailNodeBuffer")] public GPUBufferVariable<TrailNode> trailNodeBuffer = new GPUBufferVariable<TrailNode>();
 			[Shader(Name = "_TrailHeaderBuffer")] public GPUBufferVariable<TrailHeader> trailHeaderBuffer = new GPUBufferVariable<TrailHeader>();
+			[Shader(Name = "_TrailHeaderIndexBufferAppend")] public GPUBufferAppendConsume<int> trailIndexHeaderBufferAppend = new GPUBufferAppendConsume<int>();
+			[Shader(Name = "_TrailHeaderIndexBufferConsume")] public GPUBufferAppendConsume<int> trailIndexHeaderBufferConsume = new GPUBufferAppendConsume<int>();
+			[Shader(Name = "_TrailNodeIndexBufferAppend")] public GPUBufferAppendConsume<int> trailNodeIndexBufferAppend = new GPUBufferAppendConsume<int>();
+			[Shader(Name = "_TrailNodeIndexBufferConsume")] public GPUBufferAppendConsume<int> trailNodeIndexBufferConsume = new GPUBufferAppendConsume<int>();
 
 
 			//particle buffer from fluid sph is rearranged every frame
 			//we need fixed particle buffer to update trails
 			[Shader(Name = "_FixedParticleBuffer")] public GPUBufferVariable<FluidSPH3D.Particle> fixedParticleBuffer = new GPUBufferVariable<FluidSPH3D.Particle>();
-			// [Shader(Name = "_ActiveParticleIndexBufferAppend")] public GPUBufferAppendConsume<int> activeParticleIndexBufferAppend = new GPUBufferAppendConsume<int>();
-			// [Shader(Name = "_ActiveParticleIndexBuffer")] public GPUBufferVariable<int> activeParticleIndexBuffer = new GPUBufferVariable<int>();
-			// [Shader(Name = "_ActiveParticleCount")] public int activeParticleCount = 0;
+
+			[Shader(Name = "_EmitTrailNum")] public int emitTrailNum = 2048;
+			[Shader(Name = "_EmitTrailLen")] public int emitTrailLen = 128;
 		}
 		public bool Inited => this.inited;
 		public GPUBufferVariable<TrailHeader> Buffer => this.trailData.trailHeaderBuffer;
 		public GPUBufferVariable<TrailNode> NodeBuffer => this.trailData.trailNodeBuffer;
-		public int MaxNodePerTrail => GPUTrailData.MAX_NODE_PER_TRAIL;
 
 		[SerializeField] protected ComputeShader trailCS;
 		[SerializeField] protected GPUTrailData trailData = new GPUTrailData();
@@ -52,9 +56,16 @@ namespace GPUTrail
 
 			this.Configure.Initialize();
 
-			var trailNum = this.Configure.D.trailNum;
-			this.trailData.trailNodeBuffer.InitBuffer(GPUTrailData.MAX_NODE_PER_TRAIL * trailNum, true, false);
-			this.trailData.trailHeaderBuffer.InitBuffer(trailNum, true, false);
+			var headNum = this.Configure.D.trailHeaderNum;
+			var nodeNum = this.Configure.D.trailNodeNum;
+			this.trailData.trailHeaderBuffer.InitBuffer(headNum, true, false);
+			this.trailData.trailNodeBuffer.InitBuffer(nodeNum, true, false);
+
+			this.trailData.trailIndexHeaderBufferAppend.InitAppendBuffer(headNum);
+			this.trailData.trailIndexHeaderBufferConsume.InitAppendBuffer(this.trailData.trailIndexHeaderBufferAppend);
+
+			this.trailData.trailNodeIndexBufferAppend.InitAppendBuffer(nodeNum);
+			this.trailData.trailNodeIndexBufferConsume.InitAppendBuffer(this.trailData.trailNodeIndexBufferAppend);
 
 			this.dispatcher = new ComputeShaderDispatcher<Kernel>(this.trailCS);
 			foreach (Kernel k in Enum.GetValues(typeof(Kernel)))
@@ -64,10 +75,22 @@ namespace GPUTrail
 				this.dispatcher.AddParameter(k, this.particleBuffer.Buffer);
 			}
 
-			this.dispatcher.Dispatch(Kernel.Init, trailNum);
+			this.trailData.trailIndexHeaderBufferAppend.ResetCounter();
+			this.trailData.trailNodeIndexBufferAppend.ResetCounter();
+
+			this.dispatcher.Dispatch(Kernel.InitHeader, headNum);
+			this.dispatcher.Dispatch(Kernel.InitNode, nodeNum);
+
+			this.dispatcher.Dispatch(Kernel.EmitTrail, this.trailData.emitTrailNum);
+
 
 			this.trailData.trailHeaderBuffer.GetToCPUData();
 			this.trailData.trailNodeBuffer.GetToCPUData();
+
+			foreach(var d in this.trailData.trailHeaderBuffer.CPUData)
+			{
+				if(d.maxLength > 0) Debug.Log(d.headNodeIndex + " " + d.maxLength + " " + d.currentLength);
+			}
 
 			this.inited = true;
 		}
@@ -77,37 +100,27 @@ namespace GPUTrail
 			this.trailData?.Release();
 		}
 
-		protected void InitTrail(int tsize)
-		{
-			this.Configure.D.trailNum = tsize;
-
-			this.trailData.fixedParticleBuffer.InitBuffer(tsize);
-
-			if (this.trailData.trailHeaderBuffer.Size != tsize)
-			{
-				//different size of trail and particle will leads inconstancy of append buffer
-				//so we need trail size equal to or bigger than particle
-				LogTool.Log("trail size is not same as particle size", LogLevel.Warning);
-				this.trailData.trailNodeBuffer.InitBuffer(GPUTrailData.MAX_NODE_PER_TRAIL * tsize);
-				this.trailData.trailHeaderBuffer.InitBuffer(tsize);
-				this.dispatcher.Dispatch(Kernel.Init, tsize);
-			}
-		}
-
 		protected void Update()
 		{
 			if (this.trailData.fixedParticleBuffer.Size != this.particleBuffer.Buffer.Size)
 			{
 				//Update trail buffer after particle buffer created
-				var pSize = this.particleBuffer.Buffer.Size;
-				this.InitTrail(pSize);
+				this.trailData.fixedParticleBuffer.InitBuffer(this.particleBuffer.Buffer.Size);
 			}
 
-			var trailNum = this.Configure.D.trailNum;
+			var headerNum = this.Configure.D.trailHeaderNum;
 			var pNum = this.particleBuffer.Buffer.Size;
 
 			this.dispatcher.Dispatch(Kernel.UpdateParticle, pNum);
-			this.dispatcher.Dispatch(Kernel.UpdateFromParticle, trailNum);
+			if(Input.GetKeyDown(KeyCode.T))
+			{
+				this.dispatcher.Dispatch(Kernel.UpdateFromParticle, headerNum);
+				this.trailData.trailHeaderBuffer.GetToCPUData();
+				foreach (var d in this.trailData.trailHeaderBuffer.CPUData)
+				{
+					if (d.currentLength > 0) Debug.Log(d.headNodeIndex + " " + d.maxLength + " " + d.currentLength);
+				}
+			}
 		}
 		protected void OnEnable()
 		{

@@ -10,7 +10,6 @@ namespace GPUTrail
 	public interface ITrailData
 	{
 		GPUBufferVariable<TrailNode> NodeBuffer { get; }
-		int MaxNodePerTrail { get; }
 	}
 	public class GPUTrailRender : DataRenderBase<TrailHeader>
 	{
@@ -32,7 +31,6 @@ namespace GPUTrail
 
             material.SetBuffer("_TrailHeaderBuffer", this.buffer.Buffer);
             material.SetBuffer("_TrailNodeBuffer", this.trailBuffer.NodeBuffer);
-            material.SetInt("_MaxNodePerTrail", this.trailBuffer.MaxNodePerTrail);
 			var b = new Bounds(Vector3.zero, Vector3.one * 10000);
 			Graphics.DrawProcedural(material, b, MeshTopology.Points, this.trailBuffer.NodeBuffer.Size);
 		}

@@ -219,15 +219,6 @@ Shader "Unlit/TrailDebugShader"
         float p2f = scale / base;
 
 		// generate the triangle strip
-		pIn.pos = Generate(float4( (p1.xy + length_a * miter_a), p1.z, 1.0 ));
-		pIn.col = _Color;
-		pIn.uv  = float2(1.0, uv.y);
-		outStream.Append(pIn);
-
-		pIn.pos = Generate(float4( (p1.xy - length_a * miter_a), p1.z, 1.0 ));
-		pIn.col =_Color;
-		pIn.uv  = float2(0.0, uv.y);
-		outStream.Append(pIn);
 
 		pIn.pos = Generate(float4( (p2.xy + length_b * miter_b * p2f), p2.z, 1.0 ));
 		pIn.col = _Color;
@@ -239,6 +230,16 @@ Shader "Unlit/TrailDebugShader"
 		pIn.uv  = float2(0.0, uv.y);
 		outStream.Append(pIn);
 		
+		pIn.pos = Generate(float4( (p1.xy + length_a * miter_a), p1.z, 1.0 ));
+		pIn.col = _Color;
+		pIn.uv  = float2(1.0, uv.y);
+		outStream.Append(pIn);
+
+		pIn.pos = Generate(float4( (p1.xy - length_a * miter_a), p1.z, 1.0 ));
+		pIn.col =_Color;
+		pIn.uv  = float2(0.0, uv.y);
+		outStream.Append(pIn);
+        
 		outStream.RestartStrip();
     }
 
@@ -275,8 +276,8 @@ Shader "Unlit/TrailDebugShader"
 		// Blend SrcAlpha OneMinusSrcAlpha
 	
 		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
-        ZWrite Off
-        Cull Off
+        // ZWrite Off
+        // Cull Off
         Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass

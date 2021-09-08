@@ -195,8 +195,8 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    trailHeaderNum: 1024
-    trailNodeNum: 131072
+    trailHeaderNum: 32768
+    trailNodeNum: 2097152
 --- !u!114 &63783543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,8 +211,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trailCS: {fileID: 7200000, guid: acf4ffbebc3fc634a9643a5518f2f7da, type: 3}
   trailData:
-    emitTrailNum: 1024
-    emitTrailLen: 128
+    emitTrailNum: 16384
+    emitTrailLen: 32
 --- !u!114 &63783544
 MonoBehaviour:
   m_ObjectHideFlags: 0

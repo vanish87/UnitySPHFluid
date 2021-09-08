@@ -7,21 +7,11 @@ using UnityTools.Rendering;
 
 namespace GPUTrail
 {
-	public interface ITrailData
+	public class GPUTrailRender : DataRenderBase<TrailNode>
 	{
-		GPUBufferVariable<TrailNode> NodeBuffer { get; }
-	}
-	public class GPUTrailRender : DataRenderBase<TrailHeader>
-	{
-        protected ITrailData trailBuffer;
-        public override void Init()
-        {
-            base.Init();
-			this.trailBuffer ??= this.gameObject.GetComponent<ITrailData>();
-        }
 		protected override void Draw(Material material)
 		{
-			if (this.buffer == null || this.buffer.Buffer.Size == 0 || material == null || this.trailBuffer == null)
+			if (this.buffer == null || this.buffer.Buffer.Size == 0 || material == null)
 			{
 				LogTool.Log("Draw buffer is null, nothing to draw", LogLevel.Warning);
 				return;
@@ -29,10 +19,9 @@ namespace GPUTrail
             var inverseViewMatrix = Camera.main.worldToCameraMatrix.inverse;
             material.SetMatrix("_InvViewMatrix", inverseViewMatrix);
 
-            material.SetBuffer("_TrailHeaderBuffer", this.buffer.Buffer);
-            material.SetBuffer("_TrailNodeBuffer", this.trailBuffer.NodeBuffer);
+            material.SetBuffer("_TrailNodeBuffer", this.buffer.Buffer);
 			var b = new Bounds(Vector3.zero, Vector3.one * 10000);
-			Graphics.DrawProcedural(material, b, MeshTopology.Points, this.trailBuffer.NodeBuffer.Size);
+			Graphics.DrawProcedural(material, b, MeshTopology.Points, this.buffer.Buffer.Size);
 		}
 	}
 }

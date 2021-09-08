@@ -9,7 +9,7 @@ using UnityTools.Rendering;
 
 namespace GPUTrail
 {
-	public class GPUTrailController : MonoBehaviour, IInitialize, ITrailData, IDataBuffer<TrailHeader>
+	public class GPUTrailController : MonoBehaviour, IInitialize, IDataBuffer<TrailNode>
 	{
 		public enum Kernel
 		{
@@ -38,8 +38,7 @@ namespace GPUTrail
 			[Shader(Name = "_EmitTrailLen")] public int emitTrailLen = 128;
 		}
 		public bool Inited => this.inited;
-		public GPUBufferVariable<TrailHeader> Buffer => this.trailData.trailHeaderBuffer;
-		public GPUBufferVariable<TrailNode> NodeBuffer => this.trailData.trailNodeBuffer;
+		public GPUBufferVariable<TrailNode> Buffer => this.trailData.trailNodeBuffer;
 
 		[SerializeField] protected ComputeShader trailCS;
 		[SerializeField] protected GPUTrailData trailData = new GPUTrailData();
@@ -58,8 +57,8 @@ namespace GPUTrail
 
 			var headNum = this.Configure.D.trailHeaderNum;
 			var nodeNum = this.Configure.D.trailNodeNum;
-			this.trailData.trailHeaderBuffer.InitBuffer(headNum, true, false);
-			this.trailData.trailNodeBuffer.InitBuffer(nodeNum, true, false);
+			this.trailData.trailHeaderBuffer.InitBuffer(headNum);
+			this.trailData.trailNodeBuffer.InitBuffer(nodeNum);
 
 			this.trailData.trailIndexHeaderBufferAppend.InitAppendBuffer(headNum);
 			this.trailData.trailIndexHeaderBufferConsume.InitAppendBuffer(this.trailData.trailIndexHeaderBufferAppend);
@@ -82,19 +81,6 @@ namespace GPUTrail
 			this.dispatcher.Dispatch(Kernel.InitNode, nodeNum);
 
 			this.dispatcher.Dispatch(Kernel.EmitTrail, this.trailData.emitTrailNum);
-
-
-			this.trailData.trailHeaderBuffer.GetToCPUData();
-			this.trailData.trailNodeBuffer.GetToCPUData();
-
-			var idnex = new int[32];
-			this.trailData.trailNodeIndexBufferAppend.Data.GetData(idnex);
-
-
-			foreach(var d in this.trailData.trailHeaderBuffer.CPUData)
-			{
-				if(d.maxLength > 0) Debug.Log(d.headNodeIndex + " " + d.maxLength + " " + d.currentLength);
-			}
 
 			this.inited = true;
 		}
@@ -145,22 +131,6 @@ namespace GPUTrail
 		protected void OnDisable()
 		{
 			this.Deinit();
-		}
-		protected void OnDrawGizmos()
-		{
-
-				var hdata = this.trailData.trailHeaderBuffer.CPUData;
-				var ndata = this.trailData.trailNodeBuffer.CPUData;
-				var header = hdata[0];
-				var n = header.headNodeIndex;
-				while(n != -1)
-				{
-					var current = ndata[n];
-					// Debug.Log("idx:" + ndata[n].idx + " prev:" + ndata[n].prev + "next:"+ ndata[n].next);
-
-					if (current.prev != -1) Gizmos.DrawLine(current.pos, ndata[current.prev].pos);
-					n = ndata[n].next;
-				}
 		}
 	}
 }

@@ -11,13 +11,10 @@
 #include "../FluidSPH3D/SPHData.cginc"
 
 StructuredBuffer<Particle> _ParticleBuffer;
-RWStructuredBuffer<Particle> _FixedParticleBuffer;
+RWStructuredBuffer<Particle> _SourceBuffer;
 
 RWStructuredBuffer<TrailNode> _TrailNodeBuffer;
 RWStructuredBuffer<TrailHeader> _TrailHeaderBuffer;
-
-AppendStructuredBuffer<int> _TrailHeaderIndexBufferAppend;
-ConsumeStructuredBuffer<int> _TrailHeaderIndexBufferConsume;
 
 AppendStructuredBuffer<int> _TrailNodeIndexBufferAppend;
 ConsumeStructuredBuffer<int> _TrailNodeIndexBufferConsume;
@@ -50,8 +47,6 @@ void InitHeader (uint3 id : SV_DispatchThreadID)
     TrailHeader header = _TrailHeaderBuffer[hid];
     header = InitHeader(hid, header);
     _TrailHeaderBuffer[hid] = header;
-
-    _TrailHeaderIndexBufferAppend.Append(hid);
 }
  
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
@@ -68,10 +63,9 @@ void InitNode (uint3 id : SV_DispatchThreadID)
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
 void EmitTrail (uint3 id : SV_DispatchThreadID)
 {
-    const int tid = id.x;
-    if(tid >= _EmitTrailNum) return;
+    const int hid = id.x;
+    if(hid >= _EmitTrailNum) return;
 
-    const int hid = _TrailHeaderIndexBufferConsume.Consume();
     const int maxLength = _EmitTrailLen;
 
     TrailHeader header = _TrailHeaderBuffer[hid];
@@ -87,7 +81,7 @@ void UpdateParticle (uint3 id : SV_DispatchThreadID)
 {
     const int pid = id.x;
     Particle p = _ParticleBuffer[pid];
-    _FixedParticleBuffer[p.uuid] = _ParticleBuffer[pid];
+    _SourceBuffer[p.uuid] = _ParticleBuffer[pid];
 }
 
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
@@ -96,7 +90,7 @@ void UpdateFromParticle (uint3 id : SV_DispatchThreadID)
     const int hid = id.x;
     const int pid = hid;
     TrailHeader header = _TrailHeaderBuffer[hid];
-    Particle p = _FixedParticleBuffer[pid];
+    Particle p = _SourceBuffer[pid];
 
     const int firstid = header.headNodeIndex;
     const int currentlength = header.currentlength;

@@ -9,7 +9,7 @@ using UnityTools.Rendering;
 
 namespace GPUTrail
 {
-	public class GPUTrailController : MonoBehaviour, IInitialize, IDataBuffer<TrailNode>
+	public class GPUTrailController<T> : MonoBehaviour, IInitialize, IDataBuffer<TrailNode>
 	{
 		public enum Kernel
 		{
@@ -22,17 +22,13 @@ namespace GPUTrail
 		[System.Serializable]
 		public class GPUTrailData : GPUContainer
 		{
-			[Shader(Name = "_TrailNodeBuffer")] public GPUBufferVariable<TrailNode> trailNodeBuffer = new GPUBufferVariable<TrailNode>();
 			[Shader(Name = "_TrailHeaderBuffer")] public GPUBufferVariable<TrailHeader> trailHeaderBuffer = new GPUBufferVariable<TrailHeader>();
-			[Shader(Name = "_TrailHeaderIndexBufferAppend")] public GPUBufferAppendConsume<int> trailIndexHeaderBufferAppend = new GPUBufferAppendConsume<int>();
-			[Shader(Name = "_TrailHeaderIndexBufferConsume")] public GPUBufferAppendConsume<int> trailIndexHeaderBufferConsume = new GPUBufferAppendConsume<int>();
+			[Shader(Name = "_TrailNodeBuffer")] public GPUBufferVariable<TrailNode> trailNodeBuffer = new GPUBufferVariable<TrailNode>();
 			[Shader(Name = "_TrailNodeIndexBufferAppend")] public GPUBufferAppendConsume<int> trailNodeIndexBufferAppend = new GPUBufferAppendConsume<int>();
 			[Shader(Name = "_TrailNodeIndexBufferConsume")] public GPUBufferAppendConsume<int> trailNodeIndexBufferConsume = new GPUBufferAppendConsume<int>();
 
-
-			//particle buffer from fluid sph is rearranged every frame
 			//we need fixed particle buffer to update trails
-			[Shader(Name = "_FixedParticleBuffer")] public GPUBufferVariable<FluidSPH3D.Particle> fixedParticleBuffer = new GPUBufferVariable<FluidSPH3D.Particle>();
+			[Shader(Name = "_SourceBuffer")] public GPUBufferVariable<T> sourceBuffer = new GPUBufferVariable<T>();
 
 			[Shader(Name = "_EmitTrailNum")] public int emitTrailNum = 2048;
 			[Shader(Name = "_EmitTrailLen")] public int emitTrailLen = 128;
@@ -47,11 +43,12 @@ namespace GPUTrail
 		protected GPUTrailConfigure configure;
 		protected bool inited = false;
 		protected ComputeShaderDispatcher<Kernel> dispatcher;
-		protected IDataBuffer<FluidSPH3D.Particle> particleBuffer;
+		protected IDataBuffer<T> source;
 
 		public void Init()
 		{
-			this.particleBuffer = ObjectTool.FindAllObject<IDataBuffer<FluidSPH3D.Particle>>().FirstOrDefault();
+			this.source = ObjectTool.FindAllObject<IDataBuffer<T>>().FirstOrDefault();
+			LogTool.AssertNotNull(this.source);
 
 			this.Configure.Initialize();
 
@@ -59,9 +56,6 @@ namespace GPUTrail
 			var nodeNum = this.Configure.D.trailNodeNum;
 			this.trailData.trailHeaderBuffer.InitBuffer(headNum);
 			this.trailData.trailNodeBuffer.InitBuffer(nodeNum);
-
-			this.trailData.trailIndexHeaderBufferAppend.InitAppendBuffer(headNum);
-			this.trailData.trailIndexHeaderBufferConsume.InitAppendBuffer(this.trailData.trailIndexHeaderBufferAppend);
 
 			this.trailData.trailNodeIndexBufferAppend.InitAppendBuffer(nodeNum);
 			this.trailData.trailNodeIndexBufferConsume.InitAppendBuffer(this.trailData.trailNodeIndexBufferAppend);
@@ -71,10 +65,9 @@ namespace GPUTrail
 			{
 				this.dispatcher.AddParameter(k, this.Configure.D);
 				this.dispatcher.AddParameter(k, this.trailData);
-				this.dispatcher.AddParameter(k, this.particleBuffer.Buffer);
+				this.dispatcher.AddParameter(k, this.source.Buffer);
 			}
 
-			this.trailData.trailIndexHeaderBufferAppend.ResetCounter();
 			this.trailData.trailNodeIndexBufferAppend.ResetCounter();
 
 			this.dispatcher.Dispatch(Kernel.InitHeader, headNum);
@@ -92,37 +85,17 @@ namespace GPUTrail
 
 		protected void Update()
 		{
-			if (this.trailData.fixedParticleBuffer.Size != this.particleBuffer.Buffer.Size)
+			if (this.trailData.sourceBuffer.Size != this.source.Buffer.Size)
 			{
 				//Update trail buffer after particle buffer created
-				this.trailData.fixedParticleBuffer.InitBuffer(this.particleBuffer.Buffer.Size);
+				this.trailData.sourceBuffer.InitBuffer(this.source.Buffer.Size);
 			}
 
 			var headerNum = this.Configure.D.trailHeaderNum;
-			var pNum = this.particleBuffer.Buffer.Size;
+			var pNum = this.source.Buffer.Size;
 
 			this.dispatcher.Dispatch(Kernel.UpdateParticle, pNum);
-			// if(Input.GetKeyDown(KeyCode.T))
-			{
-				this.dispatcher.Dispatch(Kernel.UpdateFromParticle, headerNum);
-				this.trailData.trailHeaderBuffer.GetToCPUData();
-				this.trailData.trailNodeBuffer.GetToCPUData();
-				// foreach (var d in this.trailData.trailHeaderBuffer.CPUData)
-				// {
-				// 	if (d.currentLength > 0) Debug.Log(d.headNodeIndex + " " + d.maxLength + " " + d.currentLength);
-				// }
-
-				// var hdata = this.trailData.trailHeaderBuffer.CPUData;
-				// var ndata = this.trailData.trailNodeBuffer.CPUData;
-				// var header = hdata.Where(hd=>hd.maxLength > 0).FirstOrDefault();
-				// var n = header.headNodeIndex;
-				// Debug.Log("hid:" + header.headNodeIndex + " current len:" + header.currentLength);
-				// while(n != -1)
-				// {
-				// 	Debug.Log("idx:" + ndata[n].idx + " prev:" + ndata[n].prev + " next:"+ ndata[n].next);
-				// 	n = ndata[n].next;
-				// }
-			}
+			this.dispatcher.Dispatch(Kernel.UpdateFromParticle, headerNum);
 		}
 		protected void OnEnable()
 		{

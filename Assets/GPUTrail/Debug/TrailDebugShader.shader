@@ -29,23 +29,57 @@ Shader "Unlit/TrailDebugShader"
 
     float4 _Color;
 
+    float4 p0;
+    float4 p1;
+    float4 p2;
+    float4 p3;
+
 	v2g vert(uint id : SV_VertexID) 
 	{
 		v2g o = (v2g)0;
-        float4 p0 = float4(0, id, 0, 1);
-        float4 p1 = float4(1, id, 0, 1);
-        float4 p2 = float4(2, id, 0, 1);
-        float4 p3 = float4(3, id, 0, 1);
+        // float4 p0 = float4(0, 0, 0, 1);
+        // float4 p1 = float4(1, 0, 0, 1);
+        // float4 p2 = float4(2, 0, 0, 1);
+        // float4 p3 = float4(3, 0, 0, 1);
 
-        p0 = UnityObjectToClipPos(p0);
-        p1 = UnityObjectToClipPos(p1);
-        p2 = UnityObjectToClipPos(p2);
-        p3 = UnityObjectToClipPos(p3);
 
-        p0 /= p0.w;
-        p1 /= p1.w;
-        p2 /= p2.w;
-        p3 /= p3.w;
+        // p2 = float4(0.5, 1, 0, 1);
+        // p3 = float4(0, 1, 0, 1);
+
+        float4 idOffset = float4(0, id, 0, 0);
+        p0 += idOffset;
+        p1 += idOffset;
+        p2 += idOffset;
+        p3 += idOffset;
+
+        bool useClip = false;
+        if(useClip)
+        {
+            p0 = UnityObjectToClipPos(p0);
+            p1 = UnityObjectToClipPos(p1);
+            p2 = UnityObjectToClipPos(p2);
+            p3 = UnityObjectToClipPos(p3);
+            // p0 /= p0.w;
+            // p1 /= p1.w;
+            // p2 /= p2.w;
+            // p3 /= p3.w;
+        }
+        else
+        {
+            p0 = float4(UnityObjectToViewPos(p0), 1);
+            p1 = float4(UnityObjectToViewPos(p1), 1);
+            p2 = float4(UnityObjectToViewPos(p2), 1);
+            p3 = float4(UnityObjectToViewPos(p3), 1);
+
+            // p0 = mul(UNITY_MATRIX_P, p0);
+            // p1 = mul(UNITY_MATRIX_P, p1);
+            // p2 = mul(UNITY_MATRIX_P, p2);
+            // p3 = mul(UNITY_MATRIX_P, p3);
+            // p0 /= p0.w;
+            // p1 /= p1.w;
+            // p2 /= p2.w;
+            // p3 /= p3.w;
+        }
 
         o.p0 = p0;
         o.p1 = p1;
@@ -77,7 +111,7 @@ Shader "Unlit/TrailDebugShader"
 		[unroll]
 		for (int i = 0; i < 4; i++)
 		{
-			float3 position = g_positions[i] * 0.002f;
+			float3 position = g_positions[i] * 0.2f;
 			position = mul(_InvViewMatrix, position) + pos;
 			o.pos = UnityObjectToClipPos(float4(position, 1.0));
             o.col = col;
@@ -87,10 +121,15 @@ Shader "Unlit/TrailDebugShader"
 
 		outStream.RestartStrip();
     }
-	[maxvertexcount(4)]
+
+    float4 Generate(float4 pos)
+    {
+        return mul(UNITY_MATRIX_P, pos);
+    }
+	[maxvertexcount(7)]
 	void geom(point v2g p[1], inout TriangleStream<g2f> outStream)
 	{
-        const float _MITER_LIMIT = 0.5;
+        const float _MITER_LIMIT = 0.75;
 
         float3 p0 = p[0].p0;
 		float3 p1 = p[0].p1;
@@ -99,7 +138,9 @@ Shader "Unlit/TrailDebugShader"
 
 		float2 uv = 0;//p[0].uv.xy;
 
-		float  thickness = 0.01;
+		float thickness = 0.1;
+        float far = _ProjectionParams.z;
+
 		
 		// determine the direction of each of the 3 segments (previous, current, next)
 		float2 v0 = normalize(p1.xy - p0.xy);
@@ -130,34 +171,34 @@ Shader "Unlit/TrailDebugShader"
 			// close the gap
 			if( dot(v0, n1) > 0 )
 			{
-				pIn.pos = (float4((p1.xy + thickness * n0), p1.z, 1.0 ));
+				pIn.pos = Generate(float4((p1.xy + thickness * n0), p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(1.0, uv.y);
 				outStream.Append(pIn);
 
-				pIn.pos = (float4((p1.xy + thickness * n1), p1.z, 1.0 ));
+				pIn.pos = Generate(float4((p1.xy + thickness * n1), p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(1.0, uv.y);
 				outStream.Append(pIn);
 
-				pIn.pos = (float4( p1.xy, p1.z, 1.0 ));
+				pIn.pos = Generate(float4( p1.xy, p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(0.5, uv.y);
 				outStream.Append(pIn);
 				
 				outStream.RestartStrip();
 			} else {
-				pIn.pos = (float4((p1.xy - thickness * n1), p1.z, 1.0 ));
+				pIn.pos = Generate(float4((p1.xy - thickness * n1), p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(0.0, uv.y);
 				outStream.Append(pIn);
 
-				pIn.pos = (float4((p1.xy - thickness * n0), p1.z, 1.0 ));
+				pIn.pos = Generate(float4((p1.xy - thickness * n0), p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(0.0, uv.y);
 				outStream.Append(pIn);
 
-				pIn.pos = (float4( p1.xy, p1.z, 1.0 ));
+				pIn.pos = Generate(float4( p1.xy, p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(0.5, uv.y);
 				outStream.Append(pIn);
@@ -173,23 +214,27 @@ Shader "Unlit/TrailDebugShader"
 			length_b = thickness;
 		}
 
+        float base = abs(p2.z);
+        float scale = abs(p1.z);
+        float p2f = scale / base;
+
 		// generate the triangle strip
-		pIn.pos = (float4( (p1.xy + length_a * miter_a), p1.z, 1.0 ));
+		pIn.pos = Generate(float4( (p1.xy + length_a * miter_a), p1.z, 1.0 ));
 		pIn.col = _Color;
 		pIn.uv  = float2(1.0, uv.y);
 		outStream.Append(pIn);
 
-		pIn.pos = (float4( (p1.xy - length_a * miter_a), p1.z, 1.0 ));
+		pIn.pos = Generate(float4( (p1.xy - length_a * miter_a), p1.z, 1.0 ));
 		pIn.col =_Color;
 		pIn.uv  = float2(0.0, uv.y);
 		outStream.Append(pIn);
 
-		pIn.pos = (float4( (p2.xy + length_b * miter_b), p2.z, 1.0 ));
+		pIn.pos = Generate(float4( (p2.xy + length_b * miter_b * p2f), p2.z, 1.0 ));
 		pIn.col = _Color;
 		pIn.uv  = float2(1.0, uv.y);
 		outStream.Append(pIn);
 
-		pIn.pos = (float4( (p2.xy - length_b * miter_b), p2.z, 1.0 ));
+		pIn.pos = Generate(float4( (p2.xy - length_b * miter_b * p2f), p2.z, 1.0 ));
 		pIn.col = _Color;
 		pIn.uv  = float2(0.0, uv.y);
 		outStream.Append(pIn);
@@ -205,10 +250,10 @@ Shader "Unlit/TrailDebugShader"
 		float3 p2 = p[0].p2;
 		float3 p3 = p[0].p3;
 
-        AddQuad(p0, float4(1,0,0,1), outStream);
+        // AddQuad(p0, float4(1,0,0,1), outStream);
         AddQuad(p1, float4(1,1,1,1), outStream);
-        AddQuad(p2, float4(0,1,0,1), outStream);
-        AddQuad(p3, float4(0,0,1,1), outStream);
+        // AddQuad(p2, float4(0,1,0,1), outStream);
+        // AddQuad(p3, float4(0,0,1,1), outStream);
 	}
 
 
@@ -230,8 +275,8 @@ Shader "Unlit/TrailDebugShader"
 		// Blend SrcAlpha OneMinusSrcAlpha
 	
 		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
-        // ZWrite Off
-        // Cull On
+        ZWrite Off
+        Cull Off
         Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass

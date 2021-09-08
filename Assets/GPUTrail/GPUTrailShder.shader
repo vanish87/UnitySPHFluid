@@ -53,38 +53,25 @@ Shader "Unlit/TrailShader"
         const int i2 = node.next == -1? i1:node.next;
         const int i3 = node.next == -1? i1:(_TrailNodeBuffer[node.next].next == -1?i1:_TrailNodeBuffer[node.next].next);
 
-        float4 p0 = float4(_TrailNodeBuffer[i0].pos,1);
-        float4 p1 = float4(_TrailNodeBuffer[i1].pos,1);
-        float4 p2 = float4(_TrailNodeBuffer[i2].pos,1);
-        float4 p3 = float4(_TrailNodeBuffer[i3].pos,1);
+        float3 p0 = _TrailNodeBuffer[i0].pos;
+        float3 p1 = _TrailNodeBuffer[i1].pos;
+        float3 p2 = _TrailNodeBuffer[i2].pos;
+        float3 p3 = _TrailNodeBuffer[i3].pos;
 
-        p0 = UnityObjectToClipPos(p0);
-        p1 = UnityObjectToClipPos(p1);
-        p2 = UnityObjectToClipPos(p2);
-        p3 = UnityObjectToClipPos(p3);
+		bool tooFar = distance(p0, p1) * 5 < distance(p1,p2);
+		// tooFar = false;
 
-        p0 /= p0.w;
-        p1 /= p1.w;
-        p2 /= p2.w;
-        p3 /= p3.w;
-
-        // p0 = float4(1,0,0,1);
-        // p1 = float4(1,1,0,1);
-        // p2 = float4(1,2,0,1);
-        // p3 = float4(4,1,0,1);
-        
-        // float offset = headerID * 5;
-        // p0 += float4(0, offset, 0, 0);
-        // p1 += float4(0, offset, 0, 0);
-        // p2 += float4(0, offset, 0, 0);
-        // p3 += float4(0, offset, 0, 0);
+		p0 = UnityObjectToViewPos(p0);
+		p1 = UnityObjectToViewPos(p1);
+		p2 = UnityObjectToViewPos(p2);
+		p3 = UnityObjectToViewPos(p3);
 
         o.p0 = p0;
         o.p1 = p1;
         o.p2 = p2;
         o.p3 = p3;
         
-        o.life = (!prev || !next )?-1:1;
+        o.life = (!prev || !next || tooFar )?-1:1;
 
 		return o;
 	}
@@ -121,7 +108,12 @@ Shader "Unlit/TrailShader"
 
 		outStream.RestartStrip();
     }
-	[maxvertexcount(4)]
+    float4 Generate(float4 pos)
+    {
+        return mul(UNITY_MATRIX_P, pos);
+    }
+
+	[maxvertexcount(7)]
 	void geom(point v2g p[1], inout TriangleStream<g2f> outStream)
 	{
         if(p[0].life <= 0) return;
@@ -135,7 +127,7 @@ Shader "Unlit/TrailShader"
 
 		float2 uv = 0;//p[0].uv.xy;
 
-		float  thickness = 0.001;
+		float  thickness = 0.004;
 		
 		// determine the direction of each of the 3 segments (previous, current, next)
 		float2 v0 = normalize(p1.xy - p0.xy);
@@ -166,34 +158,34 @@ Shader "Unlit/TrailShader"
 			// close the gap
 			if( dot(v0, n1) > 0 )
 			{
-				pIn.pos = (float4((p1.xy + thickness * n0), p1.z, 1.0 ));
+				pIn.pos = Generate(float4((p1.xy + thickness * n0), p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(1.0, uv.y);
 				outStream.Append(pIn);
 
-				pIn.pos = (float4((p1.xy + thickness * n1), p1.z, 1.0 ));
+				pIn.pos = Generate(float4((p1.xy + thickness * n1), p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(1.0, uv.y);
 				outStream.Append(pIn);
 
-				pIn.pos = (float4( p1.xy, p1.z, 1.0 ));
+				pIn.pos = Generate(float4( p1.xy, p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(0.5, uv.y);
 				outStream.Append(pIn);
 				
 				outStream.RestartStrip();
 			} else {
-				pIn.pos = (float4((p1.xy - thickness * n1), p1.z, 1.0 ));
+				pIn.pos = Generate(float4((p1.xy - thickness * n1), p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(0.0, uv.y);
 				outStream.Append(pIn);
 
-				pIn.pos = (float4((p1.xy - thickness * n0), p1.z, 1.0 ));
+				pIn.pos = Generate(float4((p1.xy - thickness * n0), p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(0.0, uv.y);
 				outStream.Append(pIn);
 
-				pIn.pos = (float4( p1.xy, p1.z, 1.0 ));
+				pIn.pos = Generate(float4( p1.xy, p1.z, 1.0 ));
 				pIn.col = _Color;
 				pIn.uv  = float2(0.5, uv.y);
 				outStream.Append(pIn);
@@ -209,31 +201,36 @@ Shader "Unlit/TrailShader"
 			length_b = thickness;
 		}
 
+        float base = abs(p2.z);
+        float scale = abs(p1.z);
+        float p2f = scale / base;
+
 		// generate the triangle strip
-		pIn.pos = (float4( (p1.xy + length_a * miter_a), p1.z, 1.0 ));
+		pIn.pos = Generate(float4( (p2.xy + length_b * miter_b * p2f), p2.z, 1.0 ));
 		pIn.col = _Color;
 		pIn.uv  = float2(1.0, uv.y);
 		outStream.Append(pIn);
 
-		pIn.pos = (float4( (p1.xy - length_a * miter_a), p1.z, 1.0 ));
+		pIn.pos = Generate(float4( (p2.xy - length_b * miter_b * p2f), p2.z, 1.0 ));
+		pIn.col = _Color;
+		pIn.uv  = float2(0.0, uv.y);
+		outStream.Append(pIn);
+
+		pIn.pos = Generate(float4( (p1.xy + length_a * miter_a), p1.z, 1.0 ));
+		pIn.col = _Color;
+		pIn.uv  = float2(1.0, uv.y);
+		outStream.Append(pIn);
+
+		pIn.pos = Generate(float4( (p1.xy - length_a * miter_a), p1.z, 1.0 ));
 		pIn.col =_Color;
 		pIn.uv  = float2(0.0, uv.y);
 		outStream.Append(pIn);
 
-		pIn.pos = (float4( (p2.xy + length_b * miter_b), p2.z, 1.0 ));
-		pIn.col = _Color;
-		pIn.uv  = float2(1.0, uv.y);
-		outStream.Append(pIn);
-
-		pIn.pos = (float4( (p2.xy - length_b * miter_b), p2.z, 1.0 ));
-		pIn.col = _Color;
-		pIn.uv  = float2(0.0, uv.y);
-		outStream.Append(pIn);
 		
 		outStream.RestartStrip();
     }
 
-	[maxvertexcount(4)]
+	[maxvertexcount(16)]
 	void geomParticle(point v2g p[1], inout TriangleStream<g2f> outStream)
 	{
         float3 p0 = p[0].p0;
@@ -267,7 +264,7 @@ Shader "Unlit/TrailShader"
 	
 		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
         // ZWrite Off
-        // Cull On
+        // Cull Off
         Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass

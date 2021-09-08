@@ -196,7 +196,7 @@ MonoBehaviour:
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
     trailHeaderNum: 32768
-    trailNodeNum: 2097152
+    trailNodeNum: 4194304
 --- !u!114 &63783543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,13 +206,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 63783540}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2391fc46fc6928c44a877c7f635fd0df, type: 3}
+  m_Script: {fileID: 11500000, guid: 1c9775febf6772241aff64861428636e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   trailCS: {fileID: 7200000, guid: acf4ffbebc3fc634a9643a5518f2f7da, type: 3}
   trailData:
     emitTrailNum: 16384
-    emitTrailLen: 32
+    emitTrailLen: 128
 --- !u!114 &63783544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -810,7 +810,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1172243129}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e7ff4e2e70a25b745b0ad508df87ab10, type: 3}
   m_Name: 
@@ -882,23 +882,23 @@ MonoBehaviour:
       y: 3
     restDensity: 1000
     particleMass: 1
-    viscosity: 1000
+    viscosity: 100
     vorticity: 1
-    nu_t: 1
+    nu_t: 0.2
     nu_ext: 0
     theta: 1
     gravity:
       x: 0
       y: -9.8
       z: 0
-    timeStep: 0.004
+    timeStep: 0.002
     maxSpeed: 10
     stepIteration: 8
     particleScale: 0.5
     renderBoundaryParticle: 0
     particleLife:
-      x: 40
-      y: 60
+      x: 5
+      y: 10
     addSimulationSpaceBounds:
       x: 1
       y: 1
@@ -991,10 +991,98 @@ MonoBehaviour:
   openKey: 0
   saveKey: 0
   loadKey: 0
-  preset: 2
+  preset: 0
   isSyncing: 0
   data:
-    boundaries: []
+    boundaries:
+    - name: WallFront
+      type: 0
+      density: 0.0625
+      space:
+        center:
+          x: 0
+          y: 3.5
+          z: 1.75
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 3
+          y: 8
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 1, g: 0, b: 0, a: 1}
+    - name: WallLeft
+      type: 0
+      density: 0.0625
+      space:
+        center:
+          x: -1.5
+          y: 2.5
+          z: 2.125
+        rotation:
+          value:
+            x: 0
+            y: 0.7071068
+            z: 0
+            w: 0.7071068
+        scale:
+          x: 0.75
+          y: 10
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 1, g: 0, b: 0, a: 1}
+    - name: WallRight
+      type: 0
+      density: 0.0625
+      space:
+        center:
+          x: 1.5
+          y: 2.5
+          z: 2.125
+        rotation:
+          value:
+            x: 0
+            y: -0.7071068
+            z: 0
+            w: 0.7071068
+        scale:
+          x: 0.75
+          y: 10
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 1, g: 0, b: 0, a: 1}
+    - name: WallBack
+      type: 0
+      density: 0.0625
+      space:
+        center:
+          x: 0
+          y: 2.5
+          z: 2.5
+        rotation:
+          value:
+            x: 0
+            y: 0
+            z: 0
+            w: 1
+        scale:
+          x: 3
+          y: 10
+          z: 0.1
+        displayAxis: 0
+        displayText: 0
+        displayBound: 1
+        color: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1361117930
 GameObject:
   m_ObjectHideFlags: 0
@@ -1256,7 +1344,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2041543642
 Transform:
   m_ObjectHideFlags: 0
@@ -1265,7 +1353,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2041543641}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -2.03, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1307491547}
@@ -1290,7 +1378,7 @@ MonoBehaviour:
     space:
       center:
         x: 0
-        y: 0
+        y: -2.03
         z: 0
       rotation:
         value:

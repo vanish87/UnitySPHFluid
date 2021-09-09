@@ -43,19 +43,23 @@ Shader "Unlit/TrailShader"
 
         if(node.idx == -1) return o;
 
+		const bool prev = node.prev != -1;
+        const bool next = node.next != -1;
+        const bool nnext = next && (_TrailNodeBuffer[node.next].next != -1);
+
         const int i1 = node.idx;
 
-        const int i0 = node.prev;
-        const int i2 = node.next;
-        const int i3 = _TrailNodeBuffer[node.next].next;
+        const int i0 = node.prev == -1? i1:node.prev;
+        const int i2 = node.next == -1? i1:node.next;
+        const int i3 = node.next == -1? i1:(_TrailNodeBuffer[node.next].next == -1?i1:_TrailNodeBuffer[node.next].next);
 
         float3 p0 = _TrailNodeBuffer[i0].pos;
         float3 p1 = _TrailNodeBuffer[i1].pos;
         float3 p2 = _TrailNodeBuffer[i2].pos;
         float3 p3 = _TrailNodeBuffer[i3].pos;
 
-		bool tooFar = distance(p1,p2) > 0.5;
-		tooFar = false;
+		bool tooFar = distance(p1,p2) > 1;
+		// tooFar = false;
 
 		p0 = UnityObjectToViewPos(p0);
 		p1 = UnityObjectToViewPos(p1);
@@ -67,7 +71,7 @@ Shader "Unlit/TrailShader"
         o.p2 = p2;
         o.p3 = p3;
         
-        o.life = tooFar?-1:1;
+        o.life = (!prev || !next || tooFar )?-1:1;
 
 		return o;
 	}
@@ -123,7 +127,7 @@ Shader "Unlit/TrailShader"
 
 		float2 uv = 0;//p[0].uv.xy;
 
-		float  thickness = 0.03;
+		float  thickness = 0.004;
 		
 		// determine the direction of each of the 3 segments (previous, current, next)
 		float2 v0 = normalize(p1.xy - p0.xy);
@@ -200,6 +204,7 @@ Shader "Unlit/TrailShader"
         float base = abs(p2.z);
         float scale = abs(p1.z);
         float p2f = scale / base;
+		p2f = clamp(p2f, 0.5, 1.5);
 
 		// generate the triangle strip
 		pIn.pos = Generate(float4( (p2.xy + length_b * miter_b * p2f), p2.z, 1.0 ));

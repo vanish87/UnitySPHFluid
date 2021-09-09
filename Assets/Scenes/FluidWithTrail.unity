@@ -211,8 +211,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trailCS: {fileID: 7200000, guid: acf4ffbebc3fc634a9643a5518f2f7da, type: 3}
   trailData:
-    emitTrailNum: 16384
-    emitTrailLen: 128
+    emitTrailNum: 23000
+    emitTrailLen: 64
 --- !u!114 &63783544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -891,7 +891,7 @@ MonoBehaviour:
       x: 0
       y: -9.8
       z: 0
-    timeStep: 0.002
+    timeStep: 0.004
     maxSpeed: 10
     stepIteration: 8
     particleScale: 0.5

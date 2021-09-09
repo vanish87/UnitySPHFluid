@@ -52,8 +52,8 @@
     "particleScale": 0.5,
     "renderBoundaryParticle": false,
     "particleLife": {
-        "x": 5.0,
-        "y": 10.0
+        "x": 10.0,
+        "y": 20.0
     },
     "addSimulationSpaceBounds": {
         "x": true,

@@ -18,6 +18,7 @@ namespace GPUTrail
 			EmitTrail,
 			UpdateParticle,
 			UpdateFromParticle,
+			AppendDeadToNodePool,
 		}
 		[System.Serializable]
 		public class GPUTrailData : GPUContainer
@@ -26,6 +27,8 @@ namespace GPUTrail
 			[Shader(Name = "_TrailNodeBuffer")] public GPUBufferVariable<TrailNode> trailNodeBuffer = new GPUBufferVariable<TrailNode>();
 			[Shader(Name = "_TrailNodeIndexBufferAppend")] public GPUBufferAppendConsume<int> trailNodeIndexBufferAppend = new GPUBufferAppendConsume<int>();
 			[Shader(Name = "_TrailNodeIndexBufferConsume")] public GPUBufferAppendConsume<int> trailNodeIndexBufferConsume = new GPUBufferAppendConsume<int>();
+			[Shader(Name = "_TrailNodeIndexDeadBufferAppend")] public GPUBufferAppendConsume<int> trailNodeIndexDeadBufferAppend = new GPUBufferAppendConsume<int>();
+			[Shader(Name = "_TrailNodeIndexDeadBufferConsume")] public GPUBufferAppendConsume<int> trailNodeIndexDeadBufferConsume = new GPUBufferAppendConsume<int>();
 
 			//we need fixed particle buffer to update trails
 			[Shader(Name = "_SourceBuffer")] public GPUBufferVariable<T> sourceBuffer = new GPUBufferVariable<T>();
@@ -59,6 +62,9 @@ namespace GPUTrail
 
 			this.trailData.trailNodeIndexBufferAppend.InitAppendBuffer(nodeNum);
 			this.trailData.trailNodeIndexBufferConsume.InitAppendBuffer(this.trailData.trailNodeIndexBufferAppend);
+
+			this.trailData.trailNodeIndexDeadBufferAppend.InitAppendBuffer(nodeNum);
+			this.trailData.trailNodeIndexDeadBufferConsume.InitAppendBuffer(this.trailData.trailNodeIndexDeadBufferAppend);
 
 			this.dispatcher = new ComputeShaderDispatcher<Kernel>(this.trailCS);
 			foreach (Kernel k in Enum.GetValues(typeof(Kernel)))
@@ -96,7 +102,15 @@ namespace GPUTrail
 			var pNum = this.source.Buffer.Size;
 
 			this.dispatcher.Dispatch(Kernel.UpdateParticle, pNum);
+			this.trailData.trailNodeIndexDeadBufferAppend.ResetCounter();
 			this.dispatcher.Dispatch(Kernel.UpdateFromParticle, headerNum);
+
+			var counter = this.trailData.trailNodeIndexDeadBufferAppend.GetCounter();
+			if (counter > 0)
+			{
+				this.dispatcher.Dispatch(Kernel.AppendDeadToNodePool, counter);
+			}
+
 		}
 		protected void OnEnable()
 		{

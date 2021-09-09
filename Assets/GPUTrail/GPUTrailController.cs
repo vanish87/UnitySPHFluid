@@ -73,6 +73,7 @@ namespace GPUTrail
 			this.dispatcher.Dispatch(Kernel.InitHeader, headNum);
 			this.dispatcher.Dispatch(Kernel.InitNode, nodeNum);
 
+			LogTool.AssertIsTrue(this.trailData.emitTrailLen >= 4);
 			this.dispatcher.Dispatch(Kernel.EmitTrail, this.trailData.emitTrailNum);
 
 			this.inited = true;

@@ -4,6 +4,7 @@ namespace GPUTrail
 {
 	public struct TrailHeader
 	{
+		public int state;
 		public int headNodeIndex;
 		public int currentLength;
 		public int maxLength;

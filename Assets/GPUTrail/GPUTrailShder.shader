@@ -49,9 +49,9 @@ Shader "Unlit/TrailShader"
 
         const int i1 = node.idx;
 
-        const int i0 = node.prev == -1? i1:node.prev;
-        const int i2 = node.next == -1? i1:node.next;
-        const int i3 = node.next == -1? i1:(_TrailNodeBuffer[node.next].next == -1?i1:_TrailNodeBuffer[node.next].next);
+        const int i0 = !prev ? i1:node.prev;
+        const int i2 = !next ? i1:node.next;
+        const int i3 = !nnext ? i1:_TrailNodeBuffer[node.next].next;
 
         float3 p0 = _TrailNodeBuffer[i0].pos;
         float3 p1 = _TrailNodeBuffer[i1].pos;
@@ -204,7 +204,7 @@ Shader "Unlit/TrailShader"
         float base = abs(p2.z);
         float scale = abs(p1.z);
         float p2f = scale / base;
-		p2f = clamp(p2f, 0.5, 1.5);
+		p2f = clamp(p2f, 0, 10);
 
 		// generate the triangle strip
 		pIn.pos = Generate(float4( (p2.xy + length_b * miter_b * p2f), p2.z, 1.0 ));

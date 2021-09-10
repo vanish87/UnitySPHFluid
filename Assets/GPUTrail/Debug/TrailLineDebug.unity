@@ -165,11 +165,26 @@ MonoBehaviour:
     y: 0
     z: -0.63
     w: 1
-  - x: 3
-    y: 0.5
+  - x: 2.37
+    y: 0.85
     z: 0
     w: 1
+  - x: 2.89
+    y: 1.11
+    z: 0
+    w: 1
+  - x: 3.21
+    y: -0.02
+    z: 0
+    w: 1
+  - x: 1.97
+    y: -0.51
+    z: 0.78
+    w: 1
   shader: {fileID: 4800000, guid: 6ca08b9230d4ddf44851ed510dd62d95, type: 3}
+  thiness: 0.1
+  miterLimit: 0.75
+  zScale: 1
 --- !u!4 &5092551
 Transform:
   m_ObjectHideFlags: 0

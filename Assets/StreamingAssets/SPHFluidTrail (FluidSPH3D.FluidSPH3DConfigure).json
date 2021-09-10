@@ -28,7 +28,7 @@
             "a": 1.0
         }
     },
-    "numOfParticle": 131072,
+    "numOfParticle": 262144,
     "smoothlen": 0.10000000149011612,
     "pressureK": {
         "x": 200.0,
@@ -38,7 +38,7 @@
     "particleMass": 1.0,
     "viscosity": 100.0,
     "vorticity": 1.0,
-    "nu_t": 0.20000000298023225,
+    "nu_t": 0.0,
     "nu_ext": 0.0,
     "theta": 1.0,
     "gravity": {
@@ -48,12 +48,12 @@
     },
     "timeStep": 0.004000000189989805,
     "maxSpeed": 10.0,
-    "stepIteration": 8,
+    "stepIteration": 1,
     "particleScale": 0.5,
     "renderBoundaryParticle": false,
     "particleLife": {
-        "x": 10.0,
-        "y": 20.0
+        "x": 30.0,
+        "y": 40.0
     },
     "addSimulationSpaceBounds": {
         "x": true,

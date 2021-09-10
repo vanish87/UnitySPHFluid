@@ -203,7 +203,6 @@ Shader "Unlit/TrailDebugShader"
 
 	fixed4 frag(g2f i) : SV_Target
 	{
-		// return i.uv.y > 0.7;
         return float4(i.uv.xy, 0, 1);
 		return i.col;
 	}

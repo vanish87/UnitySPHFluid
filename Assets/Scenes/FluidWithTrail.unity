@@ -211,8 +211,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trailCS: {fileID: 7200000, guid: acf4ffbebc3fc634a9643a5518f2f7da, type: 3}
   trailData:
-    emitTrailNum: 23000
-    emitTrailLen: 64
+    emitTrailNum: 32768
+    emitTrailLen: 96
 --- !u!114 &63783544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -875,7 +875,7 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    numOfParticle: 131072
+    numOfParticle: 262144
     smoothlen: 0.1
     pressureK:
       x: 200

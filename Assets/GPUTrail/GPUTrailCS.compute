@@ -2,24 +2,29 @@
 #pragma kernel InitNode
 #pragma kernel EmitTrail
 
-#pragma kernel UpdateParticle
-#pragma kernel UpdateFromParticle
+#pragma kernel UpdateSourceBuffer
+#pragma kernel UpdateFromSourceBuffer
 #pragma kernel AppendDeadToNodePool
 
 #define TRAIL_BLOCK_SIZE 256
 
-#include "GPUTrailData.cginc"
-#include "../FluidSPH3D/SPHData.cginc"
+// #define SourceType Particle
+#define SourceType float3
 
-StructuredBuffer<Particle> _ParticleBuffer;
-RWStructuredBuffer<Particle> _SourceBuffer;
+#include "GPUTrailData.cginc"
+
+StructuredBuffer<SourceType> _ParticleBuffer;
+RWStructuredBuffer<SourceType> _SourceBuffer;
+
+RWStructuredBuffer<TrailHeader> _TrailHeaderBuffer;
+int _TrailHeaderBufferCount;
+AppendStructuredBuffer<int> _TrailHeaderIndexBufferAppend;
+ConsumeStructuredBuffer<int> _TrailHeaderIndexBufferConsume;
 
 RWStructuredBuffer<TrailNode> _TrailNodeBuffer;
-RWStructuredBuffer<TrailHeader> _TrailHeaderBuffer;
-
+int _TrailNodeBufferCount;
 AppendStructuredBuffer<int> _TrailNodeIndexBufferAppend;
 ConsumeStructuredBuffer<int> _TrailNodeIndexBufferConsume;
-
 AppendStructuredBuffer<int> _TrailNodeIndexDeadBufferAppend;
 ConsumeStructuredBuffer<int> _TrailNodeIndexDeadBufferConsume;
 
@@ -40,6 +45,7 @@ TrailNode InitNode(int idx, TrailNode node)
     node = (TrailNode)0;
     node.prev = node.next = -1;
     node.idx = idx;
+    node.uvy = 0;
     node.pos = 0;
     return node;
 }
@@ -49,28 +55,29 @@ TrailNode InitNode(int idx, TrailNode node)
 void InitHeader (uint3 id : SV_DispatchThreadID)
 {
     const int hid = id.x;
-    TrailHeader header = _TrailHeaderBuffer[hid];
-    header = InitHeader(hid, header);
-    _TrailHeaderBuffer[hid] = header;
+    if(hid >= _TrailHeaderBufferCount) return;
+
+    _TrailHeaderBuffer[hid] = InitHeader(hid, _TrailHeaderBuffer[hid]);
+    _TrailHeaderIndexBufferAppend.Append(hid);
 }
  
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
 void InitNode (uint3 id : SV_DispatchThreadID)
 {
     const int nid = id.x;
-    TrailNode node = _TrailNodeBuffer[nid];
-    node = InitNode(nid, node);
-    _TrailNodeBuffer[nid] = node;
+    if(nid >= _TrailNodeBufferCount) return;
 
+    _TrailNodeBuffer[nid] = InitNode(nid, _TrailNodeBuffer[nid]);
     _TrailNodeIndexBufferAppend.Append(nid);
 }
 
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
 void EmitTrail (uint3 id : SV_DispatchThreadID)
 {
-    const int hid = id.x;
-    if(hid >= _EmitTrailNum) return;
+    const int tid = id.x;
+    if(tid >= _EmitTrailNum) return;
 
+    const int hid = _TrailHeaderIndexBufferConsume.Consume();
     const int maxLength = _EmitTrailLen;
 
     TrailHeader header = _TrailHeaderBuffer[hid];
@@ -83,45 +90,38 @@ void EmitTrail (uint3 id : SV_DispatchThreadID)
 
 
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
-void UpdateParticle (uint3 id : SV_DispatchThreadID)
+void UpdateSourceBuffer (uint3 id : SV_DispatchThreadID)
 {
     const int pid = id.x;
-    Particle p = _ParticleBuffer[pid];
-    _SourceBuffer[p.uuid] = _ParticleBuffer[pid];
+    _SourceBuffer[pid] = _ParticleBuffer[pid];
+}
+
+void UpdateNode(inout TrailNode node, in SourceType p)
+{
+    node.pos = p;
 }
 
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]
-void UpdateFromParticle (uint3 id : SV_DispatchThreadID)
+void UpdateFromSourceBuffer (uint3 id : SV_DispatchThreadID)
 {
     const int hid = id.x;
     TrailHeader header = _TrailHeaderBuffer[hid];
+    if(!IsActive(header)) return;
 
     const int firstid = header.first;
     const int maxLength = header.maxLength;
-    int currentlength = header.currentlength;
+    const int currentlength = header.currentlength;
 
     const int pid = hid;
-    Particle p = _SourceBuffer[pid];
+    SourceType p = _SourceBuffer[pid];
 
-    if(!IsActive(header)) return;
-    // if(!IsActive(p)) return;
-
-    if(currentlength == maxLength)
-    {
-        int last = firstid;
-        while(last != -1 && _TrailNodeBuffer[last].next != -1) last = _TrailNodeBuffer[last].next;
-        int prev = _TrailNodeBuffer[last].prev;
-        _TrailNodeBuffer[prev].next = -1;
-        _TrailNodeIndexDeadBufferAppend.Append(last);
-        currentlength--;
-    }
-
+    //consume a new node anyway
     int nid = _TrailNodeIndexBufferConsume.Consume();
-    header.currentlength = currentlength+1;
-
     TrailNode node = _TrailNodeBuffer[nid];
     node = InitNode(nid, node);
+    UpdateNode(node, p);
 
+    //add new node before first node
     if(firstid != -1)
     {
         TrailNode first = _TrailNodeBuffer[firstid];
@@ -129,13 +129,35 @@ void UpdateFromParticle (uint3 id : SV_DispatchThreadID)
         node.next = first.idx;
         _TrailNodeBuffer[firstid] = first;
     }
+    _TrailNodeBuffer[nid] = node;
 
     header.first = nid;
-    node.pos = p.pos;
-    // node.pos = float3(currentlength, 0, 0);
 
+    //update local idx for each node
+    int localIdx = 0;
+    int last = -1;
+    int curr = nid;
+    while(curr != -1)
+    {
+        TrailNode node = _TrailNodeBuffer[curr];
+        node.uvy = 1-(currentlength > 1?(localIdx * 1.0f)/(currentlength-1):0);
+        _TrailNodeBuffer[curr] = node;
+
+        localIdx++;
+        last = curr;
+        curr = node.next;
+    }
+
+    //remove last new if it reaches max length
+    if(currentlength == maxLength)
+    {
+        int prev = _TrailNodeBuffer[last].prev;
+        _TrailNodeBuffer[prev].next = -1;
+        _TrailNodeIndexDeadBufferAppend.Append(last);
+    }
+
+    header.currentlength = min(currentlength+1, maxLength);
     _TrailHeaderBuffer[hid] = header;
-    _TrailNodeBuffer[nid] = node;
 }
 
 [numthreads(1,1,1)]

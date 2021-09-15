@@ -9,6 +9,7 @@ Shader "Unlit/TrailShader"
 	CGINCLUDE
 	#include "UnityCG.cginc"
     #include "GPUTrailData.cginc"
+	#include "Gradient.cginc"
 
 	struct v2g
 	{
@@ -16,7 +17,7 @@ Shader "Unlit/TrailShader"
 		float3 p1 : TEXCOORD1;
 		float3 p2 : TEXCOORD2;
 		float3 p3 : TEXCOORD3;
-		float life : TEXCOORD4;
+		float2 uv12  : TEXCOORD4;
 	};
 
 	struct g2f
@@ -32,6 +33,9 @@ Shader "Unlit/TrailShader"
 	StructuredBuffer<TrailNode> _TrailNodeBuffer;
     int _TrailNodeBufferConnt;
 
+	float _Thickness;
+	float _MiterLimit;
+	int _zScale;
 
     float4 _Color;
 
@@ -53,26 +57,27 @@ Shader "Unlit/TrailShader"
         const int i2 = !next ? i1:node.next;
         const int i3 = !nnext ? i1:_TrailNodeBuffer[node.next].next;
 
+		const float uv1 = _TrailNodeBuffer[i1].uvy;
+		const float uv2 = _TrailNodeBuffer[i2].uvy;
+
         float3 p0 = _TrailNodeBuffer[i0].pos;
         float3 p1 = _TrailNodeBuffer[i1].pos;
         float3 p2 = _TrailNodeBuffer[i2].pos;
         float3 p3 = _TrailNodeBuffer[i3].pos;
 
-		bool tooFar = distance(p1,p2) > 1;
-		// tooFar = false;
+		p0 = prev?p0:p1+normalize(p1-p2);
+		p3 = nnext?p3:p2+normalize(p2-p1);
 
-		p0 = UnityObjectToViewPos(p0);
-		p1 = UnityObjectToViewPos(p1);
-		p2 = UnityObjectToViewPos(p2);
-		p3 = UnityObjectToViewPos(p3);
+		p0 = float4(UnityObjectToViewPos(p0), 1);
+		p1 = float4(UnityObjectToViewPos(p1), 1);
+		p2 = float4(UnityObjectToViewPos(p2), 1);
+		p3 = float4(UnityObjectToViewPos(p3), 1);
 
         o.p0 = p0;
         o.p1 = p1;
         o.p2 = p2;
         o.p3 = p3;
-        
-        o.life = (!prev || !next || tooFar )?-1:1;
-
+		o.uv12 = float2(uv1, uv2);
 		return o;
 	}
 
@@ -116,18 +121,33 @@ Shader "Unlit/TrailShader"
 	[maxvertexcount(7)]
 	void geom(point v2g p[1], inout TriangleStream<g2f> outStream)
 	{
-        if(p[0].life <= 0) return;
-
-        const float _MITER_LIMIT = 0.5;
+		g2f pIn = (g2f)0;
 
         float3 p0 = p[0].p0;
 		float3 p1 = p[0].p1;
 		float3 p2 = p[0].p2;
 		float3 p3 = p[0].p3;
 
-		float2 uv = 0;//p[0].uv.xy;
+		float2 uv12 = p[0].uv12;
 
-		float  thickness = 0.004;
+		float4 t1 = SampleXLod(_GradientTexture, float2(uv12.x, 0), ThicknessGradient, _GradientTextureHeight);
+		float4 t2 = SampleXLod(_GradientTexture, float2(uv12.y, 0), ThicknessGradient, _GradientTextureHeight);
+		float2 thickness = _Thickness * float2(t1.a, t2.a);
+
+		float proj = _ProjectionParams.x;
+        float near = _ProjectionParams.y;
+        float far = _ProjectionParams.z;
+
+		float z1 = -p1.z;
+		float z2 = -p2.z;
+		z1 = (far - (z1-near))/(far-near);
+		z2 = (far - (z2-near))/(far-near);
+		z1 *= (proj != 0);
+		z2 *= (proj != 0);
+
+		z1 = _zScale?z1:1;
+		z2 = _zScale?z2:1;
+
 		
 		// determine the direction of each of the 3 segments (previous, current, next)
 		float2 v0 = normalize(p1.xy - p0.xy);
@@ -144,13 +164,12 @@ Shader "Unlit/TrailShader"
 		float2 miter_b = normalize(n1 + n2);	// miter at end of current segment
 
 		// determine the length of the miter by projecting it onto normal and then inverse it
-		float length_a = thickness / (dot(miter_a, n1) + 1e-6);
-		float length_b = thickness / (dot(miter_b, n1) + 1e-6);
+		float2 length_a = thickness / (dot(miter_a, n1) + 1e-6);
+		float2 length_b = thickness / (dot(miter_b, n1) + 1e-6);
 
-		g2f pIn = (g2f)0;
 		
 		// prevent excessively long miters at sharp corners
-		if( dot(v0, v1) < -_MITER_LIMIT)
+		if( dot(v0, v1) < -_MiterLimit)
 		{
 			miter_a  = n1;
 			length_a = thickness;
@@ -158,36 +177,36 @@ Shader "Unlit/TrailShader"
 			// close the gap
 			if( dot(v0, n1) > 0 )
 			{
-				pIn.pos = Generate(float4((p1.xy + thickness * n0), p1.z, 1.0 ));
+				pIn.pos = Generate(float4((p1.xy + thickness.x * n0), p1.z, 1.0 ));
 				pIn.col = _Color;
-				pIn.uv  = float2(1.0, uv.y);
+				pIn.uv  = float2(uv12.x, 1.0);
 				outStream.Append(pIn);
 
-				pIn.pos = Generate(float4((p1.xy + thickness * n1), p1.z, 1.0 ));
+				pIn.pos = Generate(float4((p1.xy + thickness.x * n1), p1.z, 1.0 ));
 				pIn.col = _Color;
-				pIn.uv  = float2(1.0, uv.y);
+				pIn.uv  = float2(uv12.x, 1.0);
 				outStream.Append(pIn);
 
 				pIn.pos = Generate(float4( p1.xy, p1.z, 1.0 ));
 				pIn.col = _Color;
-				pIn.uv  = float2(0.5, uv.y);
+				pIn.uv  = float2(uv12.x, 0.5);
 				outStream.Append(pIn);
 				
 				outStream.RestartStrip();
 			} else {
-				pIn.pos = Generate(float4((p1.xy - thickness * n1), p1.z, 1.0 ));
+				pIn.pos = Generate(float4((p1.xy - thickness.x * n1), p1.z, 1.0 ));
 				pIn.col = _Color;
-				pIn.uv  = float2(0.0, uv.y);
+				pIn.uv  = float2(uv12.x, 0.0);
 				outStream.Append(pIn);
 
-				pIn.pos = Generate(float4((p1.xy - thickness * n0), p1.z, 1.0 ));
+				pIn.pos = Generate(float4((p1.xy - thickness.x * n0), p1.z, 1.0 ));
 				pIn.col = _Color;
-				pIn.uv  = float2(0.0, uv.y);
+				pIn.uv  = float2(uv12.x, 0.0);
 				outStream.Append(pIn);
 
 				pIn.pos = Generate(float4( p1.xy, p1.z, 1.0 ));
 				pIn.col = _Color;
-				pIn.uv  = float2(0.5, uv.y);
+				pIn.uv  = float2(uv12.x, 0.5);
 				outStream.Append(pIn);
 				
 				outStream.RestartStrip();
@@ -195,39 +214,33 @@ Shader "Unlit/TrailShader"
 
 		}
 
-		if(dot(v1, v2) < -_MITER_LIMIT)
+		if(dot(v1, v2) < -_MiterLimit)
 		{
 			miter_b  = n1;
 			length_b = thickness;
 		}
 
-        float base = abs(p2.z);
-        float scale = abs(p1.z);
-        float p2f = scale / base;
-		p2f = clamp(p2f, 0, 10);
-
 		// generate the triangle strip
-		pIn.pos = Generate(float4( (p2.xy + length_b * miter_b * p2f), p2.z, 1.0 ));
+		pIn.pos = Generate(float4( (p2.xy + length_b.y * miter_b * z2), p2.z, 1.0 ));
 		pIn.col = _Color;
-		pIn.uv  = float2(1.0, uv.y);
+		pIn.uv  = float2(uv12.y, 1.0);
 		outStream.Append(pIn);
 
-		pIn.pos = Generate(float4( (p2.xy - length_b * miter_b * p2f), p2.z, 1.0 ));
+		pIn.pos = Generate(float4( (p2.xy - length_b.y * miter_b * z2), p2.z, 1.0 ));
 		pIn.col = _Color;
-		pIn.uv  = float2(0.0, uv.y);
+		pIn.uv  = float2(uv12.y, 0.0);
 		outStream.Append(pIn);
-
-		pIn.pos = Generate(float4( (p1.xy + length_a * miter_a), p1.z, 1.0 ));
-		pIn.col = _Color;
-		pIn.uv  = float2(1.0, uv.y);
-		outStream.Append(pIn);
-
-		pIn.pos = Generate(float4( (p1.xy - length_a * miter_a), p1.z, 1.0 ));
-		pIn.col =_Color;
-		pIn.uv  = float2(0.0, uv.y);
-		outStream.Append(pIn);
-
 		
+		pIn.pos = Generate(float4( (p1.xy + length_a.x * miter_a * z1), p1.z, 1.0 ));
+		pIn.col = _Color;
+		pIn.uv  = float2(uv12.x, 1.0);
+		outStream.Append(pIn);
+
+		pIn.pos = Generate(float4( (p1.xy - length_a.x * miter_a * z1), p1.z, 1.0 ));
+		pIn.col =_Color;
+		pIn.uv  = float2(uv12.x, 0.0);
+		outStream.Append(pIn);
+        
 		outStream.RestartStrip();
     }
 
@@ -248,8 +261,14 @@ Shader "Unlit/TrailShader"
 
 	fixed4 frag(g2f i) : SV_Target
 	{
-        // return 1;
-        return float4(1,1,1,0.3);
+		float2 uv = i.uv;
+		float4 col = float4(uv, 0, 1);
+		float4 colGradient = SampleX(_GradientTexture, uv, ColorGradient, _GradientTextureHeight);
+		col = colGradient;
+		float4 alphaX = SampleX(_GradientTexture, uv, HorizontalAlphaGradient, _GradientTextureHeight);
+		float4 alphaY = SampleY(_GradientTexture, uv, VerticalAlphaGradient, _GradientTextureHeight);
+		col.a *= alphaX.a * alphaY.a;
+		return col;
 		return i.col;
 	}
 

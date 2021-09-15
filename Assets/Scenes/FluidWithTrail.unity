@@ -383,7 +383,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 419030050}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.55, y: 2.87, z: 0}
+  m_LocalPosition: {x: 2.55, y: -2.01, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1307491547}
@@ -408,7 +408,7 @@ MonoBehaviour:
     space:
       center:
         x: 2.55
-        y: 2.87
+        y: -2.01
         z: 0
       rotation:
         value:
@@ -959,6 +959,7 @@ Transform:
   - {fileID: 2041543642}
   - {fileID: 488019585}
   - {fileID: 419030051}
+  - {fileID: 2105199585}
   m_Father: {fileID: 1172243133}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1353,7 +1354,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2041543641}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -2.03, z: 0}
+  m_LocalPosition: {x: -1.46, y: -1.503, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1307491547}
@@ -1377,8 +1378,8 @@ MonoBehaviour:
     density: 0.03125
     space:
       center:
-        x: 0
-        y: -2.03
+        x: -1.46
+        y: -1.503
         z: 0
       rotation:
         value:
@@ -1397,3 +1398,69 @@ MonoBehaviour:
   mesh: {fileID: -2432090755550338912, guid: 23c61fd80dafb5d4085b11f08b1d07c9, type: 3}
   meshScale: 15
   sampleNum: 8192
+--- !u!1 &2105199584
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2105199585}
+  - component: {fileID: 2105199586}
+  m_Layer: 0
+  m_Name: SDFSphere (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2105199585
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2105199584}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.35, y: -2.28, z: -0.63}
+  m_LocalScale: {x: 0.6, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1307491547}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2105199586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2105199584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bca95913663e4a9449e81d6d3a7a4874, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    name: SDF Sphere
+    type: 2
+    density: 0.03125
+    space:
+      center:
+        x: 1.35
+        y: -2.28
+        z: -0.63
+      rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+      scale:
+        x: 0.6
+        y: 1
+        z: 1
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}

@@ -46,6 +46,7 @@ namespace GPUTrail
 			[Shader(Name = "_TrailNodeIndexDeadBufferConsume")] public GPUBufferAppendConsume<int> trailNodeIndexDeadBufferConsume = new GPUBufferAppendConsume<int>();
 
 			//optional local buffer: sometimes a local copy of source buffer is necessary
+			//it can use source.Buffer directly
 			[Shader(Name = "_SourceBuffer")] public GPUBufferVariable<T> sourceBuffer = new GPUBufferVariable<T>();
 			[Shader(Name = "_EmitTrailNum")] public int emitTrailNum = 2048;
 			[Shader(Name = "_EmitTrailLen")] public int emitTrailLen = 128;
@@ -58,8 +59,6 @@ namespace GPUTrail
 		[SerializeField] protected GPUTrailData trailData = new GPUTrailData();
 
 		protected GPUTrailConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<GPUTrailConfigure>();
-
-
 		protected GPUTrailConfigure configure;
 		protected bool inited = false;
 		protected ComputeShaderDispatcher<Kernel> dispatcher;

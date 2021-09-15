@@ -1,7 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using GPUTrail;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityTools;
@@ -53,6 +53,9 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleVorticityBuffer")] public GPUBufferVariable<ParticleVorticity> particleVorticity = new GPUBufferVariable<ParticleVorticity>();
 			[Shader(Name = "_ParticleCount")] public GPUBufferVariable<int> particleCount = new GPUBufferVariable<int>();
 			[Shader(Name = "_DeltaTime"), DisableEdit] public float deltaTime = 0.001f;
+
+			[Shader(Name = "_TrailSource")] public GPUBufferVariable<TrailParticle> trailParticleBuffer = new GPUBufferVariable<TrailParticle>();
+
 		}
 		[System.Serializable]
 		public class StaticsData
@@ -61,7 +64,8 @@ namespace FluidSPH3D
 			public int ActiveParticleNum = 0;
 
 		}
-		public GPUBufferVariable<Particle> Buffer => this.sphData.particleBuffer;
+		GPUBufferVariable<Particle> IDataBuffer<Particle>.Buffer => this.sphData.particleBuffer;
+		GPUBufferVariable<TrailParticle> ITrailSource<TrailParticle>.Buffer => this.sphData.trailParticleBuffer;
 		public ISpace Space => this.Configure.D.simulationSpace;
 		public bool Inited => this.inited;
 		[SerializeField] protected RunMode mode = RunMode.SharedMemory;
@@ -72,18 +76,14 @@ namespace FluidSPH3D
 		protected bool inited = false;
 		protected FluidSPH3DConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<FluidSPH3DConfigure>();
 		protected FluidSPH3DConfigure configure;
-
 		protected SPHGrid SPHGrid => this.sphGrid ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<SPHGrid>();
 		protected SPHGrid sphGrid;
 		protected EmitterController EmitterController => this.emitterController ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<EmitterController>();
 		protected EmitterController emitterController;
 		protected BoundaryController BoundaryController => this.boundaryController ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<BoundaryController>();
 
-
 		protected BoundaryController boundaryController;
 		protected ComputeShaderDispatcher<SPHKernel> fluidDispatcher;
-
-
 		protected StaticsData staticsData = new StaticsData();
 
 		public void Init()

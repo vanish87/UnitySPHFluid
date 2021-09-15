@@ -21,6 +21,10 @@ namespace FluidSPH3D
                 configure.Load();
                 configure.NotifyChange();
             }
+            if(GUILayout.Button("Open File"))
+            {
+                configure.OpenFile();
+            }
             base.OnInspectorGUI();
         }
     }
@@ -41,6 +45,10 @@ namespace FluidSPH3D
                 configure.Load();
                 configure.NotifyChange();
             }
+            if(GUILayout.Button("Open File"))
+            {
+                configure.OpenFile();
+            }
             base.OnInspectorGUI();
         }
     }
@@ -60,6 +68,10 @@ namespace FluidSPH3D
             {
                 configure.Load();
                 configure.NotifyChange();
+            }
+            if(GUILayout.Button("Open File"))
+            {
+                configure.OpenFile();
             }
             base.OnInspectorGUI();
         }

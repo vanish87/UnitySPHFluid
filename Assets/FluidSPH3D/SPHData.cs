@@ -1,4 +1,5 @@
 
+using System.Runtime.InteropServices;
 using Unity.Mathematics;
 
 namespace FluidSPH3D
@@ -18,6 +19,11 @@ namespace FluidSPH3D
 		public float4 col;
 		public float life;
 		public ParticleType type;
+	}
+	[StructLayout(LayoutKind.Sequential)]
+	public class TrailParticle: GPUTrail.TrailSource
+	{
+
 	}
 	public struct ParticleDensity
 	{

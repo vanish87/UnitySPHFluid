@@ -62,6 +62,7 @@ namespace FluidSPH3D
 
 		}
 		public GPUBufferVariable<Particle> Buffer => this.sphData.particleBuffer;
+		public ISpace Space => this.Configure.D.simulationSpace;
 		[SerializeField] protected RunMode mode = RunMode.SharedMemory;
 		[SerializeField] protected SPHGPUData sphData = new SPHGPUData();
 		[SerializeField] protected BoundaryGPUData boundaryGPUData = new BoundaryGPUData();
@@ -75,6 +76,8 @@ namespace FluidSPH3D
 		protected EmitterController EmitterController => this.emitterController ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<EmitterController>();
 		protected EmitterController emitterController;
 		protected BoundaryController BoundaryController => this.boundaryController ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<BoundaryController>();
+
+
 		protected BoundaryController boundaryController;
 		protected ComputeShaderDispatcher<SPHKernel> fluidDispatcher;
 
@@ -162,7 +165,7 @@ namespace FluidSPH3D
 				LogTool.Log("pool particle " + poolNum + " not enough to emit " + num, LogLevel.Warning);
 				return;
 			}
-			this.fluidDispatcher.DispatchNoneTthread(SPHKernel.Emit, ec.emitterBuffer.Size);
+			this.fluidDispatcher.DispatchNoneThread(SPHKernel.Emit, ec.emitterBuffer.Size);
 		}
 
 		protected void InitSPH()

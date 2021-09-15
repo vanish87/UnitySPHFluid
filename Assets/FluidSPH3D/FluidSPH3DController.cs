@@ -51,9 +51,11 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleForceBuffer")] public GPUBufferVariable<ParticleForce> particleForce = new GPUBufferVariable<ParticleForce>();
 			[Shader(Name = "_ParticleVelocityBuffer")] public GPUBufferVariable<ParticleVelocity> particleVelocity = new GPUBufferVariable<ParticleVelocity>();
 			[Shader(Name = "_ParticleVorticityBuffer")] public GPUBufferVariable<ParticleVorticity> particleVorticity = new GPUBufferVariable<ParticleVorticity>();
+
+			//particle neighbor count for parameter tuning
 			[Shader(Name = "_ParticleCount")] public GPUBufferVariable<int> particleCount = new GPUBufferVariable<int>();
 			[Shader(Name = "_DeltaTime"), DisableEdit] public float deltaTime = 0.001f;
-
+			//trail pos source buffer
 			[Shader(Name = "_TrailSource")] public GPUBufferVariable<TrailParticle> trailParticleBuffer = new GPUBufferVariable<TrailParticle>();
 
 		}
@@ -81,13 +83,14 @@ namespace FluidSPH3D
 		protected EmitterController EmitterController => this.emitterController ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<EmitterController>();
 		protected EmitterController emitterController;
 		protected BoundaryController BoundaryController => this.boundaryController ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<BoundaryController>();
-
 		protected BoundaryController boundaryController;
 		protected ComputeShaderDispatcher<SPHKernel> fluidDispatcher;
 		protected StaticsData staticsData = new StaticsData();
 
 		public void Init()
 		{
+			LogTool.LogAssertIsTrue(this.mode == RunMode.SortedGrid, "Only sorted grid is supported now");
+
 			this.BoundaryController.Init();
 			this.EmitterController.Init();
 
@@ -268,18 +271,6 @@ namespace FluidSPH3D
 			}
 			this.Emit();
 			// if (Input.GetKey(KeyCode.E)) this.Emit();
-
-			if(Input.GetKeyDown(KeyCode.V))
-			{
-				this.sphData.particleBuffer.GetToCPUData();
-				var count = 0;
-				foreach(var p in this.sphData.particleBuffer.CPUData)
-				{
-					if(p.type != ParticleType.Inactive) count++;
-				}
-
-				Debug.Log(count);
-			}
 
 			this.staticsData.ActiveParticleNum = this.Configure.D.numOfParticle - this.sphData.particleBufferIndexConsume.GetCounter();
 		}

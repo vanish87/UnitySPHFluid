@@ -13,7 +13,7 @@ using UnityTools.Rendering;
 
 namespace FluidSPH3D
 {
-	public class FluidSPH3DController : MonoBehaviour, IDataBuffer<Particle>
+	public class FluidSPH3DController : MonoBehaviour, IDataBuffer<Particle>, ITrailSource<TrailParticle>, IInitialize
 	{
 		public enum RunMode
 		{
@@ -63,11 +63,13 @@ namespace FluidSPH3D
 		}
 		public GPUBufferVariable<Particle> Buffer => this.sphData.particleBuffer;
 		public ISpace Space => this.Configure.D.simulationSpace;
+		public bool Inited => this.inited;
 		[SerializeField] protected RunMode mode = RunMode.SharedMemory;
 		[SerializeField] protected SPHGPUData sphData = new SPHGPUData();
 		[SerializeField] protected BoundaryGPUData boundaryGPUData = new BoundaryGPUData();
 		[SerializeField] protected ComputeShader fluidSortedCS;
 		[SerializeField] protected ComputeShader fluidSharedCS;
+		protected bool inited = false;
 		protected FluidSPH3DConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<FluidSPH3DConfigure>();
 		protected FluidSPH3DConfigure configure;
 
@@ -84,7 +86,7 @@ namespace FluidSPH3D
 
 		protected StaticsData staticsData = new StaticsData();
 
-		protected void Init()
+		public void Init()
 		{
 			this.BoundaryController.Init();
 			this.EmitterController.Init();
@@ -95,6 +97,16 @@ namespace FluidSPH3D
 			this.InitIndexPool();
 
 			this.AddBoundary();
+
+			this.inited = true;
+		}
+		public void Deinit()
+		{
+			this.sphData?.Release();
+			this.boundaryGPUData?.Release();
+
+			this.BoundaryController.Deinit();
+			this.EmitterController.Deinit();
 		}
 		protected void InitParticle()
 		{
@@ -222,21 +234,13 @@ namespace FluidSPH3D
 			// this.sphData.particleCount.GetToCPUData();
 			// Debug.Log(this.sphData.particleCount.CPUData[10]);
 		}
-		protected void DeInit()
-		{
-			this.sphData?.Release();
-			this.boundaryGPUData?.Release();
-
-			this.BoundaryController.Deinit();
-			this.emitterController.Deinit();
-		}
 		protected void OnEnable()
 		{
-			this.Init();
+			if (!this.Inited) this.Init();
 		}
 		protected void OnDisable()
 		{
-			this.DeInit();
+			this.Deinit();
 		}
 
 		protected void Update()

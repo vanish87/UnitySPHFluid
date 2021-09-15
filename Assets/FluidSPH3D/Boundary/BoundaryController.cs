@@ -16,13 +16,16 @@ namespace FluidSPH3D
 		public float3 size;
 
 	}
-	public class BoundaryController : MonoBehaviour
+	public class BoundaryController : MonoBehaviour, IInitialize
 	{
 		protected const int MAX_NUM_SDF_BOUNDARY = 128;
 		public List<IBoundary> Boundaries => this.boundaries;
 		public GPUBufferVariable<SDFBoundaryData> SDFBoundaires => this.sdfBoundaries ??= new GPUBufferVariable<SDFBoundaryData>("_SDFBoundaryBuffer", MAX_NUM_SDF_BOUNDARY, true);
 		protected BoundaryConfigure configure;
 		protected BoundaryConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<BoundaryConfigure>();
+		public bool Inited => this.inited;
+		protected bool inited = false;
+
 		protected List<IBoundary> boundaries = new List<IBoundary>();
 		protected GPUBufferVariable<SDFBoundaryData> sdfBoundaries;
 
@@ -50,6 +53,7 @@ namespace FluidSPH3D
 				this.boundaries.Add(b);
 			}
 
+			this.inited = true;
 		}
 		public void Deinit()
 		{
@@ -86,11 +90,11 @@ namespace FluidSPH3D
 
 		protected void OnEnable()
 		{
-			// this.Init();
+			if(!this.Inited) this.Init();
 		}
 		protected void OnDisable()
 		{
-			// this.Deinit();
+			this.Deinit();
 		}
 	}
 }

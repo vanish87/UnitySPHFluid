@@ -7,17 +7,20 @@ using UnityTools.Common;
 
 namespace FluidSPH3D
 {
-	public class EmitterController : MonoBehaviour
+	public class EmitterController : MonoBehaviour, IInitialize
 	{
         public class EmitterContainer : GPUContainer
         {
 			[Shader(Name = "_EmitterBuffer")] public GPUBufferVariable<EmitterGPUData> emitterBuffer = new GPUBufferVariable<EmitterGPUData>();
         }
+		public bool Inited => this.inited;
         public EmitterContainer EmitterGPUData => this.emitterContainer;
 		public int CurrentParticleEmit => this.emitters.Sum(e => e.ParticlePerSecond);
 		protected const int MAX_NUM_EMITTER = 128;
+		protected bool inited = false;
 		protected EmitterConfigure configure;
 		protected EmitterConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<EmitterConfigure>();
+
 		protected List<IEmitter> emitters = new List<IEmitter>();
 		protected EmitterContainer emitterContainer = new EmitterContainer();
 
@@ -38,6 +41,8 @@ namespace FluidSPH3D
 			}
 
             this.emitterContainer.emitterBuffer.InitBuffer(MAX_NUM_EMITTER, true, true);
+
+			this.inited = true;
 		}
 		public void Deinit()
 		{
@@ -62,11 +67,11 @@ namespace FluidSPH3D
 		}
 		protected void OnEnable()
 		{
-			// this.Init();
+			if (!this.Inited) this.Init();
 		}
 		protected void OnDisable()
 		{
-			// this.Deinit();
+			this.Deinit();
 		}
 	}
 }

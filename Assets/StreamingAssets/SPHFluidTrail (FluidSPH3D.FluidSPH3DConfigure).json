@@ -38,7 +38,7 @@
     "particleMass": 1.0,
     "viscosity": 100.0,
     "vorticity": 1.0,
-    "nu_t": 0.0,
+    "nu_t": 0.20000000298023225,
     "nu_ext": 0.0,
     "theta": 1.0,
     "gravity": {

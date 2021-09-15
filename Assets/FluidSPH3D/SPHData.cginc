@@ -11,6 +11,10 @@ struct Particle
 	int type;
 };
 
+struct TrailParticle
+{
+	float3 pos;
+};
 
 struct ParticleDensity
 {

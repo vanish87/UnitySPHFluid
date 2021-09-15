@@ -128,6 +128,8 @@ Shader "Unlit/TrailShader"
 		float3 p2 = p[0].p2;
 		float3 p3 = p[0].p3;
 
+		if(distance(p1,p2)>1) return;
+
 		float2 uv12 = p[0].uv12;
 
 		float4 t1 = SampleXLod(_GradientTexture, float2(uv12.x, 0), ThicknessGradient, _GradientTextureHeight);

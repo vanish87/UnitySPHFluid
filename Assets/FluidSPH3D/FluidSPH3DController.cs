@@ -56,7 +56,7 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleCount")] public GPUBufferVariable<int> particleCount = new GPUBufferVariable<int>();
 			[Shader(Name = "_DeltaTime"), DisableEdit] public float deltaTime = 0.001f;
 			//trail pos source buffer
-			[Shader(Name = "_TrailSource")] public GPUBufferVariable<TrailParticle> trailParticleBuffer = new GPUBufferVariable<TrailParticle>();
+			[Shader(Name = "_TrailParticleBuffer")] public GPUBufferVariable<TrailParticle> trailParticleBuffer = new GPUBufferVariable<TrailParticle>();
 
 		}
 		[System.Serializable]
@@ -187,16 +187,20 @@ namespace FluidSPH3D
 		{
 			this.SPHGrid.Init(this.Configure.D.simulationSpace, this.Configure.D.smoothlen);
 
-			this.sphData.particleBufferIndexAppend.InitAppendBuffer(this.Configure.D.numOfParticle);
+			var pnum = this.Configure.D.numOfParticle;
+
+			this.sphData.particleBufferIndexAppend.InitAppendBuffer(pnum);
 			this.sphData.particleBufferIndexConsume.InitAppendBuffer(this.sphData.particleBufferIndexAppend);
 
-			this.sphData.particleBuffer.InitBuffer(this.Configure.D.numOfParticle, true, false);
-			this.sphData.particleDensity.InitBuffer(this.Configure.D.numOfParticle);
-			this.sphData.particleForce.InitBuffer(this.Configure.D.numOfParticle);
-			this.sphData.particleVelocity.InitBuffer(this.Configure.D.numOfParticle);
-			this.sphData.particleVorticity.InitBuffer(this.Configure.D.numOfParticle);
+			this.sphData.particleBuffer.InitBuffer(pnum, true, false);
+			this.sphData.particleDensity.InitBuffer(pnum);
+			this.sphData.particleForce.InitBuffer(pnum);
+			this.sphData.particleVelocity.InitBuffer(pnum);
+			this.sphData.particleVorticity.InitBuffer(pnum);
 
-			this.sphData.particleCount.InitBuffer(this.Configure.D.numOfParticle, true, false);
+			this.sphData.particleCount.InitBuffer(pnum, true, false);
+
+			this.sphData.trailParticleBuffer.InitBuffer(pnum);
 
 			var cs = this.mode == RunMode.SharedMemory ? this.fluidSharedCS : this.fluidSortedCS;
 			this.fluidDispatcher = new ComputeShaderDispatcher<SPHKernel>(cs);

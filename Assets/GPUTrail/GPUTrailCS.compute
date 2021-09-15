@@ -8,12 +8,12 @@
 
 #define TRAIL_BLOCK_SIZE 256
 
-// #define SourceType Particle
-#define SourceType float3
+#define SourceType TrailParticle
 
 #include "GPUTrailData.cginc"
+#include "../FluidSPH3D/SPHData.cginc"
 
-StructuredBuffer<SourceType> _ParticleBuffer;
+StructuredBuffer<SourceType> _TrailParticleBuffer;
 RWStructuredBuffer<SourceType> _SourceBuffer;
 
 RWStructuredBuffer<TrailHeader> _TrailHeaderBuffer;
@@ -93,12 +93,12 @@ void EmitTrail (uint3 id : SV_DispatchThreadID)
 void UpdateSourceBuffer (uint3 id : SV_DispatchThreadID)
 {
     const int pid = id.x;
-    _SourceBuffer[pid] = _ParticleBuffer[pid];
+    _SourceBuffer[pid] = _TrailParticleBuffer[pid];
 }
 
 void UpdateNode(inout TrailNode node, in SourceType p)
 {
-    node.pos = p;
+    node.pos = p.pos;
 }
 
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]

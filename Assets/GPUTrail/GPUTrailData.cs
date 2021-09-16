@@ -17,9 +17,4 @@ namespace GPUTrail
 		public float uvy;
 		public float3 pos;
 	}
-	[StructLayout(LayoutKind.Sequential)]
-	public class TrailSource
-	{
-		public float3 pos;
-	}
 }

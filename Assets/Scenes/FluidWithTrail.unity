@@ -189,15 +189,15 @@ MonoBehaviour:
           z: 0
           w: 1
       scale:
-        x: 1
-        y: 1
-        z: 1
+        x: 10000
+        y: 10000
+        z: 10000
       displayAxis: 0
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    trailHeaderNum: 65536
-    trailNodeNum: 8388608
+    trailHeaderNum: 32768
+    trailNodeNum: 4194304
 --- !u!114 &63783543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,7 +213,7 @@ MonoBehaviour:
   trailCS: {fileID: 7200000, guid: acf4ffbebc3fc634a9643a5518f2f7da, type: 3}
   trailData:
     emitTrailNum: 32768
-    emitTrailLen: 128
+    maxTrailLen: 64
 --- !u!114 &63783544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -838,8 +838,8 @@ MonoBehaviour:
         displayBound: 1
         color: {r: 0, g: 0, b: 1, a: 1}
     - name: Emiiter2
-      isActive: 1
-      particlePerSecond: 384
+      isActive: 0
+      particlePerSecond: 64
       space:
         center:
           x: -0.46
@@ -861,10 +861,10 @@ MonoBehaviour:
         color: {r: 0, g: 0, b: 1, a: 1}
     - name: Emiiter3
       isActive: 1
-      particlePerSecond: 256
+      particlePerSecond: 32
       space:
         center:
-          x: 0.58
+          x: 0.09
           y: 6.28
           z: 2.25
         rotation:
@@ -874,8 +874,8 @@ MonoBehaviour:
             z: 0
             w: 1
         scale:
-          x: 1
-          y: 0.02
+          x: 2
+          y: 0.8
           z: 0.1
         displayAxis: 0
         displayText: 0

@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Unity.Mathematics;
 
 namespace GPUTrail
@@ -5,6 +6,7 @@ namespace GPUTrail
 	public struct TrailHeader
 	{
 		public int state;
+		public int sourceID;
 		public int first;
 		public int currentLength;
 		public int maxLength;
@@ -13,6 +15,11 @@ namespace GPUTrail
 	{
 		public int prev, next, idx;
 		public float uvy;
+		public float3 pos;
+	}
+	[StructLayout(LayoutKind.Sequential)]
+	public class TrailSource
+	{
 		public float3 pos;
 	}
 }

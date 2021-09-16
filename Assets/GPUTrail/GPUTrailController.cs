@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using System.Runtime.InteropServices;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityTools;
 using UnityTools.Common;
@@ -11,12 +9,6 @@ using UnityTools.Rendering;
 
 namespace GPUTrail
 {
-	[StructLayout(LayoutKind.Sequential)]
-	public class TrailSource
-	{
-		public float3 pos;
-	}
-
 	public interface ITrailSource<T> where T : TrailSource
 	{
 		GPUBufferVariable<T> Buffer { get; }

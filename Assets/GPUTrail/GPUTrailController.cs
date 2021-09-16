@@ -41,7 +41,7 @@ namespace GPUTrail
 			//it can use source.Buffer directly
 			[Shader(Name = "_SourceBuffer")] public GPUBufferVariable<T> sourceBuffer = new GPUBufferVariable<T>();
 			[Shader(Name = "_EmitTrailNum")] public int emitTrailNum = 2048;
-			[Shader(Name = "_EmitTrailLen")] public int emitTrailLen = 128;
+			[Shader(Name = "_MaxTrailLen")] public int maxTrailLen = 128;
 		}
 		public bool Inited => this.inited;
 		public GPUBufferVariable<TrailNode> Buffer => this.trailData.trailNodeBuffer;
@@ -86,15 +86,21 @@ namespace GPUTrail
 			this.dispatcher.Dispatch(Kernel.InitHeader, headNum);
 			this.dispatcher.Dispatch(Kernel.InitNode, nodeNum);
 
-			LogTool.AssertIsTrue(this.trailData.emitTrailLen > 0);
-			this.dispatcher.Dispatch(Kernel.EmitTrail, this.trailData.emitTrailNum);
-
 			this.inited = true;
 		}
 
 		public virtual void Deinit()
 		{
 			this.trailData?.Release();
+		}
+		protected void EmitTrail(int num, int maxLen)
+		{
+            LogTool.AssertIsTrue(num > 0);
+            LogTool.AssertIsTrue(maxLen > 0);
+			
+			this.trailData.emitTrailNum = num;
+			this.trailData.maxTrailLen = maxLen;
+            this.dispatcher.Dispatch(Kernel.EmitTrail, num);
 		}
 
 		protected virtual void Update()

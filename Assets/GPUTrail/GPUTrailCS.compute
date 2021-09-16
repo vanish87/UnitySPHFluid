@@ -30,7 +30,7 @@ AppendStructuredBuffer<int> _TrailNodeIndexDeadBufferAppend;
 ConsumeStructuredBuffer<int> _TrailNodeIndexDeadBufferConsume;
 
 int _EmitTrailNum;
-int _EmitTrailLen;
+int _MaxTrailLen;
 
 TrailHeader InitHeader(int idx, TrailHeader header)
 {
@@ -80,7 +80,7 @@ void EmitTrail (uint3 id : SV_DispatchThreadID)
     if(tid >= _EmitTrailNum) return;
 
     const int hid = _TrailHeaderIndexBufferConsume.Consume();
-    const int maxLength = _EmitTrailLen;
+    const int maxLength = _MaxTrailLen;
 
     TrailHeader header = _TrailHeaderBuffer[hid];
     header = InitHeader(hid, header);

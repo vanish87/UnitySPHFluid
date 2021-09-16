@@ -8,6 +8,7 @@ namespace FluidSPH3D
 		public override void Init()
 		{
 			base.Init();
+			// this.EmitTrail(this.trailData.emitTrailNum, this.trailData.maxTrailLen);
 		}
 		public override void Deinit()
 		{

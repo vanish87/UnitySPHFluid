@@ -9,12 +9,13 @@
 #define TRAIL_BLOCK_SIZE 256
 
 #define SourceType TrailParticle
+#define SourceBufferName _SourceBuffer
 
 #include "GPUTrailData.cginc"
 #include "../FluidSPH3D/SPHData.cginc"
 
 StructuredBuffer<SourceType> _TrailParticleBuffer;
-RWStructuredBuffer<SourceType> _SourceBuffer;
+RWStructuredBuffer<SourceType> SourceBufferName;
 
 RWStructuredBuffer<TrailHeader> _TrailHeaderBuffer;
 int _TrailHeaderBufferCount;
@@ -93,7 +94,7 @@ void EmitTrail (uint3 id : SV_DispatchThreadID)
 void UpdateSourceBuffer (uint3 id : SV_DispatchThreadID)
 {
     const int pid = id.x;
-    _SourceBuffer[pid] = _TrailParticleBuffer[pid];
+    SourceBufferName[pid] = _TrailParticleBuffer[pid];
 }
 
 void UpdateNode(inout TrailNode node, in SourceType p)
@@ -113,7 +114,7 @@ void UpdateFromSourceBuffer (uint3 id : SV_DispatchThreadID)
     const int currentlength = header.currentlength;
 
     const int pid = hid;
-    SourceType p = _SourceBuffer[pid];
+    SourceType p = SourceBufferName[pid];
 
     //consume a new node anyway
     int nid = _TrailNodeIndexBufferConsume.Consume();

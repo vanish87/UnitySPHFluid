@@ -699,7 +699,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &558687677
 Transform:
   m_ObjectHideFlags: 0
@@ -708,8 +708,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 558687676}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.74, y: 4.72, z: 2.12}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalPosition: {x: -2.79, y: -2.38, z: 0.01}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1307491547}
   m_RootOrder: 1
@@ -732,9 +732,9 @@ MonoBehaviour:
     density: 0.03125
     space:
       center:
-        x: -0.74
-        y: 4.72
-        z: 2.12
+        x: -2.79
+        y: -2.38
+        z: 0.01
       rotation:
         value:
           x: 0
@@ -742,9 +742,9 @@ MonoBehaviour:
           z: 0
           w: 1
       scale:
-        x: 0.5
-        y: 0.5
-        z: 0.5
+        x: 1
+        y: 1
+        z: 1
       displayAxis: 0
       displayText: 0
       displayBound: 1
@@ -881,6 +881,72 @@ MonoBehaviour:
         displayText: 0
         displayBound: 1
         color: {r: 0, g: 0, b: 1, a: 1}
+--- !u!1 &779176047
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 779176048}
+  - component: {fileID: 779176049}
+  m_Layer: 0
+  m_Name: Sphere (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &779176048
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779176047}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.74, y: 4.72, z: 2.12}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_Children: []
+  m_Father: {fileID: 1307491547}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &779176049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779176047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfa758b858222514e85ab2bf7f39ab86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    name: Sphere
+    type: 1
+    density: 0.03125
+    space:
+      center:
+        x: -0.74
+        y: 4.72
+        z: 2.12
+      rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+      scale:
+        x: 0.5
+        y: 0.5
+        z: 0.5
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &983096801
 GameObject:
   m_ObjectHideFlags: 0
@@ -1150,6 +1216,7 @@ Transform:
   - {fileID: 1414455847}
   - {fileID: 419030051}
   - {fileID: 2105199585}
+  - {fileID: 779176048}
   m_Father: {fileID: 1172243133}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1495,7 +1562,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1414455846}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.507, z: 0}
+  m_LocalPosition: {x: -0.59, y: -1.507, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children: []
   m_Father: {fileID: 1307491547}
@@ -1519,7 +1586,7 @@ MonoBehaviour:
     density: 0.03125
     space:
       center:
-        x: 0
+        x: -0.59
         y: -1.507
         z: 0
       rotation:
@@ -1660,7 +1727,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2105199584}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.35, y: -2.28, z: -0.63}
+  m_LocalPosition: {x: 2.21, y: -2.28, z: -0.41}
   m_LocalScale: {x: 0.6, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1307491547}
@@ -1684,9 +1751,9 @@ MonoBehaviour:
     density: 0.03125
     space:
       center:
-        x: 1.35
+        x: 2.21
         y: -2.28
-        z: -0.63
+        z: -0.41
       rotation:
         value:
           x: 0

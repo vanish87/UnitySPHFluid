@@ -2,6 +2,7 @@
 struct TrailHeader
 {
 	int state;
+	int sourceID;
 	int first;
 	int currentlength;
 	int maxLength;

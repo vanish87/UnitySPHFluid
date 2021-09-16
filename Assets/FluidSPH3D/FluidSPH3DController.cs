@@ -13,7 +13,7 @@ using UnityTools.Rendering;
 
 namespace FluidSPH3D
 {
-	public class FluidSPH3DController : MonoBehaviour, IDataBuffer<Particle>, ITrailSource<TrailParticle>, IInitialize
+	public class FluidSPH3DController : MonoBehaviour, IDataBuffer<Particle>, ITrailSource<TrailParticle, int>, IInitialize
 	{
 		public enum RunMode
 		{
@@ -56,7 +56,9 @@ namespace FluidSPH3D
 			[Shader(Name = "_ParticleCount")] public GPUBufferVariable<int> particleCount = new GPUBufferVariable<int>();
 			[Shader(Name = "_DeltaTime"), DisableEdit] public float deltaTime = 0.001f;
 			//trail pos source buffer
-			[Shader(Name = "_TrailParticleBuffer")] public GPUBufferVariable<TrailParticle> trailParticleBuffer = new GPUBufferVariable<TrailParticle>();
+			[Shader(Name = "_TrailSourceBuffer")] public GPUBufferVariable<TrailParticle> trailSourceBuffer = new GPUBufferVariable<TrailParticle>();
+			[Shader(Name = "_TrailEmitBufferAppend")] public GPUBufferAppendConsume<int> trailEmitBufferAppend = new GPUBufferAppendConsume<int>();
+			[Shader(Name = "_TrailEmitBufferConsume")] public GPUBufferAppendConsume<int> trailEmitBufferConsume = new GPUBufferAppendConsume<int>();
 
 		}
 		[System.Serializable]
@@ -67,7 +69,8 @@ namespace FluidSPH3D
 
 		}
 		GPUBufferVariable<Particle> IDataBuffer<Particle>.Buffer => this.sphData.particleBuffer;
-		GPUBufferVariable<TrailParticle> ITrailSource<TrailParticle>.Buffer => this.sphData.trailParticleBuffer;
+		GPUBufferVariable<TrailParticle> ITrailSource<TrailParticle, int>.SourceBuffer => this.sphData.trailSourceBuffer;
+		GPUBufferAppendConsume<int> ITrailSource<TrailParticle, int>.EmitBuffer => this.sphData.trailEmitBufferConsume;
 		public ISpace Space => this.Configure.D.simulationSpace;
 		public bool Inited => this.inited;
 		[SerializeField] protected RunMode mode = RunMode.SharedMemory;
@@ -200,7 +203,9 @@ namespace FluidSPH3D
 
 			this.sphData.particleCount.InitBuffer(pnum, true, false);
 
-			this.sphData.trailParticleBuffer.InitBuffer(pnum);
+			this.sphData.trailSourceBuffer.InitBuffer(pnum);
+			this.sphData.trailEmitBufferAppend.InitAppendBuffer(pnum);
+			this.sphData.trailEmitBufferConsume.InitAppendBuffer(this.sphData.trailEmitBufferAppend);
 
 			var cs = this.mode == RunMode.SharedMemory ? this.fluidSharedCS : this.fluidSortedCS;
 			this.fluidDispatcher = new ComputeShaderDispatcher<SPHKernel>(cs);
@@ -252,6 +257,18 @@ namespace FluidSPH3D
 
 		protected void Update()
 		{
+
+			if (Input.GetKeyDown(KeyCode.R)) 
+			{
+				this.InitSPH();
+				this.InitParticle();
+
+				this.InitIndexPool();
+				this.AddBoundary();
+			}
+			// if (Input.GetKey(KeyCode.E)) this.Emit();
+			this.Emit();
+
 			foreach(var i in Enumerable.Range(0, this.Configure.D.stepIteration))
 			{
 				this.UpdateRuntimeParameter();
@@ -264,17 +281,6 @@ namespace FluidSPH3D
 				}
 				this.SPHStep();
 			}
-
-			if (Input.GetKeyDown(KeyCode.R)) 
-			{
-				this.InitSPH();
-				this.InitParticle();
-
-				this.InitIndexPool();
-				this.AddBoundary();
-			}
-			this.Emit();
-			// if (Input.GetKey(KeyCode.E)) this.Emit();
 
 			this.staticsData.ActiveParticleNum = this.Configure.D.numOfParticle - this.sphData.particleBufferIndexConsume.GetCounter();
 		}

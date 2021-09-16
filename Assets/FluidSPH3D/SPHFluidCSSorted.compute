@@ -45,10 +45,9 @@ RWStructuredBuffer<ParticleForce>  _ParticleForceBuffer;
 RWStructuredBuffer<ParticleVorticity>  _ParticleVorticityBuffer;
 RWStructuredBuffer<int>  _ParticleCount;
 
-RWStructuredBuffer<TrailParticle> _TrailParticleBuffer;
-
 StructuredBuffer<uint2> _GridBuffer;
 
+#include "TrailData.cginc"
 #include "SPHIndexPool.cginc"
 #include "SDF.cginc"
 
@@ -412,5 +411,6 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 	// Update
 	_ParticleBuffer[P_ID] = p;
 
-	_TrailParticleBuffer[p.uuid].pos = IsActive(p)? p.pos:0;
+	_TrailSourceBuffer[p.uuid].type = p.type;
+	_TrailSourceBuffer[p.uuid].pos = IsActive(p)? p.pos:0;
 }

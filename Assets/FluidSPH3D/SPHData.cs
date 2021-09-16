@@ -20,10 +20,10 @@ namespace FluidSPH3D
 		public float life;
 		public ParticleType type;
 	}
-	[StructLayout(LayoutKind.Sequential)]
-	public class TrailParticle: GPUTrail.TrailSource
+	public struct TrailParticle
 	{
-
+		int type;
+		float3 pos;
 	}
 	public struct ParticleDensity
 	{

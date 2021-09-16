@@ -1138,23 +1138,23 @@ MonoBehaviour:
       y: 3
     restDensity: 1000
     particleMass: 1
-    viscosity: 100
+    viscosity: 400
     vorticity: 1
-    nu_t: 0.2
+    nu_t: 0.3
     nu_ext: 0
     theta: 1
     gravity:
       x: 0
       y: -9.8
       z: 0
-    timeStep: 0.004
-    maxSpeed: 10
-    stepIteration: 8
+    timeStep: 0.002
+    maxSpeed: 20
+    stepIteration: 4
     particleScale: 0.5
     renderBoundaryParticle: 0
     particleLife:
-      x: 5
-      y: 10
+      x: 30
+      y: 50
     addSimulationSpaceBounds:
       x: 1
       y: 1
@@ -1217,6 +1217,7 @@ Transform:
   - {fileID: 419030051}
   - {fileID: 2105199585}
   - {fileID: 779176048}
+  - {fileID: 2073017678}
   m_Father: {fileID: 1172243133}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1702,6 +1703,72 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bitonicCS: {fileID: 7200000, guid: f9a7972f3420583448003e6065fd3a5e, type: 3}
+--- !u!1 &2073017677
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2073017678}
+  - component: {fileID: 2073017679}
+  m_Layer: 0
+  m_Name: Sphere (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2073017678
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073017677}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.58, y: -2.38, z: 1.17}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1307491547}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2073017679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073017677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfa758b858222514e85ab2bf7f39ab86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    name: Sphere
+    type: 1
+    density: 0.03125
+    space:
+      center:
+        x: 2.58
+        y: -2.38
+        z: 1.17
+      rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+      scale:
+        x: 1
+        y: 1
+        z: 1
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &2105199584
 GameObject:
   m_ObjectHideFlags: 0

@@ -38,7 +38,7 @@
     "particleMass": 1.0,
     "viscosity": 400.0,
     "vorticity": 1.0,
-    "nu_t": 0.30000001192092898,
+    "nu_t": 0.4000000059604645,
     "nu_ext": 0.0,
     "theta": 1.0,
     "gravity": {
@@ -53,7 +53,7 @@
     "renderBoundaryParticle": false,
     "particleLife": {
         "x": 30.0,
-        "y": 50.0
+        "y": 60.0
     },
     "addSimulationSpaceBounds": {
         "x": true,

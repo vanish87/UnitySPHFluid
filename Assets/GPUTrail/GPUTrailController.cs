@@ -64,7 +64,7 @@ namespace GPUTrail
 		protected ComputeShaderDispatcher<Kernel> dispatcher;
 		protected ITrailSource<T> source;
 
-		public void Init()
+		public virtual void Init()
 		{
 			this.source = ObjectTool.FindAllObject<ITrailSource<T>>().FirstOrDefault();
 			LogTool.AssertNotNull(this.source);
@@ -100,12 +100,12 @@ namespace GPUTrail
 			this.inited = true;
 		}
 
-		public void Deinit()
+		public virtual void Deinit()
 		{
 			this.trailData?.Release();
 		}
 
-		protected void Update()
+		protected virtual void Update()
 		{
 			if (this.trailData.sourceBuffer.Size != this.source.Buffer.Size)
 			{

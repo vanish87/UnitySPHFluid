@@ -266,11 +266,10 @@ namespace FluidSPH3D
 				this.InitIndexPool();
 				this.AddBoundary();
 			}
-			// if (Input.GetKey(KeyCode.E)) this.Emit();
-			this.Emit();
 
 			foreach(var i in Enumerable.Range(0, this.Configure.D.stepIteration))
 			{
+				this.Emit();
 				this.UpdateRuntimeParameter();
 
 				if (this.mode == RunMode.SortedGrid)

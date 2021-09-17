@@ -28,6 +28,6 @@
             "a": 1.0
         }
     },
-    "trailHeaderNum": 65536,
-    "trailNodeNum": 8388608
+    "trailHeaderNum": 32768,
+    "trailNodeNum": 4194304
 }

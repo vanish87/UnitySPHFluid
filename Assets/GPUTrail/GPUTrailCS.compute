@@ -121,58 +121,100 @@ void UpdateFromSourceBuffer (uint3 id : SV_DispatchThreadID)
 {
     const int hid = id.x;
     TrailHeader header = _TrailHeaderBuffer[hid];
-    if(!IsActive(header)) return;
-
     const int firstid = header.first;
     const int maxLength = header.maxLength;
     const int currentlength = header.currentlength;
 
-    const int pid = header.sourceID;
-    SourceType p = _TrailSourceBuffer[pid];
-
-    //consume a new node anyway
-    int nid = _TrailNodeIndexBufferConsume.Consume();
-    TrailNode node = _TrailNodeBuffer[nid];
-    node = InitNode(nid, node);
-    UpdateNode(node, p);
-
-    //add new node before first node
-    if(firstid != -1)
+    if(IsActive(header))
     {
-        TrailNode first = _TrailNodeBuffer[firstid];
-        first.prev = node.idx;
-        node.next = first.idx;
-        _TrailNodeBuffer[firstid] = first;
+        const int pid = header.sourceID;
+        SourceType p = _TrailSourceBuffer[pid];
+        if(!IsActive(p))
+        {
+            header.state = TS_DEAD;
+        }
+        else
+        {
+            //consume a new node anyway
+            int nid = _TrailNodeIndexBufferConsume.Consume();
+            TrailNode node = _TrailNodeBuffer[nid];
+            node = InitNode(nid, node);
+            UpdateNode(node, p);
+
+            //add new node before first node
+            if(firstid != -1)
+            {
+                TrailNode first = _TrailNodeBuffer[firstid];
+                first.prev = node.idx;
+                node.next = first.idx;
+                _TrailNodeBuffer[firstid] = first;
+            }
+            _TrailNodeBuffer[nid] = node;
+
+            header.first = nid;
+
+            //update local idx for each node
+            int localIdx = 0;
+            int last = -1;
+            int curr = nid;
+            while(curr != -1)
+            {
+                TrailNode node = _TrailNodeBuffer[curr];
+                node.uvy = 1-(currentlength > 1?(localIdx * 1.0f)/(currentlength-1):0);
+                _TrailNodeBuffer[curr] = node;
+
+                localIdx++;
+                last = curr;
+                curr = node.next;
+            }
+
+            //remove last new if it reaches max length
+            if(currentlength == maxLength)
+            {
+                int prev = _TrailNodeBuffer[last].prev;
+                _TrailNodeBuffer[prev].next = -1;
+                _TrailNodeIndexDeadBufferAppend.Append(last);
+            }
+
+            header.currentlength = min(currentlength+1, maxLength);
+        }
+        _TrailHeaderBuffer[hid] = header;
     }
-    _TrailNodeBuffer[nid] = node;
-
-    header.first = nid;
-
-    //update local idx for each node
-    int localIdx = 0;
-    int last = -1;
-    int curr = nid;
-    while(curr != -1)
+    else if(IsDead(header))
     {
-        TrailNode node = _TrailNodeBuffer[curr];
-        node.uvy = 1-(currentlength > 1?(localIdx * 1.0f)/(currentlength-1):0);
-        _TrailNodeBuffer[curr] = node;
+        //update local idx for each node
+        int localIdx = 0;
+        int last = -1;
+        int curr = firstid;
+        int newLength = currentlength -1;
+        while(curr != -1)
+        {
+            TrailNode node = _TrailNodeBuffer[curr];
+            node.uvy = 1-(newLength > 1?(localIdx * 1.0f)/(newLength-1):0);
+            _TrailNodeBuffer[curr] = node;
 
-        localIdx++;
-        last = curr;
-        curr = node.next;
-    }
+            localIdx++;
+            last = curr;
+            curr = node.next;
+        }
 
-    //remove last new if it reaches max length
-    if(currentlength == maxLength)
-    {
+        //remove last
         int prev = _TrailNodeBuffer[last].prev;
-        _TrailNodeBuffer[prev].next = -1;
+        if(prev != -1)
+        {
+            _TrailNodeBuffer[prev].next = -1;
+        }
         _TrailNodeIndexDeadBufferAppend.Append(last);
-    }
 
-    header.currentlength = min(currentlength+1, maxLength);
-    _TrailHeaderBuffer[hid] = header;
+        if(newLength == 0)
+        {
+            header = InitHeader(hid, header);
+            _TrailHeaderIndexBufferAppend.Append(hid);
+        }
+
+        header.currentlength = newLength;
+        _TrailHeaderBuffer[hid] = header;
+    }
 }
 
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]

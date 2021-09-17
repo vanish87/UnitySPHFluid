@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityTools;
 using UnityTools.Common;
@@ -111,10 +112,16 @@ namespace GPUTrail
 			var headerNum = this.Configure.D.trailHeaderNum;
 			this.dispatcher.Dispatch(Kernel.UpdateFromSourceBuffer, headerNum);
 
-			const int appnedCount = 1024 * 8;
+			count.z= this.trailData.trailNodeIndexDeadBufferAppend.GetCounter();
+
+			const int appnedCount = 1024 * 64;
 			this.dispatcher.Dispatch(Kernel.AppendDeadToNodePool, appnedCount);
 
+			count.x= this.trailData.trailHeaderIndexBufferConsume.GetCounter();
+			count.y= this.trailData.trailNodeIndexBufferConsume.GetCounter();
 		}
+
+		public int3 count;
 		protected void OnEnable()
 		{
 			if (!this.Inited) this.Init();

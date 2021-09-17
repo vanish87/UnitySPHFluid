@@ -60,6 +60,8 @@ namespace GPUTrail
 
 		public virtual void Init()
 		{
+			if(this.Inited) return;
+
 			this.source = ObjectTool.FindAllObject<ITrailSource<TrailSource, EmitSource>>().FirstOrDefault();
 			LogTool.AssertNotNull(this.source);
 
@@ -124,7 +126,7 @@ namespace GPUTrail
 		public int3 count;
 		protected void OnEnable()
 		{
-			if (!this.Inited) this.Init();
+			this.Init();
 		}
 		protected void OnDisable()
 		{

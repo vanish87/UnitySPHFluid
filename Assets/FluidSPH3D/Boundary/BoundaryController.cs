@@ -92,7 +92,7 @@ namespace FluidSPH3D
 
 		protected void OnEnable()
 		{
-			if(!this.Inited) this.Init();
+			this.Init();
 		}
 		protected void OnDisable()
 		{

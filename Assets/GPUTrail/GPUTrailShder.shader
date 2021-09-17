@@ -278,25 +278,37 @@ Shader "Unlit/TrailShader"
 
 	SubShader
 	{
-		// No culling or depth
-		// Cull On ZWrite On ZTest Always
-		// ZWrite On ZTest Always
-		// Blend One OneMinusSrcAlpha
-		// Blend SrcAlpha OneMinusSrcAlpha
-	
-		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
-        // ZWrite Off
-        // Cull Off
-        Blend SrcAlpha OneMinusSrcAlpha
-
 		Pass
 		{
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma geometry geom
-			// #pragma geometry geomParticle
 			#pragma fragment frag
 			ENDCG
 		}
+		// Pass
+		// {
+		// 	Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
+		// 	Cull Off
+		// 	ZWrite Off
+		// 	Blend Zero OneMinusSrcAlpha
+		// 	CGPROGRAM
+		// 	#pragma vertex vert
+		// 	#pragma geometry geom
+		// 	#pragma fragment frag
+		// 	ENDCG
+		// }
+		// Pass
+		// {
+		// 	Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
+		// 	Cull Off
+		// 	ZWrite Off
+		// 	Blend SrcAlpha One
+		// 	CGPROGRAM
+		// 	#pragma vertex vert
+		// 	#pragma geometry geom
+		// 	#pragma fragment frag
+		// 	ENDCG
+		// }
 	}
 }

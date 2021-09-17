@@ -31,6 +31,8 @@ namespace FluidSPH3D
 
 		public void Init()
 		{
+			if(this.Inited) return;
+
 			this.boundaries.Clear();
 			this.boundaries.AddRange(this.gameObject.GetComponentsInChildren<IBoundary>());
 

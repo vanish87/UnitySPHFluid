@@ -26,6 +26,8 @@ namespace FluidSPH3D
 
 		public void Init()
 		{
+			if(this.Inited) return;
+
             this.emitters.Clear();
             this.emitters.AddRange(this.gameObject.GetComponentsInChildren<IEmitter>());
 

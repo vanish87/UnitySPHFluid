@@ -109,11 +109,21 @@ void EmitTrailFromSource (uint3 id : SV_DispatchThreadID)
     header.maxLength = maxLength;
     _TrailHeaderBuffer[hid] = header;
 }
+float wang_hash01(uint seed)
+{
+    seed = (seed ^ 61) ^ (seed >> 16);
+    seed *= 9;
+    seed = seed ^ (seed >> 4);
+    seed *= 0x27d4eb2d;
+    seed = seed ^ (seed >> 15);
+    return float(seed) / 4294967295.0; // 2^32-1
+}
 
 
 void UpdateNode(inout TrailNode node, in SourceType p)
 {
-    node.pos = p.pos;
+    // float3 offset = float3(wang_hash01(p.uuid), wang_hash01(p.uuid * 139882), wang_hash01(p.uuid + _Time.x));
+    node.pos = p.pos;// + offset;
 }
 
 [numthreads(TRAIL_BLOCK_SIZE,1,1)]

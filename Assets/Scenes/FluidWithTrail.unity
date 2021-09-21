@@ -765,7 +765,7 @@ GameObject:
   - component: {fileID: 594008805}
   - component: {fileID: 594008804}
   m_Layer: 0
-  m_Name: EmitterController
+  m_Name: TrailEmitterController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1243,7 +1243,7 @@ GameObject:
   - component: {fileID: 1307491549}
   - component: {fileID: 1307491548}
   m_Layer: 0
-  m_Name: BoundaryController
+  m_Name: TrailBoundaryController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

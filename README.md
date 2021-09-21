@@ -7,7 +7,7 @@ Follows the [Tutorial](https://interactivecomputergraphics.github.io/SPH-Tutoria
 - [x] State Equation Pressure Term
 - [x] Cubic spline kernel
 - [x] Uniform Space Grid Hashing/Sorting
-- [x] Vorticity Refinement Term
+- [x] Vorticity Confinement Term
 - [x]  13K/26K Particles in real time
 - [ ] SDF/Obstacle Particles for boundary
 - [ ] Poisson solver for pressure term

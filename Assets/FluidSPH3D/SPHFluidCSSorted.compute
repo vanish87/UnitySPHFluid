@@ -1,22 +1,39 @@
 ﻿#pragma kernel Density
 #pragma kernel Vorticity
+#pragma kernel VorticityConfinement
 #pragma kernel Viscosity
 #pragma kernel Pressure
 #pragma kernel Integrate
 
+#pragma kernel InitIndexPool
+#pragma kernel Emit
+
+#pragma kernel AddBoundary
+
+#define SIMULATION_BLOCK_SIZE 512
+
 #include "SPHData.cginc"
 #include "Kernel.cginc"
 #include "GridHelper.cginc"
-#define SIMULATION_BLOCK_SIZE 256
 
 float _H;
 float2 _PressureK;// k1 and k2 in State Equation Pressure
 float _RestDensity;
 float _ParticleMass;
 float _Viscosity;
+float _Vorticity;
 float3 _Gravity;
 float _TimeStep;
+float _MaxSpeed;
+float _DeltaTime;
+float2 _ParticleLife;
 
+bool3 _SimulationSpaceBounds;
+
+
+float _NU_T;
+float _NU_EXT;
+float _Theta;
 
 RWStructuredBuffer<Particle> _ParticleBuffer;
 int _ParticleBufferCount;
@@ -30,11 +47,18 @@ RWStructuredBuffer<int>  _ParticleCount;
 
 StructuredBuffer<uint2> _GridBuffer;
 
+#include "TrailData.cginc"
+#include "SPHIndexPool.cginc"
+#include "SDF.cginc"
+
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
 {
 	const unsigned int P_ID = DTid.x;
-	float3 P_position = _ParticleBufferSorted[P_ID].pos;
+	Particle p = _ParticleBufferSorted[P_ID];
+	if(!IsActive(p)) return;
+
+	float3 P_position = p.pos;
 
 	float density = 0.0;
 
@@ -48,10 +72,15 @@ void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTi
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
-			float3 N_position = _ParticleBufferSorted[N_ID].pos;
+			Particle np = _ParticleBufferSorted[N_ID];
+			if(!IsActive(np)) continue;
+
+			float3 N_position = np.pos;
+
+			float gamma = IsBoundary(np)?20:1;
 
 			float3 r = P_position - N_position;
-			density += _ParticleMass * W(r, _H);
+			density += _ParticleMass * W(r, _H) * gamma;
 		}
 	}
 	_ParticleDensityBuffer[P_ID].density = max(density, _RestDensity);
@@ -61,6 +90,66 @@ void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTi
 void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
 {
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
+	const float h_sq = pow(_H, 2);
+
+	Particle p = _ParticleBufferSorted[P_ID];
+	if(!IsActive(p)) return;
+
+	float3 P_position = p.pos;
+	float3 P_vel = p.vel;
+	float3 P_w = p.w;
+
+	float3 nonPressureForce = 0;
+	float3 transferForce = 0;
+	float3 transferTorque = 0;
+
+
+	// nonPressureForce += _Gravity;
+	nonPressureForce += GetSDFForce(P_position);
+
+    int3 cid = PosToCellIndex(P_position, _GridMin, _GridMax, _GridSpacing);
+	int3 range = 1;
+	LOOP_RANGE(i, j, k, cid, range, _GridSize)
+	{
+		int3 index = int3(i,j,k);
+		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
+		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
+		{
+			Particle np = _ParticleBufferSorted[N_ID];
+			if(!IsActive(np)) continue;
+
+			float3 N_position = _ParticleBufferSorted[N_ID].pos;
+
+			float3 r = P_position - N_position;
+			float r_sq = dot(r, r);
+			if (r_sq < h_sq && P_ID != N_ID)
+			{
+				float3 N_w = _ParticleBufferSorted[N_ID].w;
+				float3 N_vel = _ParticleBufferSorted[N_ID].vel;
+				float  N_density = _ParticleDensityBuffer[N_ID].density;
+
+				float3 r = P_position - N_position;
+
+				float3 gradW = WGrad(r, _H);
+				transferForce  += -_ParticleMass/N_density *(cross(P_w - N_w, gradW));
+				transferTorque += -_ParticleMass/N_density *(cross(P_vel - N_vel, gradW));
+			}
+		}
+	}
+
+	_ParticleForceBuffer[P_ID].force = nonPressureForce;
+	_ParticleForceBuffer[P_ID].transferForce = _ParticleMass * _NU_T * transferForce;
+	_ParticleForceBuffer[P_ID].transferTorque = _ParticleMass * _NU_T * (transferTorque - 2 * P_w);
+
+}
+
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void VorticityConfinement(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
+{
+	const unsigned int P_ID = DTid.x; // Particle ID to operate on
+
+	Particle p = _ParticleBufferSorted[P_ID];
+	if(!IsActive(p)) return;
 
 	float3 P_position = _ParticleBufferSorted[P_ID].pos;
 	float3 P_velocity = _ParticleBufferSorted[P_ID].vel;
@@ -79,6 +168,9 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
+			Particle np = _ParticleBufferSorted[N_ID];
+			if(!IsActive(np)) continue;
+
 			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
 			float3 r = P_position - N_position;
@@ -108,6 +200,9 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(index, _GridSize)];
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
+			Particle np = _ParticleBufferSorted[N_ID];
+			if(!IsActive(np)) continue;
+
 			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
 			float3 r = P_position - N_position;
@@ -128,23 +223,20 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	float3 force = 0;
 	if(length(n) > 0)
 	{
-		float ep = 1.0f;
-		// ep = 0.01f;
+		float ep = _Vorticity;
 		force += ep * cross(normalize(n), w);
 	}
 
 	_ParticleForceBuffer[P_ID].force = force;
-}
-float sdBox( float3 p, float3 b )
-{
-	float3 q = abs(p) - b;
-	return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
 }
 
 [numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
 void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
 {
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
+
+	Particle p = _ParticleBufferSorted[P_ID];
+	if(!IsActive(p)) return;
 
 	float3 P_position = _ParticleBufferSorted[P_ID].pos;
 	float3 P_velocity = _ParticleBufferSorted[P_ID].vel;
@@ -153,6 +245,7 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	const float h_sq = pow(_H, 2);
 
 	float3 force = _ParticleForceBuffer[P_ID].force;
+	float3 transferForce = _ParticleForceBuffer[P_ID].transferForce;
 	
     int3 cid = PosToCellIndex(P_position, _GridMin, _GridMax, _GridSpacing);
 	int3 range = 1;
@@ -164,6 +257,9 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
+			Particle np = _ParticleBufferSorted[N_ID];
+			if(!IsActive(np)) continue;
+
 			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
 			float3 r = P_position - N_position;
@@ -183,16 +279,7 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 	}
 	// P_velocity + _TimeStep * (force) / _ParticleMass;
 
-	// float alpha = 2.0f;
-	// P_velocity += alpha * force;
-
-	// force = 0;
-	if(distance(P_position, float3(0.1,0.3,0)) < 0.2) force += normalize(P_position-float3(0.1,0.3,0)) * 1000;
-	if(distance(P_position, float3(0.8,0.1,0)) < 0.2) force += normalize(P_position-float3(0.8,0.1,0)) * 1000;
-	if(distance(P_position, float3(-0.5,0.5,0)) < 0.4) force += normalize(P_position-float3(-0.4,0.5,0)) * 1000;
-	// force += (sdBox(P_position, float3(0.5,0.5,0.1)) < 0)?float3(0,100,0):0;
-
-	_ParticleVelocityBuffer[P_ID].vel= P_velocity + _TimeStep * (force + _Gravity) / _ParticleMass;
+	_ParticleVelocityBuffer[P_ID].vel= P_velocity + _TimeStep * (force + transferForce + _Gravity) / _ParticleMass;
 }
 
 
@@ -200,6 +287,9 @@ void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
 {
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
+	
+	Particle p = _ParticleBufferSorted[P_ID];
+	if(!IsActive(p)) return;
 
 	float3 P_position = _ParticleBufferSorted[P_ID].pos;
 	float3 P_velocity = _ParticleBufferSorted[P_ID].vel;
@@ -222,6 +312,9 @@ void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 		uint2 startEnd = _GridBuffer[CellIndexToCellID(int3(i,j,k), _GridSize)];
 		for(uint N_ID = startEnd.x; N_ID < startEnd.y; ++N_ID)
 		{
+			Particle np = _ParticleBufferSorted[N_ID];
+			if(!IsActive(np)) continue;
+
 			float3 N_position = _ParticleBufferSorted[N_ID].pos;
 
 			float3 r = P_position - N_position;
@@ -242,6 +335,41 @@ void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GT
 	_ParticleCount[P_ID] = count;
 }
 
+#define LIMIT_MIN(space, p, axis, b)\
+if(space.axis && p.pos.axis < b.axis){\
+p.vel.axis = 0; p.pos.axis = b.axis;}
+
+#define LIMIT_MAX(space, p, axis, b)\
+if(space.axis && p.pos.axis > b.axis){\
+p.vel.axis = 0; p.pos.axis = b.axis;}
+
+#define INACTIVE_IF_INVALID(p, gmin, gmax)\
+if(any(p.pos < gmin) || any(p.pos > gmax)) p.type = PT_INACTIVE;
+
+Particle CheckBounds(Particle p)
+{
+	float3 gmin = _GridMin;
+	float3 gmax = _GridMax;
+
+	bool3 space = _SimulationSpaceBounds;
+
+	LIMIT_MIN(space, p, x, gmin)
+	LIMIT_MAX(space, p, x, gmax)
+
+	LIMIT_MIN(space, p, y, gmin)
+	LIMIT_MAX(space, p, y, gmax)
+
+	LIMIT_MIN(space, p, z, gmin)
+	LIMIT_MAX(space, p, z, gmax)
+
+	INACTIVE_IF_INVALID(p, gmin, gmax)
+
+		// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
+		// p.pos.y = gmax.y - _GridSpacing.y;
+	return p;
+}
+
+
 //--------------------------------------------------------------------------------------
 // Integration
 //--------------------------------------------------------------------------------------
@@ -250,51 +378,39 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 	const unsigned int P_ID = DTid.x; // Particle ID to operate on
 
 	Particle p = _ParticleBufferSorted[P_ID];
-	float3 acceleration = _ParticleForceBuffer[P_ID].force;
-	float3 velocity = _ParticleVelocityBuffer[P_ID].vel;
+	if(IsFluid(p))
+	{
+		float3 acceleration = _ParticleForceBuffer[P_ID].force;
+		float3 transferTorque = _ParticleForceBuffer[P_ID].transferTorque;
+		float3 velocity = _ParticleVelocityBuffer[P_ID].vel;
 
-	p.vel = velocity + _TimeStep * acceleration / _ParticleMass;
-	p.pos += _TimeStep * p.vel;
+		p.vel = velocity + _TimeStep * acceleration / _ParticleMass;
 
-	float3 gmin = _GridMin;
-	float3 gmax = _GridMax;
+		float speed = length(p.vel);
+		if(speed > _MaxSpeed) p.vel = normalize(p.vel) * _MaxSpeed;
 
-	float scale = 0.1f;
-	if (p.pos.x < gmin.x) {
-		p.vel.x = -p.vel.x * scale;
-		p.pos.x = gmin.x;
-	}
-	if (p.pos.x > gmax.x) {
-		p.vel.x = -p.vel.x * scale;
-		p.pos.x = gmax.x;
-	}
-	if (p.pos.y < gmin.y) {
-		p.vel.y = 0;
-		p.pos.y = gmin.y;
-		// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
-		// p.pos.y = gmax.y - _GridSpacing.y;
-	}
-	if (p.pos.y > gmax.y) {
-		p.vel.y = 0;
-		p.pos.y = gmax.y;
-	}
+		p.pos += _TimeStep * p.vel;
+		p.w +=  _Vorticity * _TimeStep * (transferTorque + _NU_EXT) / (_ParticleMass * _Theta);
 
-	if (p.pos.z > gmax.z) {
-		p.vel.z = -p.vel.z * scale;
-		p.pos.z = gmax.z;
-	}
-	if (p.pos.z < gmin.z) {
-		p.vel.z = -p.vel.z * scale;
-		p.pos.z = gmin.z;
+		p = CheckBounds(p);
 
-		if(p.pos.y < gmin.y + _GridSpacing.y * 5)
+		p.life -= _DeltaTime;
+		if(p.life < 0)
 		{
-		// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
-		// p.vel.z = 0;
-		// p.pos.y = gmax.y - _GridSpacing.y;
-		// p.pos.z = gmax.z - _GridSpacing.z * 20;
+			p.type = PT_INACTIVE;
 		}
 	}
+
+	//Rebuild append index buffer
+	if(!IsActive(p))
+	{
+		p = DeactiveParticle(p, P_ID);
+		_ParticleBufferIndexAppend.Append(P_ID);
+	}
+
 	// Update
 	_ParticleBuffer[P_ID] = p;
+
+	_TrailSourceBuffer[p.uuid].type = p.type;
+	_TrailSourceBuffer[p.uuid].pos = IsActive(p)? p.pos:0;
 }

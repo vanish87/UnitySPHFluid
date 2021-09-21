@@ -30,6 +30,7 @@ Shader "Unlit/SPHParticleShader"
 	float4 _ST;
 	float _H;
 	float _ParticleScale;
+	bool _RenderBoundaryParticle;
 
     StructuredBuffer<Particle> _ParticleBuffer;
 
@@ -39,11 +40,13 @@ Shader "Unlit/SPHParticleShader"
         UNITY_SETUP_INSTANCE_ID(i);
         UNITY_TRANSFER_INSTANCE_ID(i, o);
 
-        float radius = 0.5f * _H * _ParticleScale;
-        float4 wp = float4(i.vertex.xyz * radius + _ParticleBuffer[iid].pos,1);
+		Particle p = _ParticleBuffer[iid];
+
+		bool shoudRender = !(p.type == PT_INACTIVE || (p.type == PT_BOUNDARY && !_RenderBoundaryParticle));
+        float radius = 0.5f * _H * _ParticleScale * shoudRender;
+        float4 wp = float4(i.vertex.xyz * radius + p.pos,1);
         o.position = UnityObjectToClipPos(wp);
-        o.color = _ParticleBuffer[iid].col;
-        // o.color = 1;
+        o.color = p.col;
         return o;
 	}
 
@@ -62,7 +65,9 @@ Shader "Unlit/SPHParticleShader"
 		// Blend One OneMinusSrcAlpha
         // Blend SrcAlpha OneMinusSrcAlpha
     
-		// Tags{ "RenderType"="Opaque" "Queue"="Geometry"}
+		// Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
+        // // ZWrite Off
+        // Blend SrcAlpha OneMinusSrcAlpha
 		// Blend One One
 		Pass
 		{

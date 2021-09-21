@@ -7,9 +7,9 @@ using UnityTools.Common;
 
 namespace FluidSPH3D
 {
-	public class SPHGrid : ObjectGrid<Particle>
+	public class SPHGrid : ObjectGrid<Particle, uint2>
 	{
-		public GPUData GridGPUData => this.gridData;
+		public Data GridGPUData => this.gridData;
         public void Init(Space3D space, float gridSpacing)
         {
             this.space = space;

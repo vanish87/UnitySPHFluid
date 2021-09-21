@@ -15,6 +15,7 @@ Follows the [Tutorial](https://interactivecomputergraphics.github.io/SPH-Tutoria
 - [ ] Solid/Fluid Coupling
 
 ![](Gifs/sph1.gif)
+![](Gifs/waterfall_fluid.gif)
 ![](Gifs/sph2.gif)
 ![](Gifs/sph3.gif)
 ![](Gifs/sph4.gif)

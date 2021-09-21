@@ -71,7 +71,7 @@
         {
             "name": "Emiiter3",
             "isActive": true,
-            "particlePerSecond": 16,
+            "particlePerSecond": 256,
             "space": {
                 "center": {
                     "x": 0.09000000357627869,

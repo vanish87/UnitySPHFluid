@@ -3,7 +3,7 @@
         {
             "name": "Top",
             "isActive": true,
-            "particlePerSecond": 256,
+            "particlePerSecond": 64,
             "space": {
                 "center": {
                     "x": 0.5099999904632568,
@@ -37,7 +37,7 @@
         {
             "name": "Top",
             "isActive": true,
-            "particlePerSecond": 256,
+            "particlePerSecond": 64,
             "space": {
                 "center": {
                     "x": 0.0,

@@ -131,8 +131,8 @@ void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 G
 				float3 r = P_position - N_position;
 
 				float3 gradW = WGrad(r, _H);
-				transferForce  += -_ParticleMass/N_density *(cross(P_w - N_w, gradW));
-				transferTorque += -_ParticleMass/N_density *(cross(P_vel - N_vel, gradW));
+				transferForce  += -_ParticleMass/N_density *(cross(N_w, gradW));
+				transferTorque += -_ParticleMass/N_density *(cross(N_vel, gradW));
 			}
 		}
 	}

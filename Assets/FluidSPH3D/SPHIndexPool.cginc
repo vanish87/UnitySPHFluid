@@ -37,7 +37,7 @@ Particle RandomParticle(int did, int uuid, float4x4 localToWorld = IDENTITY)
 	p.type = PT_INACTIVE;
 	p.uuid = uuid;
 	p.pos = pos.xyz;
-	p.col = 1;
+	p.col.rgb = GenerateRandomPos01(did, uuid + _Time * 0);
 
 	return p;
 }

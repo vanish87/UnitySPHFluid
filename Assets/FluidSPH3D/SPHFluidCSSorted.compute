@@ -226,6 +226,7 @@ void VorticityConfinement(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThread
 		float ep = _Vorticity;
 		force += ep * cross(normalize(n), w);
 	}
+	force += GetSDFForce(P_position);
 
 	_ParticleForceBuffer[P_ID].force = force;
 }

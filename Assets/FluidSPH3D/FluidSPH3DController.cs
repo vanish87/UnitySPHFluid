@@ -20,6 +20,11 @@ namespace FluidSPH3D
 			SortedGrid,
 			SharedMemory,
 		}
+		public enum VortexMode
+		{
+			VorticityConfinement,
+			MicropolarModel,
+		}
 		public enum SPHKernel
 		{
 			Density,
@@ -74,6 +79,7 @@ namespace FluidSPH3D
 		public ISpace Space => this.Configure.D.simulationSpace;
 		public bool Inited => this.inited;
 		[SerializeField] protected RunMode mode = RunMode.SharedMemory;
+		[SerializeField] protected VortexMode vortexMode = VortexMode.MicropolarModel;
 		[SerializeField] protected SPHGPUData sphData = new SPHGPUData();
 		[SerializeField] protected BoundaryGPUData boundaryGPUData = new BoundaryGPUData();
 		[SerializeField] protected ComputeShader fluidSortedCS;
@@ -234,7 +240,14 @@ namespace FluidSPH3D
 		{
 			var num = this.Configure.D.numOfParticle;
 			this.fluidDispatcher.Dispatch(SPHKernel.Density, num);
-			this.fluidDispatcher.Dispatch(SPHKernel.Vorticity, num);
+			if (this.vortexMode == VortexMode.VorticityConfinement)
+			{
+				this.fluidDispatcher.Dispatch(SPHKernel.VorticityConfinement, num);
+			}
+			else
+			{
+				this.fluidDispatcher.Dispatch(SPHKernel.Vorticity, num);
+			}
 			this.fluidDispatcher.Dispatch(SPHKernel.Viscosity, num);
 			this.fluidDispatcher.Dispatch(SPHKernel.Pressure, num);
 

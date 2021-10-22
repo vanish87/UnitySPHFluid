@@ -36,11 +36,11 @@
         },
         {
             "name": "Emiiter2",
-            "isActive": false,
-            "particlePerSecond": 64,
+            "isActive": true,
+            "particlePerSecond": 512,
             "space": {
                 "center": {
-                    "x": -0.46000000834465029,
+                    "x": 0.019999999552965165,
                     "y": 6.769999980926514,
                     "z": 2.25
                 },
@@ -53,8 +53,8 @@
                     }
                 },
                 "scale": {
-                    "x": 1.0,
-                    "y": 0.05000000074505806,
+                    "x": 2.0,
+                    "y": 0.800000011920929,
                     "z": 0.10000000149011612
                 },
                 "displayAxis": false,
@@ -70,8 +70,8 @@
         },
         {
             "name": "Emiiter3",
-            "isActive": true,
-            "particlePerSecond": 16,
+            "isActive": false,
+            "particlePerSecond": 96,
             "space": {
                 "center": {
                     "x": 0.09000000357627869,

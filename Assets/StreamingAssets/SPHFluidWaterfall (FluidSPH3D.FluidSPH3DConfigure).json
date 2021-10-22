@@ -38,7 +38,7 @@
     "particleMass": 1.0,
     "viscosity": 200.0,
     "vorticity": 1.0,
-    "nu_t": 0.30000001192092898,
+    "nu_t": 0.3499999940395355,
     "nu_ext": 0.0,
     "theta": 1.0,
     "gravity": {
@@ -50,7 +50,7 @@
     "maxSpeed": 5.0,
     "stepIteration": 2,
     "particleScale": 0.5,
-    "renderBoundaryParticle": false,
+    "renderBoundaryParticle": true,
     "particleLife": {
         "x": 40.0,
         "y": 60.0

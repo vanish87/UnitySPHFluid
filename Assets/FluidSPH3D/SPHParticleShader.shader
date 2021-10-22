@@ -61,11 +61,16 @@ Shader "Unlit/SPHParticleShader"
     {
         // No culling or depth
         // Cull On ZWrite On ZTest Always
-        // ZWrite On ZTest Always
+        // ZWrite Off
+		//ZTest Always
 		// Blend One OneMinusSrcAlpha
-        // Blend SrcAlpha OneMinusSrcAlpha
+        Blend SrcAlpha OneMinusSrcAlpha
+		// Blend One OneMinusSrcAlpha // Premultiplied transparency
+		// Blend One One // Additive
+		// Blend OneMinusDstColor One // Soft additive
+		// Blend DstColor Zero // Multiplicative
     
-		// Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
+		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
         // // ZWrite Off
         // Blend SrcAlpha OneMinusSrcAlpha
 		// Blend One One

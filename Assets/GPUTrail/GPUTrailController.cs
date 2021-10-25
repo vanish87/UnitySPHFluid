@@ -97,6 +97,7 @@ namespace GPUTrail
 		public virtual void Deinit()
 		{
 			this.trailData?.Release();
+			this.inited = false;
 		}
 		protected void EmitTrail(int num, int maxLen)
 		{

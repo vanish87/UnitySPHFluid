@@ -15,14 +15,8 @@ namespace FluidSPH
 {
 	public class SPHController : MonoBehaviour,
                                  IDataBuffer<Particle>, //for rendering particles
-                                 // ITrailSource<TrailParticle, int>, //for updating trails
                                  IInitialize
 	{
-		public enum RunMode
-		{
-			SortedGrid,
-			SharedMemory,
-		}
 		public enum SPHKernel
 		{
 			Density,
@@ -34,8 +28,6 @@ namespace FluidSPH
 
 			InitIndexPool,
 			Emit,
-			EmitFromBuffer,
-
 			AddBoundary,
 		}
 		[System.Serializable]
@@ -52,17 +44,6 @@ namespace FluidSPH
 
 			//particle neighbor count for parameter tuning
 			[Shader(Name = "_ParticleCount")] public GPUBufferVariable<int> particleCount = new GPUBufferVariable<int>();
-			//trail pos source buffer
-			[Shader(Name = "_TrailSourceBuffer")] public GPUBufferVariable<TrailParticle> trailSourceBuffer = new GPUBufferVariable<TrailParticle>();
-			[Shader(Name = "_TrailEmitBufferAppend")] public GPUBufferAppendConsume<int> trailEmitBufferAppend = new GPUBufferAppendConsume<int>();
-			[Shader(Name = "_TrailEmitBufferConsume")] public GPUBufferAppendConsume<int> trailEmitBufferConsume = new GPUBufferAppendConsume<int>();
-
-		}
-		[System.Serializable]
-		public class RuntimeData : GPUContainer
-		{
-			// [Shader(Name = "_ImpulseTexture")] public RenderTexture impulseTexture;
-			// [Shader(Name = "_ImpulseTextureSize")] public int2 impulseTextureSize;
 		}
 		[System.Serializable]
 		public class StaticsData
@@ -72,15 +53,10 @@ namespace FluidSPH
 
 		}
 		GPUBufferVariable<Particle> IDataBuffer<Particle>.Buffer => this.sphData.particleBuffer;
-		// GPUBufferVariable<TrailParticle> ITrailSource<TrailParticle, int>.SourceBuffer => this.sphData.trailSourceBuffer;
-		// GPUBufferAppendConsume<int> ITrailSource<TrailParticle, int>.EmitBuffer => this.sphData.trailEmitBufferConsume;
 		public ISpace Space => this.Configure.D.simulationSpace;
 		public bool Inited => this.inited;
-		[SerializeField] protected RunMode mode = RunMode.SharedMemory;
 		[SerializeField] protected SPHGPUData sphData = new SPHGPUData();
-		[SerializeField] protected RuntimeData runtimeData = new RuntimeData();
 		[SerializeField] protected ComputeShader fluidSortedCS;
-		[SerializeField] protected ComputeShader fluidSharedCS;
 		[SerializeField] protected AccumulatorTimestep runner;
 		protected bool inited = false;
 		protected SPHConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<SPHConfigure>();
@@ -168,31 +144,24 @@ namespace FluidSPH
 			var poolNum = this.sphData.particleBufferIndexConsume.GetCounter();
 			var maxActiveParticle = this.Configure.D.numOfParticle;
 			if (this.staticsData.ActiveParticleNum - this.staticsData.BoundaryParticleNum > maxActiveParticle) return;
-			// if (poolNum < num)
+			var size = 0;
+			var count = 0;
+			foreach (var e in this.EmitterController.EmitterGPUData.emitterBuffer.CPUData)
 			{
-                var size = 0;
-                var count = 0;
-                foreach(var e in this.EmitterController.EmitterGPUData.emitterBuffer.CPUData)
-                {
-                    if(count + e.particlePerSecond > poolNum) break;
+				if (count + e.particlePerSecond > poolNum) break;
 
-                    count += e.particlePerSecond;
-                    size++;
-                }
-				if (size > 0)
-                {
-                    // Debug.Log(size);
-					this.fluidDispatcher.DispatchNoneThread(SPHKernel.Emit, size);
-                }
-                else
-                {
-					LogTool.Log("pool particle " + poolNum + " not enough to emit " + num, LogLevel.Warning);
-                }
+				count += e.particlePerSecond;
+				size++;
 			}
-            // else
-            // {
-			// 	this.fluidDispatcher.DispatchNoneThread(SPHKernel.Emit, ec.emitterBuffer.Size);
-            // }
+			if (size > 0)
+			{
+				// Debug.Log(size);
+				this.fluidDispatcher.DispatchNoneThread(SPHKernel.Emit, size);
+			}
+			else
+			{
+				LogTool.Log("pool particle " + poolNum + " not enough to emit " + num, LogLevel.Warning);
+			}
 		}
 
 		protected void InitSPH()
@@ -212,17 +181,12 @@ namespace FluidSPH
 
 			this.sphData.particleCount.InitBuffer(pnum, true, false);
 
-			this.sphData.trailSourceBuffer.InitBuffer(pnum);
-			this.sphData.trailEmitBufferAppend.InitAppendBuffer(pnum);
-			this.sphData.trailEmitBufferConsume.InitAppendBuffer(this.sphData.trailEmitBufferAppend);
-
-			var cs = this.mode == RunMode.SharedMemory ? this.fluidSharedCS : this.fluidSortedCS;
+			var cs = this.fluidSortedCS;
 			this.fluidDispatcher = new ComputeShaderDispatcher<SPHKernel>(cs);
 			foreach (SPHKernel k in Enum.GetValues(typeof(SPHKernel)))
 			{
 				this.fluidDispatcher.AddParameter(k, this.Configure.D);
 				this.fluidDispatcher.AddParameter(k, this.sphData);
-				this.fluidDispatcher.AddParameter(k, this.runtimeData);
 				this.fluidDispatcher.AddParameter(k, this.SPHGrid.GridGPUData);
 				this.fluidDispatcher.AddParameter(k, this.EmitterController.EmitterGPUData);
 				this.fluidDispatcher.AddParameter(k, this.BoundaryController.BoundaryGPUData);
@@ -235,17 +199,12 @@ namespace FluidSPH
 
 			this.runner = new AccumulatorTimestep(dt, iteration);
 			this.runner.OnUpdate(this.SimulationUpdate);
-
-			// this.runtimeData.impulseTexture = this.FluidSim2D.GetVelocityBuffer();
-			// this.runtimeData.impulseTextureSize.x = this.FluidSim2D.GetSimulationBufferSizeWidth();
-			// this.runtimeData.impulseTextureSize.y = this.FluidSim2D.GetSimulationBufferSizeHeight();
 		}
 		protected float GetCFL(float h, float maxSpeed)
 		{
 			const float lambda = 0.4f;
             const float minCFL = 0.00001f;
 			return lambda * (h / math.max(maxSpeed, minCFL));
-
 		}
 		protected void SPHStep()
 		{
@@ -269,7 +228,6 @@ namespace FluidSPH
 
 			this.Emit();
 
-			if (this.mode == RunMode.SortedGrid)
 			{
 				GPUBufferVariable<Particle> sorted;
 				this.SPHGrid.BuildSortedParticleGridIndex(this.sphData.particleBuffer, out sorted);
@@ -288,13 +246,6 @@ namespace FluidSPH
 			// var data = FileTool.Read<Particle[]>(this.DataPath);
 			// this.sphData.particleBuffer.OverWriteCPUData(data);
 			// this.sphData.particleBuffer.SetToGPUBuffer(true);
-		}
-		protected void EmitFromBuffer()
-		{
-			this.sphData.particleBufferIndexAppend.ResetCounter();
-
-			var pnum = this.Configure.D.numOfParticle;
-			this.fluidDispatcher.Dispatch(SPHKernel.EmitFromBuffer, pnum);
 		}
 		protected void OnEnable()
 		{
@@ -342,16 +293,6 @@ namespace FluidSPH
 			GUILayout.Label("Boundary Count " + bcount);
 			GUILayout.Label("Active Count " + pcount);
 			GUILayout.Label("Active Count without boundary " + (pcount - bcount));
-		}
-
-		public void InitBuffer()
-		{
-			throw new NotImplementedException();
-		}
-
-		public void DeinitBuffer()
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

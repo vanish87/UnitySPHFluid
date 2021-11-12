@@ -15,6 +15,8 @@ Follows the [Smoothed Particle Hydrodynamics Techniques for the Physics Based Si
 - [ ] Surface tension term
 - [ ] Solid/Fluid Coupling
 
+https://user-images.githubusercontent.com/1934796/141450369-9d4fc7a3-bae1-42e2-aedf-298c3904c149.mp4
+
 ![](Gifs/sph1m.gif)
 ![](Gifs/sph1.gif)
 ![](Gifs/waterfall_fluid.gif)

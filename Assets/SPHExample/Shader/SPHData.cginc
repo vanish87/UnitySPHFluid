@@ -37,6 +37,29 @@ static const int PT_INACTIVE = 0;
 static const int PT_FLUID 	= 1;
 static const int PT_BOUNDARY = 2;
 
+//Configure parameters
+float _H;
+float2 _PressureK;// k1 and k2 in State Equation Pressure
+float _RestDensity;
+float _ParticleMass;
+float _Viscosity;
+float _Vorticity;
+float3 _Gravity;
+float _TimeStep;
+int _StepIteration;
+float2 _MaxSpeed;
+float2 _ParticleLife;
+
+bool3 _SimulationSpaceBounds;
+
+float _NU_T;
+float _NU_EXT;
+float _Theta;
+float4 _TransferForceParameter;
+float4 _TransferTorqueParameter;
+float4 _AngularVelocityParameter;
+float4 _LinearVelocityParameter;
+
 bool IsFluid(Particle p) 
 {
 	return p.type == PT_FLUID;
@@ -50,3 +73,4 @@ bool IsActive(Particle p)
 {
 	return p.type != PT_INACTIVE;
 }
+

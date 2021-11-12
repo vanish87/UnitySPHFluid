@@ -98,19 +98,14 @@ namespace FluidSPH
 		{
 			if (this.Inited) return;
 
-			LogTool.LogAssertIsTrue(this.mode == RunMode.SortedGrid, "Only sorted grid is supported now");
-
 			this.BoundaryController.Init();
 			this.EmitterController.Init();
 
 			this.Configure.Initialize();
 			this.InitSPH();
-			{
-				this.InitParticle();
-				this.InitIndexPool();
-
-				this.AddBoundary();
-			}
+			this.InitParticle();
+			this.InitIndexPool();
+			this.AddBoundary();
 
 			this.inited = true;
 		}

@@ -14,43 +14,12 @@
 #define SIMULATION_BLOCK_SIZE 512
 
 #include "SPHData.cginc"
+#include "SPHBuffer.cginc"
 #include "Kernel.cginc"
 #include "GridHelper.cginc"
 
-float _H;
-float2 _PressureK;// k1 and k2 in State Equation Pressure
-float _RestDensity;
-float _ParticleMass;
-float _Viscosity;
-float _Vorticity;
-float3 _Gravity;
-float _TimeStep;
-int _StepIteration;
-float2 _MaxSpeed;
-float2 _ParticleLife;
 
-bool3 _SimulationSpaceBounds;
-
-
-float _NU_T;
-float _NU_EXT;
-float _Theta;
-float4 _TransferForceParameter;
-float4 _TransferTorqueParameter;
-float4 _AngularVelocityParameter;
-float4 _LinearVelocityParameter;
-
-
-RWStructuredBuffer<Particle> _ParticleBuffer;
-int _ParticleBufferCount;
 StructuredBuffer<Particle> _ParticleBufferSorted;
-
-RWStructuredBuffer<ParticleVelocity> _ParticleVelocityBuffer;
-RWStructuredBuffer<ParticleDensity> _ParticleDensityBuffer;
-RWStructuredBuffer<ParticleForce>  _ParticleForceBuffer;
-RWStructuredBuffer<ParticleVorticity>  _ParticleVorticityBuffer;
-RWStructuredBuffer<int>  _ParticleCount;
-
 StructuredBuffer<uint2> _GridBuffer;
 
 // #include "TrailData.cginc"

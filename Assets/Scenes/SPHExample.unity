@@ -494,7 +494,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &381505553
 Transform:
   m_ObjectHideFlags: 0
@@ -772,7 +772,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 554297468}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 760a19cf5df0a1b4084bae56057b7a9a, type: 3}
+  m_Script: {fileID: 11500000, guid: 51d1f71dc53f30140a134152209460a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &558263384
@@ -1127,9 +1127,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c53a50c60bce6e4a9eb849373db9d00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 0
+  mode: 1
   fluidSortedCS: {fileID: 7200000, guid: 9868878c36bcfd14b865ef5eadb8685b, type: 3}
-  fluidSharedCS: {fileID: 0}
+  fluidSharedCS: {fileID: 7200000, guid: f3e4007c82be598449df801bdf476ce7, type: 3}
   runner:
     accumulator: 0
     preferredTimestep: 0

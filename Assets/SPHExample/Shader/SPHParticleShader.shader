@@ -41,11 +41,10 @@ Shader "Fluid/SPHParticleShader"
 
 	sampler2D _MainTex;
 	float4 _ST;
-	float _H;
+	
+	StructuredBuffer<Particle> _ParticleBuffer;
 	float _ParticleScale;
 	bool _RenderBoundaryParticle;
-
-    StructuredBuffer<Particle> _ParticleBuffer;
 
 	v2f vert(appdata i, uint iid : SV_InstanceID) 
 	{

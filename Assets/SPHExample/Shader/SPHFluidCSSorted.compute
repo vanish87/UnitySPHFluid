@@ -1,0 +1,389 @@
+﻿#pragma kernel Density
+#pragma kernel Vorticity
+#pragma kernel VorticityConfinement
+#pragma kernel Viscosity
+#pragma kernel Pressure
+#pragma kernel Integrate
+
+#pragma kernel InitIndexPool
+#pragma kernel Emit
+#pragma kernel EmitFromBuffer
+
+#pragma kernel AddBoundary
+
+#define SIMULATION_BLOCK_SIZE 512
+
+#include "SPHData.cginc"
+#include "SPHBuffer.cginc"
+#include "Kernel.cginc"
+#include "GridHelper.cginc"
+
+
+StructuredBuffer<Particle> _ParticleBufferSorted;
+StructuredBuffer<uint2> _GridBuffer;
+
+// #include "TrailData.cginc"
+#include "Boundary.cginc"
+#include "SPHIndexPool.cginc"
+
+void MinMaxScaleDissipation(inout float3 value, float4 minMaxScaleDissipation)
+{
+	const float s = minMaxScaleDissipation.x;
+	const float2 minMax = minMaxScaleDissipation.yz;
+	const float dissipation = minMaxScaleDissipation.w;
+	value = s > 0? s * clamp(value, minMax.x, minMax.y):value;
+	value *= dissipation;
+}
+
+// Texture2D<float4> _ImpulseTexture;
+// float3 GetTextureForce(float3 pos)
+// {
+// 	float3 normalizedPos = PosToNormalized01(pos, _GridMin, _GridMax);
+// 	return _ImpulseTexture[normalizedPos.xz * _ImpulseTextureSize].xyz * _Fluid2DForceScale;
+// }
+
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void Density(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
+{
+	const uint p_id = DTid.x;
+	Particle p = _ParticleBufferSorted[p_id];
+	if(!IsActive(p)) return;
+
+	float3 p_pos = p.pos;
+
+	float density = 0.0;
+
+	FOR_EACH_NEIGHBOR_START(p, n_id, _GridBuffer, _GridMin, _GridMax, _GridSpacing, _GridSize)
+	{
+		Particle np = _ParticleBufferSorted[n_id];
+		if(!IsActive(np)) continue;
+
+		float3 n_pos = np.pos;
+
+		float gamma = IsBoundary(np)?20:1;
+
+		float3 r = p_pos - n_pos;
+		density += _ParticleMass * W(r, _H) * gamma;
+	}
+	FOR_EACH_NEIGHBOR_END
+
+	_ParticleDensityBuffer[p_id].density = max(density, _RestDensity);
+}
+
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void Vorticity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
+{
+	const uint p_id = DTid.x; // Particle ID to operate on
+	const float h_sq = pow(_H, 2);
+
+	Particle p = _ParticleBufferSorted[p_id];
+	if(!IsActive(p)) return;
+
+	float3 p_pos = p.pos;
+	float3 P_vel = p.vel;
+	float3 P_w = p.w;
+
+	float3 nonPressureForce = 0;
+	float3 transferForce = 0;
+	float3 transferTorque = 0;
+
+
+	// nonPressureForce += _Gravity;
+	nonPressureForce += GetSDFForce(p_pos);
+	// nonPressureForce += GetTextureForce(p_pos).xzy;
+
+	FOR_EACH_NEIGHBOR_START(p, n_id, _GridBuffer, _GridMin, _GridMax, _GridSpacing, _GridSize)
+	{
+		Particle np = _ParticleBufferSorted[n_id];
+		if(!IsActive(np)) continue;
+
+		float3 n_pos = np.pos;
+
+		float3 r = p_pos - n_pos;
+		float r_sq = dot(r, r);
+		if (r_sq < h_sq && p_id != n_id)
+		{
+			float3 N_w = np.w;
+			float3 N_vel = np.vel;
+			float  N_density = _ParticleDensityBuffer[n_id].density;
+
+			float3 r = p_pos - n_pos;
+
+			float3 gradW = WGrad(r, _H);
+			transferForce  += -_ParticleMass/N_density *(cross(P_w - N_w, gradW));
+			transferTorque += -_ParticleMass/N_density *(cross(P_vel - N_vel, gradW));
+		}
+	}
+	FOR_EACH_NEIGHBOR_END
+
+
+	MinMaxScaleDissipation(transferForce, _TransferForceParameter);
+	MinMaxScaleDissipation(transferTorque, _TransferTorqueParameter);
+
+	_ParticleForceBuffer[p_id].force = nonPressureForce;
+	_ParticleForceBuffer[p_id].transferForce = _ParticleMass * _NU_T * transferForce;
+	_ParticleForceBuffer[p_id].transferTorque = _ParticleMass * _NU_T * (transferTorque - 2 * P_w);
+
+}
+
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void VorticityConfinement(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
+{
+	const uint p_id = DTid.x; // Particle ID to operate on
+
+	Particle p = _ParticleBufferSorted[p_id];
+	if(!IsActive(p)) return;
+
+	float3 p_pos = p.pos;
+	float3 P_velocity = p.vel;
+	float  P_density  = _ParticleDensityBuffer[p_id].density;
+
+	const float h_sq = pow(_H, 2);
+	float3 w = 0;
+	
+	FOR_EACH_NEIGHBOR_START(p, n_id, _GridBuffer, _GridMin, _GridMax, _GridSpacing, _GridSize)
+	{
+		Particle np = _ParticleBufferSorted[n_id];
+		if(!IsActive(np)) continue;
+
+		float3 n_pos = np.pos;
+
+		float3 r = p_pos - n_pos;
+		float r_sq = dot(r, r);
+		if (r_sq < h_sq && p_id != n_id)
+		{
+			float3 N_velocity = np.vel;
+			float  N_density = _ParticleDensityBuffer[n_id].density;
+
+			float3 r = p_pos - n_pos;
+
+			float3 gradW = WGrad(r, _H);
+			w += -_ParticleMass/N_density *(cross(P_velocity - N_velocity, gradW));
+		}
+	}
+	FOR_EACH_NEIGHBOR_END
+	
+	_ParticleVorticityBuffer[p_id].vor = w;
+	AllMemoryBarrier();
+
+	float3 n = 0;
+	FOR_EACH_NEIGHBOR_START(p, n_id, _GridBuffer, _GridMin, _GridMax, _GridSpacing, _GridSize)
+	{
+		Particle np = _ParticleBufferSorted[n_id];
+		if(!IsActive(np)) continue;
+
+		float3 n_pos = np.pos;
+
+		float3 r = p_pos - n_pos;
+		float r_sq = dot(r, r);
+		if (r_sq < h_sq && p_id != n_id)
+		{
+			float3 N_velocity = np.vel;
+			float  N_density = _ParticleDensityBuffer[n_id].density;
+			float3 N_vorticity = _ParticleVorticityBuffer[n_id].vor;
+
+			float3 r = p_pos - n_pos;
+
+			float3 gradW = WGrad(r, _H);
+			n += _ParticleMass/N_density * length(N_vorticity) * gradW;
+		}
+	}
+	FOR_EACH_NEIGHBOR_END
+
+	float3 force = GetSDFForce(p_pos);
+	
+	if(length(n) > 0)
+	{
+		float ep = _Vorticity;
+		force += ep * cross(normalize(n), w);
+	}
+
+	_ParticleForceBuffer[p_id].force = force;
+}
+
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void Viscosity(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
+{
+	const uint p_id = DTid.x; // Particle ID to operate on
+
+	Particle p = _ParticleBufferSorted[p_id];
+	if(!IsActive(p)) return;
+
+	float3 p_pos = p.pos;
+	float3 P_velocity = p.vel;
+	float  P_density  = _ParticleDensityBuffer[p_id].density;
+
+	const float h_sq = pow(_H, 2);
+
+	float3 force = _ParticleForceBuffer[p_id].force;
+	float3 transferForce = _ParticleForceBuffer[p_id].transferForce;
+	
+	FOR_EACH_NEIGHBOR_START(p, n_id, _GridBuffer, _GridMin, _GridMax, _GridSpacing, _GridSize)
+	{
+		Particle np = _ParticleBufferSorted[n_id];
+		if(!IsActive(np)) continue;
+
+		float3 n_pos = np.pos;
+
+		float3 r = p_pos - n_pos;
+		float r_sq = dot(r, r);
+		if (r_sq < h_sq && p_id != n_id)
+		{
+			float3 N_velocity = np.vel;
+			float  N_density = _ParticleDensityBuffer[n_id].density;
+
+			// Viscosity Term
+			force += CalculateLapVelocity(_H, _ParticleMass, _Viscosity, r, P_velocity, N_velocity, P_density, N_density);
+
+		}
+	}
+	FOR_EACH_NEIGHBOR_END
+
+	_ParticleVelocityBuffer[p_id].vel= P_velocity + _TimeStep * (force + transferForce + _Gravity) / _ParticleMass;
+}
+
+
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void Pressure(uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex)
+{
+	const uint p_id = DTid.x; // Particle ID to operate on
+	
+	Particle p = _ParticleBufferSorted[p_id];
+	if(!IsActive(p)) return;
+
+	float3 p_pos = p.pos;
+	float3 P_velocity = p.vel;
+	float  P_density  = _ParticleDensityBuffer[p_id].density;
+	float  P_pressure = CalculateSEPressure(P_density, _PressureK.x, _PressureK.y, _RestDensity);
+
+	const float h_sq = pow(_H, 2);
+
+	float3 gradPressure = float3(0, 0, 0);
+	int count = 0;
+
+	
+	FOR_EACH_NEIGHBOR_START(p, n_id, _GridBuffer, _GridMin, _GridMax, _GridSpacing, _GridSize)
+	{
+		Particle np = _ParticleBufferSorted[n_id];
+		if(!IsActive(np)) continue;
+
+		float3 n_pos = np.pos;
+
+		float3 r = p_pos - n_pos;
+		float r_sq = dot(r, r);
+		if (r_sq < h_sq && p_id != n_id)
+		{
+			float3 N_velocity = np.vel;
+			float  N_density = _ParticleDensityBuffer[n_id].density;
+			float  N_pressure = CalculateSEPressure(N_density, _PressureK.x, _PressureK.y, _RestDensity);
+
+			gradPressure += CalculateGradPressure(_H, _ParticleMass, r, P_pressure, N_pressure, P_density, N_density);
+			count++;
+		}
+	}
+	FOR_EACH_NEIGHBOR_END
+
+	_ParticleForceBuffer[p_id].force = -(1.0/P_density) * P_density *  gradPressure;
+	_ParticleCount[p_id] = count;
+}
+
+#define LIMIT_MIN(space, p, axis, b)\
+if(space.axis && p.pos.axis < b.axis){\
+p.vel.axis = 0; p.pos.axis = b.axis;}
+
+#define LIMIT_MAX(space, p, axis, b)\
+if(space.axis && p.pos.axis > b.axis){\
+p.vel.axis = 0; p.pos.axis = b.axis;}
+
+#define INACTIVE_IF_INVALID(p, gmin, gmax)\
+if(any(p.pos < gmin) || any(p.pos > gmax)) p.type = PT_INACTIVE;
+
+Particle CheckBounds(Particle p)
+{
+	float3 gmin = _GridMin;
+	float3 gmax = _GridMax;
+
+	bool3 space = _SimulationSpaceBounds;
+
+	LIMIT_MIN(space, p, x, gmin)
+	LIMIT_MAX(space, p, x, gmax)
+
+	LIMIT_MIN(space, p, y, gmin)
+	LIMIT_MAX(space, p, y, gmax)
+
+	LIMIT_MIN(space, p, z, gmin)
+	LIMIT_MAX(space, p, z, gmax)
+
+	INACTIVE_IF_INVALID(p, gmin, gmax)
+
+		// p.vel.xy = float2(p.vel.x * 0.1,-0.1f);
+		// p.pos.y = gmax.y - _GridSpacing.y;
+	return p;
+}
+
+
+//--------------------------------------------------------------------------------------
+// Integration
+//--------------------------------------------------------------------------------------
+[numthreads(SIMULATION_BLOCK_SIZE, 1, 1)]
+void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint  GI : SV_GroupIndex) {
+	const uint p_id = DTid.x; // Particle ID to operate on
+
+	Particle p = _ParticleBufferSorted[p_id];
+	if(IsFluid(p))
+	{
+		float3 acceleration = _ParticleForceBuffer[p_id].force;
+		float3 transferTorque = _ParticleForceBuffer[p_id].transferTorque;
+		float3 velocity = _ParticleVelocityBuffer[p_id].vel;
+
+		p.vel = velocity + _TimeStep * acceleration / _ParticleMass;
+
+		// if(p.pos.z > 0.58 && -1.3 < p.pos.x && p.pos.x < -0.3) p.vel += float3(0,0,-0.03);
+
+		float speed = length(p.vel);
+		const float maxSpeed = min(_MaxSpeed.x, _MaxSpeed.y);
+		if(maxSpeed > 0 && speed > maxSpeed) p.vel = normalize(p.vel) * maxSpeed;
+		MinMaxScaleDissipation(p.vel, _LinearVelocityParameter);
+
+		p.pos += _TimeStep * p.vel;
+
+		p.w +=  _TimeStep * (transferTorque + _NU_EXT) / (_ParticleMass * _Theta);
+
+		MinMaxScaleDissipation(p.w, _AngularVelocityParameter);
+
+		p = CheckBounds(p);
+
+		p.life -= _TimeStep;
+		if(p.life < 0)
+		{
+			p.type = PT_INACTIVE;
+			// p.w = 0.0;
+			// p.life = lerp(_ParticleLife.x, _ParticleLife.y, wang_hash01(p.uuid + _Time.x));
+		}
+	}
+	else
+	if(IsBoundary(p))
+	{
+		BoundaryParticleData bp = _BoundaryParticleData[p.bpid];
+
+		float4x4 mat = _BoundaryData[bp.bid].localToWorld;
+		float4 worldPos = mul(mat, float4(bp.localPos,1));
+		p.pos = worldPos;
+	}
+
+	//Rebuild append index buffer
+	if(!IsActive(p))
+	{
+		p = DeactiveParticle(p, p_id);
+		_ParticleBufferIndexAppend.Append(p_id);
+	}
+
+	p.col.a = _ParticleDensityBuffer[p_id].density/5000.0f;
+
+	// Update
+	_ParticleBuffer[p_id] = p;
+
+	// _TrailSourceBuffer[p.uuid].type = p.type;
+	// _TrailSourceBuffer[p.uuid].pos = IsActive(p)? p.pos:0;
+	// _TrailSourceBuffer[p.uuid].vel = IsActive(p)? p.w:0;
+}

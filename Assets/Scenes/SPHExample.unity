@@ -700,6 +700,7 @@ GameObject:
   m_Component:
   - component: {fileID: 554297469}
   - component: {fileID: 554297470}
+  - component: {fileID: 554297471}
   m_Layer: 0
   m_Name: SDFSphere_1
   m_TagString: Untagged
@@ -762,6 +763,18 @@ MonoBehaviour:
     x: 0
     y: 0
     z: 0
+--- !u!114 &554297471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 554297468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 760a19cf5df0a1b4084bae56057b7a9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &558263384
 GameObject:
   m_ObjectHideFlags: 0
@@ -1243,6 +1256,7 @@ GameObject:
   - component: {fileID: 1845767512}
   - component: {fileID: 1845767511}
   - component: {fileID: 1845767510}
+  - component: {fileID: 1845767513}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1316,6 +1330,45 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -45, z: 0}
+--- !u!114 &1845767513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1845767509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb6944acbdd7fd242bcd16d1dc21dadd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  controllable: 1
+  zoomTrigger: 2
+  enableZoom: 1
+  invertZoomDirection: 0
+  zoomSpeed: 6
+  limitZoomX: 0
+  limitZoomY: 0
+  limitZoomZ: 0
+  smoothZoom: 1
+  smoothZoomSpeed: 10
+  rotateTrigger: 1
+  enableRotate: 1
+  invertRotateDirection: 0
+  rotateSpeed: 3
+  limitRotateX: 0
+  limitRotateY: 0
+  smoothRotate: 1
+  smoothRotateSpeed: 10
+  dragTrigger: 2
+  enablePan: 1
+  invertPanDirection: 0
+  dragSpeed: 3
+  limitPanX: 0
+  limitPanY: 0
+  smoothPan: 1
+  smoothPanSpeed: 10
 --- !u!1 &2022512684
 GameObject:
   m_ObjectHideFlags: 0

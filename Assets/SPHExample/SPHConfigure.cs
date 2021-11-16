@@ -40,6 +40,8 @@ namespace FluidSPH
 			//y is max speed to achieve visual effect
 			[Shader(Name = "_MaxSpeed")] public float2 maxSpeed = new float2(1, 1);
 			[Shader(Name = "_StepIteration")] public int stepIteration = 4;
+			[Shader(Name = "_ForceIteration")] public bool forceIteration = false;
+			[Shader(Name = "_ForceTimeStep")] public bool forceTimeStep = false;
 			[Shader(Name = "_ParticleScale")] public float particleScale = 1f;
 			[Shader(Name = "_RenderBoundaryParticle")] public bool renderBoundaryParticle = true;
 			[Shader(Name = "_ParticleLife")] public float2 particleLife = new float2(1, 20);

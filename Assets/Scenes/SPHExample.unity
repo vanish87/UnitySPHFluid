@@ -1133,8 +1133,8 @@ MonoBehaviour:
     preferredTimestep: 0
     maxIteration: 0
     logWarning: 0
-    alwaysPreferredTimestep: 0
-    forceStepIteration: 1
+    forcePreferredTimestep: 0
+    forceIteration: 0
     currentState: 0
 --- !u!114 &1756950053
 MonoBehaviour:
@@ -1189,7 +1189,7 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    numOfParticle: 8192
+    numOfParticle: 1048576
     smoothlen: 0.3
     pressureK:
       x: 400
@@ -1225,11 +1225,13 @@ MonoBehaviour:
       x: 0
       y: -9.8
       z: 0
-    timeStep: 0.060000002
+    timeStep: 0.030000001
     maxSpeed:
       x: 2
       y: 10
-    stepIteration: 8
+    stepIteration: 2
+    forceIteration: 1
+    forceTimeStep: 0
     particleScale: 0.5
     renderBoundaryParticle: 1
     particleLife:

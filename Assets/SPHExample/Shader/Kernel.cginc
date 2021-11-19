@@ -58,3 +58,9 @@ float3 CalculateLapVelocity(float h, float mass, float viscosity, float3 r, floa
 		return 0;
 	}
 }
+
+float GetReynoldsNumber(float3 velocity, float viscosity, float density, float L)
+{
+	float nu = viscosity/density;
+	return length(velocity) * L / max(0.000001f, nu);
+}

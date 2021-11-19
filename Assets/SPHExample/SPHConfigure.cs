@@ -19,6 +19,7 @@ namespace FluidSPH
 			[Shader(Name = "_PressureK")] public float2 pressureK = new float2(400, 3);
 			[Shader(Name = "_RestDensity")] public float restDensity = 1000;
 			[Shader(Name = "_ParticleMass")] public float particleMass = 1f;
+			//Kinematic Viscosity
 			[Shader(Name = "_Viscosity")] public float viscosity = 100f;
 			//for Vorticity Confinement
 			[Shader(Name = "_Vorticity")] public float vorticity = 1f;

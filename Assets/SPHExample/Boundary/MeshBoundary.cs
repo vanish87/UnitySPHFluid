@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityTools;
 using UnityTools.Common;
+using UnityTools.Rendering;
 
 namespace FluidSPH
 {

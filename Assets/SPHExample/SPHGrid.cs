@@ -10,10 +10,10 @@ namespace FluidSPH
 	public class SPHGrid : ObjectGrid<Particle, uint2>
 	{
 		public Data GridGPUData => this.gridData;
-        public void Init(Space3D space, float gridSpacing)
-        {
-            this.space = space;
-            this.Init(gridSpacing);
-        }
+		public void Init(Space3D space, float gridSpacing)
+		{
+			this.space = space;
+			this.Init(gridSpacing);
+		}
 	}
 }

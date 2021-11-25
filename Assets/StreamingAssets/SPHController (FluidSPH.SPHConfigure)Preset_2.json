@@ -94,10 +94,5 @@
         "x": true,
         "y": true,
         "z": true
-    },
-    "blend": {
-        "v": false,
-        "src": 1,
-        "dst": 0
     }
 }

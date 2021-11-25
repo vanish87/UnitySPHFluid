@@ -76,6 +76,8 @@
         "y": 10.0
     },
     "stepIteration": 8,
+    "forceIteration": false,
+    "forceTimeStep": false,
     "particleScale": 0.5,
     "renderBoundaryParticle": true,
     "particleLife": {

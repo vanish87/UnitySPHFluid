@@ -6,11 +6,16 @@ using UnityTools.Rendering;
 
 namespace FluidSPH
 {
-	public class SPHParticleRender : DataRenderBase<Particle>
+	public class SPHQuadRender : DataRenderBase<Particle>
 	{
 		[SerializeField] protected Texture particleTexture;
 		protected SPHConfigure Configure => this.configure ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<SPHConfigure>();
 		protected SPHConfigure configure;
+		public override void Init(params object[] parameters)
+		{
+			base.Init(parameters);
+			this.dataMaterial.Data.mainTexture = this.particleTexture;
+		}
 		public override void OnUpdateDraw()
 		{
 			this.Configure.D.UpdateGPU(this.dataMaterial);

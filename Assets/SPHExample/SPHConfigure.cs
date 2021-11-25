@@ -19,6 +19,7 @@ namespace FluidSPH
 			[Shader(Name = "_PressureK")] public float2 pressureK = new float2(400, 3);
 			[Shader(Name = "_RestDensity")] public float restDensity = 1000;
 			[Shader(Name = "_ParticleMass")] public float particleMass = 1f;
+			//Kinematic Viscosity
 			[Shader(Name = "_Viscosity")] public float viscosity = 100f;
 			//for Vorticity Confinement
 			[Shader(Name = "_Vorticity")] public float vorticity = 1f;
@@ -40,6 +41,8 @@ namespace FluidSPH
 			//y is max speed to achieve visual effect
 			[Shader(Name = "_MaxSpeed")] public float2 maxSpeed = new float2(1, 1);
 			[Shader(Name = "_StepIteration")] public int stepIteration = 4;
+			[Shader(Name = "_ForceIteration")] public bool forceIteration = false;
+			[Shader(Name = "_ForceTimeStep")] public bool forceTimeStep = false;
 			[Shader(Name = "_ParticleScale")] public float particleScale = 1f;
 			[Shader(Name = "_RenderBoundaryParticle")] public bool renderBoundaryParticle = true;
 			[Shader(Name = "_ParticleLife")] public float2 particleLife = new float2(1, 20);

@@ -197,7 +197,7 @@ namespace FluidSPH
 			int iteration = this.Configure.D.stepIteration;
 			var dt = this.GetCFL(h, maxSpeed);
 
-			this.runner = new AccumulatorTimestep(dt, iteration);
+			this.runner = new AccumulatorTimestep(dt, iteration, this.Configure.D.forceTimeStep, this.Configure.D.forceIteration);
 			this.runner.OnUpdate(this.SimulationUpdate);
 		}
 		protected float GetCFL(float h, float maxSpeed)

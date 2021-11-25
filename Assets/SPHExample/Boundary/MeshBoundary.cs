@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityTools;
 using UnityTools.Common;
+using UnityTools.Rendering;
 
 namespace FluidSPH
 {
@@ -15,9 +16,13 @@ namespace FluidSPH
         [SerializeField] protected int sampleNum = 1024;
         [SerializeField] protected float3 meshOriginalSize;
         protected DisposableMaterial material;
+		protected string FilePath => System.IO.Path.Combine(Application.streamingAssetsPath, this.data.name + ".bin");
         public override List<float3> Sample(float density = 1/32f)
         {
-            var wpos = Sampler.SampleMeshSurface(this.mesh, this.sampleNum);
+            var wpos = FileTool.Read<List<float3>>(this.FilePath);
+            if(wpos != null && wpos.Count > 0) return wpos;
+
+            wpos = Sampler.SampleMeshSurface(this.mesh, this.sampleNum);
             var b = this.mesh.bounds;
             this.meshOriginalSize = new float3(b.size);
             var center = new float3(b.center);
@@ -30,6 +35,7 @@ namespace FluidSPH
                 // wpos[i] = this.Space.TRS.MultiplyPoint(np);
                 wpos[i] = np;
             }
+			FileTool.Write(this.FilePath, wpos);
 
             return wpos;
         }

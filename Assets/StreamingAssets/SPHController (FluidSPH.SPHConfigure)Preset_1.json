@@ -35,10 +35,10 @@
         "y": 3.0
     },
     "restDensity": 1000.0,
-    "particleMass": 18.0,
-    "viscosity": 500.0,
+    "particleMass": 28.0,
+    "viscosity": 100.0,
     "vorticity": 1.0,
-    "nu_t": 0.20000000298023225,
+    "nu_t": 0.10000000149011612,
     "nu_ext": 0.0,
     "theta": 1.0,
     "transferForceParameter": {
@@ -75,8 +75,8 @@
         "x": 2.0,
         "y": 10.0
     },
-    "stepIteration": 2,
-    "forceIteration": true,
+    "stepIteration": 8,
+    "forceIteration": false,
     "forceTimeStep": false,
     "particleScale": 0.5,
     "renderBoundaryParticle": true,

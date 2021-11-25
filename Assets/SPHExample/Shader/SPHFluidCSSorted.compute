@@ -378,7 +378,10 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 		_ParticleBufferIndexAppend.Append(p_id);
 	}
 
-	p.col.a = _ParticleDensityBuffer[p_id].density/5000.0f;
+	// p.col.a = _ParticleDensityBuffer[p_id].density/10000.0f;
+	float density = _ParticleDensityBuffer[p_id].density;
+	float L = 0.05;
+	p.col.a = GetReynoldsNumber(p.vel, _Viscosity, density, L);
 
 	// Update
 	_ParticleBuffer[p_id] = p;

@@ -44,14 +44,14 @@ Shader "UnityTools/GeometryQuadShader"
 	sampler2D _MainTex;
 	float4 _ST;
 	
-	StructuredBuffer<Particle> _DataBuffer;
+	StructuredBuffer<Particle> _ParticleBuffer;
 	float _ParticleScale;
 	bool _RenderBoundaryParticle;
 
 	v2g vert(uint iid : SV_VertexID) 
 	{
         v2g o = (v2g)0;
-		Particle p = _DataBuffer[iid];
+		Particle p = _ParticleBuffer[iid];
 
 		bool shoudRender = !(p.type == PT_INACTIVE || (p.type == PT_BOUNDARY && !_RenderBoundaryParticle));
         float radius = 0.5f * _H * _ParticleScale * shoudRender;

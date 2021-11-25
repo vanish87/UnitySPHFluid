@@ -1281,10 +1281,6 @@ MonoBehaviour:
       x: 1
       y: 1
       z: 1
-    blend:
-      v: 1
-      src: 1
-      dst: 1
 --- !u!114 &1756950055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1297,10 +1293,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e665d71961594149bb9c37149aa7229, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fpsAverage: 5.4011173
-  frameRate: 5.21
-  frameCount: 3
-  elapsedTime: 0.7164707
+  fpsAverage: 4.143146
+  frameRate: 3
+  frameCount: 0
+  elapsedTime: 0
   staticsTime: 1
   displayGUI: 1
 --- !u!114 &1756950056

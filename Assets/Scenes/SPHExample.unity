@@ -914,6 +914,77 @@ MonoBehaviour:
     x: 0
     y: 0
     z: 0
+--- !u!1 &1095835527
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1095835528}
+  - component: {fileID: 1095835529}
+  m_Layer: 0
+  m_Name: Wall
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1095835528
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1095835527}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalScale: {x: 5, y: 20, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 2022512685}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1095835529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1095835527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd0bc1edf5ab16a4790b30b93e3ed8f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    name: Wall
+    type: 2
+    density: 0.03125
+    space:
+      center:
+        x: 0
+        y: 0
+        z: -10
+      rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+      scale:
+        x: 5
+        y: 20
+        z: 1
+      displayAxis: 0
+      displayText: 0
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
+  vel:
+    x: 0
+    y: 0
+    z: 0
 --- !u!1 &1180091792
 GameObject:
   m_ObjectHideFlags: 0
@@ -1293,10 +1364,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e665d71961594149bb9c37149aa7229, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fpsAverage: 4.143146
-  frameRate: 3
-  frameCount: 0
-  elapsedTime: 0
+  fpsAverage: 14.627707
+  frameRate: 6.88
+  frameCount: 4
+  elapsedTime: 0.84389627
   staticsTime: 1
   displayGUI: 1
 --- !u!114 &1756950056
@@ -1516,6 +1587,7 @@ Transform:
   - {fileID: 381505553}
   - {fileID: 1023341701}
   - {fileID: 554297469}
+  - {fileID: 1095835528}
   m_Father: {fileID: 1756950051}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

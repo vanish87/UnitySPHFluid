@@ -70,7 +70,7 @@ Shader "UnityTools/GeometryQuadShader"
 	}
 
 
-	[maxvertexcount(4)]
+	[maxvertexcount(QuadVertex)]
 	void geom(point v2g p[1], inout TriangleStream<g2f> outStream)
 	{
 		float size = p[0].size;

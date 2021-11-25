@@ -64,7 +64,9 @@ Shader "UnityTools/GeometryQuadShader"
 
 	fixed4 frag(g2f i) : SV_Target
 	{
-        return i.color;
+		float4 col = i.color;
+		col.a *= tex2D(_MainTex, i.texcoord).a;
+        return col;
 	}
 
 
@@ -106,5 +108,30 @@ Shader "UnityTools/GeometryQuadShader"
 			#pragma fragment frag
 			ENDCG
 		}
+
+		// Pass
+		// {
+		// 	Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
+		// 	Cull Off
+		// 	ZWrite Off
+		// 	Blend Zero OneMinusSrcAlpha
+		// 	CGPROGRAM
+		// 	#pragma vertex vert
+		// 	#pragma geometry geom
+		// 	#pragma fragment frag
+		// 	ENDCG
+		// }
+		// Pass
+		// {
+		// 	Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
+		// 	Cull Off
+		// 	ZWrite Off
+		// 	Blend SrcAlpha One
+		// 	CGPROGRAM
+		// 	#pragma vertex vert
+		// 	#pragma geometry geom
+		// 	#pragma fragment frag
+		// 	ENDCG
+		// }
     }
 }

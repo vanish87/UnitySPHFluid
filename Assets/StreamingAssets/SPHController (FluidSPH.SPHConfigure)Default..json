@@ -14,9 +14,9 @@
             }
         },
         "scale": {
-            "x": 10.0,
-            "y": 20.0,
-            "z": 50.0
+            "x": 20.0,
+            "y": 10.0,
+            "z": 10.0
         },
         "displayAxis": false,
         "displayText": false,
@@ -28,7 +28,7 @@
             "a": 1.0
         }
     },
-    "numOfParticle": 1048576,
+    "numOfParticle": 262144,
     "smoothlen": 0.30000001192092898,
     "pressureK": {
         "x": 400.0,
@@ -36,9 +36,9 @@
     },
     "restDensity": 1000.0,
     "particleMass": 18.0,
-    "viscosity": 500.0,
+    "viscosity": 50.0,
     "vorticity": 1.0,
-    "nu_t": 0.20000000298023225,
+    "nu_t": 0.05000000074505806,
     "nu_ext": 0.0,
     "theta": 1.0,
     "transferForceParameter": {
@@ -70,7 +70,7 @@
         "y": -9.800000190734864,
         "z": 0.0
     },
-    "timeStep": 0.06000000238418579,
+    "timeStep": 0.04795749858021736,
     "maxSpeed": {
         "x": 2.0,
         "y": 10.0

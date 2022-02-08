@@ -50,7 +50,7 @@ namespace FluidSPH
 			this.boundaries.Clear();
 			this.boundaries.AddRange(this.gameObject.GetComponentsInChildren<IBoundary>());
 
-			this.Configure.Initialize();
+			this.Configure.Init();
 			foreach (var bs in this.Configure.D.boundaries)
 			{
 				var go = new GameObject(bs.name);

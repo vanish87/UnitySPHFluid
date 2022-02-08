@@ -14,7 +14,7 @@ namespace FluidSPH
 		public override void Init(params object[] parameters)
 		{
 			base.Init(parameters);
-			this.dataMaterial.Data.mainTexture = this.particleTexture;
+			this.dataMaterial.Mat.mainTexture = this.particleTexture;
 		}
 		public override void OnUpdateDraw()
 		{

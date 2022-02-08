@@ -77,7 +77,7 @@ namespace FluidSPH
 			this.BoundaryController.Init();
 			this.EmitterController.Init();
 
-			this.Configure.Initialize();
+			this.Configure.Init();
 			this.InitSPH();
 			this.InitParticle();
 			this.InitIndexPool();
@@ -160,7 +160,7 @@ namespace FluidSPH
 			}
 			else
 			{
-				LogTool.Log("pool particle " + poolNum + " not enough to emit " + num, LogLevel.Warning);
+				// LogTool.Log("pool particle " + poolNum + " not enough to emit " + num, LogLevel.Warning);
 			}
 		}
 

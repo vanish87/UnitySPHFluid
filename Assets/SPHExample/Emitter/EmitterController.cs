@@ -31,7 +31,7 @@ namespace FluidSPH
             this.emitters.Clear();
             this.emitters.AddRange(this.gameObject.GetComponentsInChildren<IEmitter>());
 
-			this.Configure.Initialize();
+			this.Configure.Init();
 			foreach (var ec in this.Configure.D.emitters)
 			{
 				var go = new GameObject(ec.name);

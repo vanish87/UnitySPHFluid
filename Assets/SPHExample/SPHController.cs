@@ -308,5 +308,15 @@ namespace FluidSPH
 			GUILayout.Label("Active Count " + pcount);
 			GUILayout.Label("Active Count without boundary " + (pcount - bcount));
 		}
+
+		public void InitBuffer()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void DeinitBuffer()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

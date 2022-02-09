@@ -339,7 +339,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 285413090}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 5.05, z: 21.65}
+  m_LocalPosition: {x: -31.68, y: 5.05, z: 0}
   m_LocalScale: {x: 5, y: 1, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -360,13 +360,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data:
     name: Emitter
-    isActive: 1
+    isActive: 0
     particlePerSecond: 32768
     space:
       center:
-        x: 0
+        x: -31.68
         y: 5.05
-        z: 21.65
+        z: 0
       rotation:
         value:
           x: 0
@@ -494,7 +494,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &381505553
 Transform:
   m_ObjectHideFlags: 0
@@ -581,7 +581,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 437312331}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 8, z: 21.65}
+  m_LocalPosition: {x: -31.68, y: 8, z: 0}
   m_LocalScale: {x: 5, y: 1, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -602,13 +602,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data:
     name: Emitter
-    isActive: 1
+    isActive: 0
     particlePerSecond: 40960
     space:
       center:
-        x: 0
+        x: -31.68
         y: 8
-        z: 21.65
+        z: 0
       rotation:
         value:
           x: 0
@@ -648,7 +648,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 509759857}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.53, z: 21.65}
+  m_LocalPosition: {x: -31.68, y: -0.53, z: 0}
   m_LocalScale: {x: 5, y: 1, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -669,13 +669,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data:
     name: Emitter
-    isActive: 1
+    isActive: 0
     particlePerSecond: 8192
     space:
       center:
-        x: 0
+        x: -31.68
         y: -0.53
-        z: 21.65
+        z: 0
       rotation:
         value:
           x: 0
@@ -716,8 +716,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 554297468}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.07, y: -9.14, z: -0.13}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalPosition: {x: -8.9, y: 0, z: -0.13}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 125862780}
@@ -742,8 +742,8 @@ MonoBehaviour:
     density: 0.03125
     space:
       center:
-        x: 1.07
-        y: -9.14
+        x: -8.9
+        y: 0
         z: -0.13
       rotation:
         value:
@@ -752,9 +752,9 @@ MonoBehaviour:
           z: 0
           w: 1
       scale:
-        x: 3
-        y: 3
-        z: 3
+        x: 1
+        y: 1
+        z: 1
       displayAxis: 0
       displayText: 0
       displayBound: 1
@@ -800,7 +800,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 558263384}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.58, z: 21.65}
+  m_LocalPosition: {x: -31.68, y: 1.58, z: 0}
   m_LocalScale: {x: 5, y: 1, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -821,13 +821,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data:
     name: Emitter
-    isActive: 1
+    isActive: 0
     particlePerSecond: 16384
     space:
       center:
-        x: 0
+        x: -31.68
         y: 1.58
-        z: 21.65
+        z: 0
       rotation:
         value:
           x: 0
@@ -842,6 +842,281 @@ MonoBehaviour:
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
+--- !u!1 &974456033
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 974456034}
+  - component: {fileID: 974456038}
+  - component: {fileID: 974456037}
+  - component: {fileID: 974456036}
+  - component: {fileID: 974456035}
+  m_Layer: 0
+  m_Name: Trail
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &974456034
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974456033}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &974456035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974456033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fc85145bea637c4b8689ee22f573930, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trailCS: {fileID: 7200000, guid: acf4ffbebc3fc634a9643a5518f2f7da, type: 3}
+--- !u!114 &974456036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974456033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac7b38d6bd1e7424fbc696118d0fa6f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveMode: 1
+  saveType: 1
+  openKey: 0
+  saveKey: 0
+  loadKey: 0
+  preset: 0
+  isSyncing: 0
+  data:
+    thickness: 0.1
+    cornerDivision: 4
+    angleThreshold: 0
+    maxSpeedScale: 0
+    gradients:
+    - serializedVersion: 2
+      key0: {r: 1, g: 0, b: 0, a: 1}
+      key1: {r: 1, g: 0, b: 0, a: 1}
+      key2: {r: 1, g: 0, b: 0, a: 1}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 32768
+      ctime2: 65535
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 32768
+      atime2: 65535
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_NumColorKeys: 3
+      m_NumAlphaKeys: 3
+    - serializedVersion: 2
+      key0: {r: 1, g: 0, b: 0, a: 1}
+      key1: {r: 1, g: 0, b: 0, a: 1}
+      key2: {r: 1, g: 0, b: 0, a: 1}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 32768
+      ctime2: 65535
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 32768
+      atime2: 65535
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_NumColorKeys: 3
+      m_NumAlphaKeys: 3
+    - serializedVersion: 2
+      key0: {r: 1, g: 0, b: 0, a: 1}
+      key1: {r: 1, g: 0, b: 0, a: 1}
+      key2: {r: 1, g: 0, b: 0, a: 1}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 32768
+      ctime2: 65535
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 32768
+      atime2: 65535
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_NumColorKeys: 3
+      m_NumAlphaKeys: 3
+    - serializedVersion: 2
+      key0: {r: 0.93333334, g: 0.54509807, b: 0.20392157, a: 1}
+      key1: {r: 0.20784314, g: 0.5137255, b: 0.9607843, a: 1}
+      key2: {r: 0.45490196, g: 0.98039216, b: 0.29803923, a: 0}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 32768
+      ctime2: 65535
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 65535
+      atime2: 0
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_NumColorKeys: 3
+      m_NumAlphaKeys: 2
+    gradientTexture: {fileID: 0}
+    gradientTextureHeight: 4
+--- !u!114 &974456037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974456033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d431d4aa7f7809499253f576cbcef68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dataMaterial:
+    defaultShaderName: Unlit/Texture
+    renderQueueTag:
+      v: 2000
+    ignoreProjectorTag:
+      v: 1
+    renderTypeTag:
+      v: Opaque
+    blend:
+      v: 0
+      src: 1
+      dst: 0
+    blendOperation:
+      v: 0
+    colorMask:
+      v: 14
+    cull:
+      v: 2
+    zClip:
+      v: 0
+    zTest:
+      v: 4
+    zWrite:
+      v: 1
+    checkBoardSize:
+      v: 0
+    shader: {fileID: 4800000, guid: 08fa773d6c58e874eb8791964139205e, type: 3}
+  mode: 0
+  layer: 
+  allCamera: 0
+  referenceCamera: {fileID: 0}
+--- !u!114 &974456038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974456033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ccf07f7ec21a604e97c8b7bc31376a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveMode: 1
+  saveType: 1
+  openKey: 0
+  saveKey: 0
+  loadKey: 0
+  preset: 0
+  isSyncing: 0
+  data:
+    space:
+      center:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        value:
+          x: 0
+          y: 0
+          z: 0
+          w: 1
+      scale:
+        x: 1
+        y: 1
+        z: 1
+      displayAxis: 1
+      displayText: 1
+      displayBound: 1
+      color: {r: 0, g: 1, b: 1, a: 1}
+    trailHeaderNum: 32768
+    trailNodeNum: 4194304
+    emitTrailNum: 8192
+    trailLengthMinMax:
+      x: 32
+      y: 128
 --- !u!1 &1023341700
 GameObject:
   m_ObjectHideFlags: 0
@@ -1042,7 +1317,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289036975}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 6.71, z: 21.65}
+  m_LocalPosition: {x: -21.18, y: 6.71, z: 0}
   m_LocalScale: {x: 5, y: 1, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1064,12 +1339,12 @@ MonoBehaviour:
   data:
     name: Emitter
     isActive: 1
-    particlePerSecond: 49152
+    particlePerSecond: 12288
     space:
       center:
-        x: 0
+        x: -21.18
         y: 6.71
-        z: 21.65
+        z: 0
       rotation:
         value:
           x: 0
@@ -1253,7 +1528,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb5e7f2d35789814d8a0dfe9f33ed856, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dataShader: {fileID: 4800000, guid: a5af35bf4c324504f89a5d6f0983f818, type: 3}
+  dataMaterial:
+    defaultShaderName: Unlit/Texture
+    renderQueueTag:
+      v: 2000
+    ignoreProjectorTag:
+      v: 1
+    renderTypeTag:
+      v: Opaque
+    blend:
+      v: 0
+      src: 1
+      dst: 0
+    blendOperation:
+      v: 0
+    colorMask:
+      v: 14
+    cull:
+      v: 2
+    zClip:
+      v: 0
+    zTest:
+      v: 4
+    zWrite:
+      v: 1
+    checkBoardSize:
+      v: 0
+    shader: {fileID: 4800000, guid: a5af35bf4c324504f89a5d6f0983f818, type: 3}
   mode: 0
   particleTexture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!114 &1756950054
@@ -1273,7 +1574,7 @@ MonoBehaviour:
   openKey: 0
   saveKey: 0
   loadKey: 0
-  preset: 0
+  preset: 2
   isSyncing: 0
   data:
     simulationSpace:
@@ -1288,21 +1589,21 @@ MonoBehaviour:
           z: 0
           w: 1
       scale:
-        x: 10
-        y: 20
-        z: 50
+        x: 50
+        y: 1
+        z: 10
       displayAxis: 0
       displayText: 0
       displayBound: 1
       color: {r: 0, g: 1, b: 1, a: 1}
-    numOfParticle: 1048576
+    numOfParticle: 262144
     smoothlen: 0.3
     pressureK:
       x: 400
       y: 3
     restDensity: 1000
-    particleMass: 18
-    viscosity: 500
+    particleMass: 1
+    viscosity: 100
     vorticity: 1
     nu_t: 0.2
     nu_ext: 0
@@ -1321,7 +1622,7 @@ MonoBehaviour:
       x: 0
       y: -25.132742
       z: 25.132742
-      w: 1
+      w: 0.99
     linearVelocityParameter:
       x: 0
       y: -1
@@ -1331,23 +1632,23 @@ MonoBehaviour:
       x: 0
       y: -9.8
       z: 0
-    timeStep: 0.060000002
+    timeStep: 0.040000003
     maxSpeed:
-      x: 2
+      x: 3
       y: 10
     stepIteration: 2
     forceIteration: 1
     forceTimeStep: 0
-    particleScale: 0.5
+    particleScale: 0.22
     renderBoundaryParticle: 1
     particleLife:
       x: 50
-      y: 80
+      y: 70
     addSimulationSpaceBounds:
       x: 1
       y: 1
       z: 1
-    trailEmitRate: 0.01
+    trailEmitRate: 0.5
     addSimulationBoundaryParticle:
       x: 1
       y: 1
@@ -1364,10 +1665,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e665d71961594149bb9c37149aa7229, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fpsAverage: 14.627707
-  frameRate: 6.88
-  frameCount: 4
-  elapsedTime: 0.84389627
+  fpsAverage: 6.4750295
+  frameRate: 6.18
+  frameCount: 6
+  elapsedTime: 0.76556766
   staticsTime: 1
   displayGUI: 1
 --- !u!114 &1756950056
@@ -1382,7 +1683,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a20f8922f1e16cf45936847cf42ff77f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dataShader: {fileID: 4800000, guid: e55f85cf098c9024f8d0f0d9cd5555b8, type: 3}
+  dataMaterial:
+    defaultShaderName: Unlit/Texture
+    renderQueueTag:
+      v: 2000
+    ignoreProjectorTag:
+      v: 1
+    renderTypeTag:
+      v: Opaque
+    blend:
+      v: 0
+      src: 1
+      dst: 0
+    blendOperation:
+      v: 0
+    colorMask:
+      v: 14
+    cull:
+      v: 2
+    zClip:
+      v: 0
+    zTest:
+      v: 4
+    zWrite:
+      v: 1
+    checkBoardSize:
+      v: 0
+    shader: {fileID: 0}
   mode: 0
   mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1845325605

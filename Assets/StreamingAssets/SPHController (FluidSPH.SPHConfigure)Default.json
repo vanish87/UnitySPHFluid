@@ -14,8 +14,8 @@
             }
         },
         "scale": {
-            "x": 50.0,
-            "y": 1.0,
+            "x": 150.0,
+            "y": 0.10000000149011612,
             "z": 10.0
         },
         "displayAxis": false,
@@ -35,20 +35,20 @@
         "y": 3.0
     },
     "restDensity": 1000.0,
-    "particleMass": 1.0,
-    "viscosity": 100.0,
+    "particleMass": 18.0,
+    "viscosity": 10.0,
     "vorticity": 1.0,
-    "nu_t": 0.30000001192092898,
+    "nu_t": 0.05000000074505806,
     "nu_ext": 0.0,
     "theta": 1.0,
     "transferForceParameter": {
-        "x": 1.0,
+        "x": 0.0,
         "y": -25.132741928100587,
         "z": 25.132741928100587,
-        "w": 0.8999999761581421
+        "w": 1.0
     },
     "transferTorqueParameter": {
-        "x": 0.5,
+        "x": 0.0,
         "y": -25.132741928100587,
         "z": 25.132741928100587,
         "w": 1.0
@@ -70,26 +70,26 @@
         "y": -9.800000190734864,
         "z": 0.0
     },
-    "timeStep": 0.04000000283122063,
+    "timeStep": 0.06000000238418579,
     "maxSpeed": {
-        "x": 3.0,
+        "x": 2.0,
         "y": 10.0
     },
     "stepIteration": 4,
     "forceIteration": true,
     "forceTimeStep": false,
-    "particleScale": 0.10000000149011612,
+    "particleScale": 0.4000000059604645,
     "renderBoundaryParticle": true,
     "particleLife": {
-        "x": 50.0,
-        "y": 70.0
+        "x": 100.0,
+        "y": 160.0
     },
     "addSimulationSpaceBounds": {
         "x": true,
         "y": true,
         "z": true
     },
-    "trailEmitRate": 0.20000000298023225,
+    "trailEmitRate": 0.009999999776482582,
     "addSimulationBoundaryParticle": {
         "x": true,
         "y": true,

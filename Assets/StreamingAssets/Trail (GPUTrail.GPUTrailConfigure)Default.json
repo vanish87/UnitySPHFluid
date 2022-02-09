@@ -1,0 +1,38 @@
+﻿{
+    "space": {
+        "center": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "rotation": {
+            "value": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            }
+        },
+        "scale": {
+            "x": 1000.0,
+            "y": 1000.0,
+            "z": 1000.0
+        },
+        "displayAxis": true,
+        "displayText": true,
+        "displayBound": true,
+        "color": {
+            "r": 0.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+        }
+    },
+    "trailHeaderNum": 32768,
+    "trailNodeNum": 4194304,
+    "emitTrailNum": 8192,
+    "trailLengthMinMax": {
+        "x": 8,
+        "y": 16
+    }
+}

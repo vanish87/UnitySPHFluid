@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GPUTrail;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityTools;
@@ -15,6 +16,7 @@ namespace FluidSPH
 {
 	public class SPHController : MonoBehaviour,
                                  IDataBuffer<Particle>, //for rendering particles
+                                 ITrailSource<TrailParticle, int>, //for rendering particles
                                  IInitialize
 	{
 		public enum SPHKernel
@@ -44,6 +46,10 @@ namespace FluidSPH
 
 			//particle neighbor count for parameter tuning
 			[Shader(Name = "_ParticleCount")] public GPUBufferVariable<int> particleCount = new GPUBufferVariable<int>();
+
+			[Shader(Name = "_TrailSourceBuffer")] public GPUBufferVariable<TrailParticle> trailSourceBuffer = new GPUBufferVariable<TrailParticle>();
+			[Shader(Name = "_TrailEmitBufferAppend")] public GPUBufferAppendConsume<int> trailEmitBufferAppend = new GPUBufferAppendConsume<int>();
+			[Shader(Name = "_TrailEmitBufferConsume")] public GPUBufferAppendConsume<int> trailEmitBufferConsume = new GPUBufferAppendConsume<int>();
 		}
 		[System.Serializable]
 		public class StaticsData
@@ -52,7 +58,6 @@ namespace FluidSPH
 			[DisableEdit] public int ActiveParticleNum = 0;
 
 		}
-		GPUBufferVariable<Particle> IDataBuffer<Particle>.Buffer => this.sphData.particleBuffer;
 		public ISpace Space => this.Configure.D.simulationSpace;
 		public bool Inited => this.inited;
 		[SerializeField] protected SPHGPUData sphData = new SPHGPUData();
@@ -66,6 +71,11 @@ namespace FluidSPH
 		protected EmitterController EmitterController => this.emitterController ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<EmitterController>();
 		protected EmitterController emitterController;
 		protected BoundaryController BoundaryController => this.boundaryController ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<BoundaryController>();
+
+		GPUBufferVariable<Particle> IDataBuffer<Particle>.Buffer => this.sphData.particleBuffer;
+		GPUBufferVariable<TrailParticle> ITrailSource<TrailParticle, int>.SourceBuffer => this.sphData.trailSourceBuffer;
+		GPUBufferAppendConsume<int> ITrailSource<TrailParticle, int>.EmitBuffer => this.sphData.trailEmitBufferConsume;
+
 		protected BoundaryController boundaryController;
 		protected ComputeShaderDispatcher<SPHKernel> fluidDispatcher;
 		protected StaticsData staticsData = new StaticsData();
@@ -180,6 +190,10 @@ namespace FluidSPH
 			this.sphData.particleVorticity.InitBuffer(pnum);
 
 			this.sphData.particleCount.InitBuffer(pnum, true, false);
+
+			this.sphData.trailSourceBuffer.InitBuffer(pnum);
+			this.sphData.trailEmitBufferAppend.InitAppendBuffer(pnum);
+			this.sphData.trailEmitBufferConsume.InitAppendBuffer(this.sphData.trailEmitBufferAppend);
 
 			var cs = this.fluidSortedCS;
 			this.fluidDispatcher = new ComputeShaderDispatcher<SPHKernel>(cs);

@@ -22,7 +22,7 @@
 StructuredBuffer<Particle> _ParticleBufferSorted;
 StructuredBuffer<uint2> _GridBuffer;
 
-// #include "TrailData.cginc"
+#include "TrailData.cginc"
 #include "Boundary.cginc"
 #include "SPHIndexPool.cginc"
 
@@ -386,7 +386,7 @@ void Integrate(uint3 Gid  : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 
 	// Update
 	_ParticleBuffer[p_id] = p;
 
-	// _TrailSourceBuffer[p.uuid].type = p.type;
-	// _TrailSourceBuffer[p.uuid].pos = IsActive(p)? p.pos:0;
-	// _TrailSourceBuffer[p.uuid].vel = IsActive(p)? p.w:0;
+	_TrailSourceBuffer[p.uuid].type = p.type;
+	_TrailSourceBuffer[p.uuid].pos = IsActive(p)? p.pos:0;
+	_TrailSourceBuffer[p.uuid].vel = IsActive(p)? p.w:0;
 }

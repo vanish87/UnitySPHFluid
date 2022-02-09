@@ -88,10 +88,10 @@ void Emit(uint3 EmitterID : SV_GroupID, uint ParticleID : SV_GroupIndex)
 				const int uuid = _ParticleBuffer[P_ID].uuid;
 				_ParticleBuffer[P_ID] = EmitParticle(P_ID, uuid, e);
 				
-				// if(wang_hash01(P_ID) < _TrailEmitRate)
-				// {
-				// 	_TrailEmitBufferAppend.Append(uuid);
-				// }
+				if(wang_hash01(P_ID) < _TrailEmitRate)
+				{
+					_TrailEmitBufferAppend.Append(uuid);
+				}
 			}
 
 		}

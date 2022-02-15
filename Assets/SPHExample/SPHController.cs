@@ -16,7 +16,7 @@ namespace FluidSPH
 {
 	public class SPHController : MonoBehaviour,
                                  IDataBuffer<Particle>, //for rendering particles
-                                 ITrailSource<TrailParticle, int>, //for rendering particles
+                                 ITrailSource<TrailParticle, int>, //for emit trails
                                  IInitialize
 	{
 		public enum SPHKernel

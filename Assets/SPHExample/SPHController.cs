@@ -71,12 +71,12 @@ namespace FluidSPH
 		protected EmitterController EmitterController => this.emitterController ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<EmitterController>();
 		protected EmitterController emitterController;
 		protected BoundaryController BoundaryController => this.boundaryController ??= this.gameObject.FindOrAddTypeInComponentsAndChildren<BoundaryController>();
+		protected BoundaryController boundaryController;
 
 		GPUBufferVariable<Particle> IDataBuffer<Particle>.Buffer => this.sphData.particleBuffer;
 		GPUBufferVariable<TrailParticle> ITrailSource<TrailParticle, int>.SourceBuffer => this.sphData.trailSourceBuffer;
 		GPUBufferAppendConsume<int> ITrailSource<TrailParticle, int>.EmitBuffer => this.sphData.trailEmitBufferConsume;
 
-		protected BoundaryController boundaryController;
 		protected ComputeShaderDispatcher<SPHKernel> fluidDispatcher;
 		protected StaticsData staticsData = new StaticsData();
 

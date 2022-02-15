@@ -504,8 +504,8 @@ Transform:
   m_GameObject: {fileID: 381505552}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 15.2}
-  m_LocalScale: {x: 10, y: 9.905059, z: 7.7593718}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 5, y: 4.9525294, z: 3.8796859}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2022512685}
   m_RootOrder: 0
@@ -538,9 +538,9 @@ MonoBehaviour:
           z: 0
           w: 1
       scale:
-        x: 10
-        y: 9.905059
-        z: 7.7593718
+        x: 5
+        y: 4.9525294
+        z: 3.8796859
       displayAxis: 0
       displayText: 0
       displayBound: 1
@@ -852,9 +852,9 @@ GameObject:
   m_Component:
   - component: {fileID: 974456034}
   - component: {fileID: 974456038}
+  - component: {fileID: 974456035}
   - component: {fileID: 974456037}
   - component: {fileID: 974456036}
-  - component: {fileID: 974456035}
   m_Layer: 0
   m_Name: Trail
   m_TagString: Untagged
@@ -910,13 +910,41 @@ MonoBehaviour:
   preset: 0
   isSyncing: 0
   data:
-    thickness: 0.1
+    thickness: 0.05
     cornerDivision: 4
     angleThreshold: 0
     maxSpeedScale: 0
     gradients:
     - serializedVersion: 2
-      key0: {r: 1, g: 0, b: 0, a: 1}
+      key0: {r: 1, g: 0, b: 0, a: 0.16078432}
+      key1: {r: 1, g: 0, b: 0, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 1}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 65535
+      ctime2: 65535
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 4433
+      atime2: 49151
+      atime3: 65535
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 4
+    - serializedVersion: 2
+      key0: {r: 1, g: 0, b: 0, a: 0}
       key1: {r: 1, g: 0, b: 0, a: 1}
       key2: {r: 1, g: 0, b: 0, a: 1}
       key3: {r: 0, g: 0, b: 0, a: 0}
@@ -925,7 +953,7 @@ MonoBehaviour:
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
-      ctime1: 32768
+      ctime1: 65535
       ctime2: 65535
       ctime3: 0
       ctime4: 0
@@ -933,18 +961,18 @@ MonoBehaviour:
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 32768
-      atime2: 65535
-      atime3: 0
+      atime1: 3277
+      atime2: 52428
+      atime3: 65535
       atime4: 0
       atime5: 0
       atime6: 0
       atime7: 0
       m_Mode: 0
-      m_NumColorKeys: 3
-      m_NumAlphaKeys: 3
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 4
     - serializedVersion: 2
-      key0: {r: 1, g: 0, b: 0, a: 1}
+      key0: {r: 1, g: 0, b: 0, a: 0}
       key1: {r: 1, g: 0, b: 0, a: 1}
       key2: {r: 1, g: 0, b: 0, a: 1}
       key3: {r: 0, g: 0, b: 0, a: 0}
@@ -953,7 +981,7 @@ MonoBehaviour:
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
-      ctime1: 32768
+      ctime1: 65535
       ctime2: 65535
       ctime3: 0
       ctime4: 0
@@ -961,58 +989,30 @@ MonoBehaviour:
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 32768
-      atime2: 65535
-      atime3: 0
+      atime1: 16384
+      atime2: 49151
+      atime3: 65535
       atime4: 0
       atime5: 0
       atime6: 0
       atime7: 0
       m_Mode: 0
-      m_NumColorKeys: 3
-      m_NumAlphaKeys: 3
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 4
     - serializedVersion: 2
-      key0: {r: 1, g: 0, b: 0, a: 1}
-      key1: {r: 1, g: 0, b: 0, a: 1}
-      key2: {r: 1, g: 0, b: 0, a: 1}
-      key3: {r: 0, g: 0, b: 0, a: 0}
-      key4: {r: 0, g: 0, b: 0, a: 0}
+      key0: {r: 0.58431375, g: 0.60784316, b: 0.654902, a: 1}
+      key1: {r: 0.18630831, g: 0.28369674, b: 0.57586205, a: 1}
+      key2: {r: 0.3046907, g: 0.46445504, b: 0.6793104, a: 0}
+      key3: {r: 0.33681542, g: 0.39331824, b: 0.42413795, a: 0}
+      key4: {r: 0.3882353, g: 0.42352942, b: 0.90588236, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
-      ctime1: 32768
-      ctime2: 65535
-      ctime3: 0
-      ctime4: 0
-      ctime5: 0
-      ctime6: 0
-      ctime7: 0
-      atime0: 0
-      atime1: 32768
-      atime2: 65535
-      atime3: 0
-      atime4: 0
-      atime5: 0
-      atime6: 0
-      atime7: 0
-      m_Mode: 0
-      m_NumColorKeys: 3
-      m_NumAlphaKeys: 3
-    - serializedVersion: 2
-      key0: {r: 0.93333334, g: 0.54509807, b: 0.20392157, a: 1}
-      key1: {r: 0.20784314, g: 0.5137255, b: 0.9607843, a: 1}
-      key2: {r: 0.45490196, g: 0.98039216, b: 0.29803923, a: 0}
-      key3: {r: 0, g: 0, b: 0, a: 0}
-      key4: {r: 0, g: 0, b: 0, a: 0}
-      key5: {r: 0, g: 0, b: 0, a: 0}
-      key6: {r: 0, g: 0, b: 0, a: 0}
-      key7: {r: 0, g: 0, b: 0, a: 0}
-      ctime0: 0
-      ctime1: 32768
-      ctime2: 65535
-      ctime3: 0
-      ctime4: 0
+      ctime1: 4433
+      ctime2: 11372
+      ctime3: 42020
+      ctime4: 65535
       ctime5: 0
       ctime6: 0
       ctime7: 0
@@ -1025,9 +1025,9 @@ MonoBehaviour:
       atime6: 0
       atime7: 0
       m_Mode: 0
-      m_NumColorKeys: 3
+      m_NumColorKeys: 5
       m_NumAlphaKeys: 2
-    gradientTexture: {fileID: 0}
+    gradientTexture: {fileID: 1615632646}
     gradientTextureHeight: 4
 --- !u!114 &974456037
 MonoBehaviour:
@@ -1456,6 +1456,53 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bitonicCS: {fileID: 7200000, guid: f9a7972f3420583448003e6065fd3a5e, type: 3}
+--- !u!28 &1615632646
+Texture2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 2
+  m_Width: 128
+  m_Height: 4
+  m_CompleteImageSize: 2048
+  m_MipsStripped: 0
+  m_TextureFormat: 4
+  m_MipCount: 1
+  m_IsReadable: 1
+  m_IsPreProcessed: 0
+  m_IgnoreMasterTextureLimit: 0
+  m_StreamingMipmaps: 0
+  m_StreamingMipmapsPriority: 0
+  m_VTOnly: 0
+  m_AlphaIsTransparency: 0
+  m_ImageCount: 1
+  m_TextureDimension: 2
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 0
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_LightmapFormat: 0
+  m_ColorSpace: 0
+  m_PlatformBlob: 
+  image data: 2048
+  _typelessdata: ff000029ff000042ff00005bff000074ff00008dff0000a6ff0000beff0000d7ff0000f0ff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000f9ff0000f1ff0000e9ff0000e1ff0000d9ff0000d1ff0000c9ff0000c1ff0000b9ff0000b1ff0000a9ff0000a1ff000099ff000091ff000089ff000081ff000078ff000070ff000068ff000060ff000058ff000050ff000048ff000040ff000038ff000030ff000028ff000020ff000018ff000010ff000008ff000000ff000000ff000028ff000050ff000078ff0000a1ff0000c9ff0000f1ff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000fbff0000f1ff0000e7ff0000ddff0000d3ff0000c9ff0000bfff0000b5ff0000abff0000a1ff000097ff00008dff000083ff000078ff00006eff000064ff00005aff000050ff000046ff00003cff000032ff000028ff00001eff000014ff00000aff000000ff000000ff000008ff000010ff000018ff000020ff000028ff000030ff000038ff000040ff000048ff000050ff000058ff000060ff000068ff000070ff000078ff000081ff000089ff000091ff000099ff0000a1ff0000a9ff0000b1ff0000b9ff0000c1ff0000c9ff0000d1ff0000d9ff0000e1ff0000e9ff0000f1ff0000f9ff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000ffff0000f9ff0000f1ff0000e9ff0000e1ff0000d9ff0000d1ff0000c9ff0000c1ff0000b9ff0000b1ff0000a9ff0000a1ff000099ff000091ff000089ff000081ff000078ff000070ff000068ff000060ff000058ff000050ff000048ff000040ff000038ff000030ff000028ff000020ff000018ff000010ff000008ff000000959ba7ff8991a5ff7d88a2ff727ea0ff66759eff5a6b9bff4e6199ff425897ff364e94ff304a94ff334d96ff355198ff37549aff39579bff3c5b9dff3e5e9fff4062a1ff4265a3ff4569a5ff476ca7ff496fa9ff4b73abff4e76adff4e76acff4e76abff4e76aaff4e75a9ff4e75a8ff4f75a7ff4f74a6ff4f74a5ff4f74a3ff4f73a2ff4f73a1ff4f73a0ff4f729fff50729eff50729dff50729cff50719bff50719aff507198ff507097ff517096ff517095ff516f94ff516f93ff516f92ff516f91ff516e90ff526e8fff526e8dff526d8cff526d8bff526d8aff526c89ff526c88ff536c87ff536b86ff536b85ff536b84ff536b83ff536a81ff536a80ff536a7fff54697eff54697dff54697cff54687bff54687aff546879ff546778ff556776ff556775ff556774ff556673ff556672ff556671ff556570ff56656fff56656eff56646dff56646eff566570ff576573ff576576ff576578ff57657bff58657eff586681ff586683ff596686ff596689ff59668bff5a668eff5a6791ff5a6793ff5a6796ff5b6799ff5b679cff5b679eff5c68a1ff5c68a4ff5c68a6ff5c68a9ff5d68acff5d68aeff5d69b1ff5e69b4ff5e69b6ff5e69b9ff5e69bcff5f69bfff5f6ac1ff5f6ac4ff606ac7ff606ac9ff606accff606acfff616bd1ff616bd4ff616bd7ff626bdaff626bdcff626bdfff626ce2ff636ce4ff636ce7ff
+  m_StreamData:
+    serializedVersion: 2
+    offset: 0
+    size: 0
+    path: 
 --- !u!1 &1756950050
 GameObject:
   m_ObjectHideFlags: 0
@@ -1605,16 +1652,16 @@ MonoBehaviour:
     particleMass: 1
     viscosity: 100
     vorticity: 1
-    nu_t: 0.2
+    nu_t: 0.3
     nu_ext: 0
     theta: 1
     transferForceParameter:
-      x: 0
+      x: 1
       y: -25.132742
       z: 25.132742
-      w: 1
+      w: 0.9
     transferTorqueParameter:
-      x: 0
+      x: 0.5
       y: -25.132742
       z: 25.132742
       w: 1
@@ -1622,7 +1669,7 @@ MonoBehaviour:
       x: 0
       y: -25.132742
       z: 25.132742
-      w: 0.99
+      w: 1
     linearVelocityParameter:
       x: 0
       y: -1
@@ -1636,10 +1683,10 @@ MonoBehaviour:
     maxSpeed:
       x: 3
       y: 10
-    stepIteration: 2
+    stepIteration: 4
     forceIteration: 1
     forceTimeStep: 0
-    particleScale: 0.22
+    particleScale: 0.1
     renderBoundaryParticle: 1
     particleLife:
       x: 50
@@ -1648,7 +1695,7 @@ MonoBehaviour:
       x: 1
       y: 1
       z: 1
-    trailEmitRate: 0.5
+    trailEmitRate: 0.2
     addSimulationBoundaryParticle:
       x: 1
       y: 1
@@ -1665,10 +1712,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e665d71961594149bb9c37149aa7229, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fpsAverage: 6.4750295
-  frameRate: 6.18
-  frameCount: 6
-  elapsedTime: 0.76556766
+  fpsAverage: 5.8252425
+  frameRate: 11.68
+  frameCount: 1
+  elapsedTime: 0.33333334
   staticsTime: 1
   displayGUI: 1
 --- !u!114 &1756950056

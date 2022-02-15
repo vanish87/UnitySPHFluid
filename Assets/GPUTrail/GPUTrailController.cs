@@ -118,7 +118,7 @@ namespace GPUTrail
 
 			// count.z= this.trailData.trailNodeIndexDeadBufferAppend.GetCounter();
 
-			const int appnedCount = 1024 * 64;
+			const int appnedCount = 1024 * 512;
 			this.dispatcher.Dispatch(Kernel.AppendDeadToNodePool, appnedCount);
 
 			// count.x= this.trailData.trailHeaderIndexBufferConsume.GetCounter();
